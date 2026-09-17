@@ -20,14 +20,21 @@ export function TopicRow({
   noteCount = 0,
   resourceCount = 0,
   subjectSlug,
+  unitNumber,
 }: {
   topic: Topic;
   noteCount?: number;
   resourceCount?: number;
   subjectSlug: string;
+  /** When known, the title and the count chips open the topic's own page. */
+  unitNumber?: number;
 }) {
   const [pending, start] = useTransition();
   const Icon = ICON[topic.status];
+  const topicHref =
+    unitNumber !== undefined
+      ? `/subjects/${subjectSlug}/unit-${unitNumber}/${topic.code}`
+      : null;
 
   return (
     <li
@@ -58,14 +65,26 @@ export function TopicRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <p
-              className={cn(
-                "text-[13px] leading-snug",
-                topic.status === "mastered" && "text-muted",
-              )}
-            >
-              {topic.title}
-            </p>
+            {topicHref ? (
+              <Link
+                href={topicHref}
+                className={cn(
+                  "text-[13px] leading-snug hover:underline focus-ring rounded",
+                  topic.status === "mastered" && "text-muted",
+                )}
+              >
+                {topic.title}
+              </Link>
+            ) : (
+              <p
+                className={cn(
+                  "text-[13px] leading-snug",
+                  topic.status === "mastered" && "text-muted",
+                )}
+              >
+                {topic.title}
+              </p>
+            )}
             <div className="flex items-center gap-1 shrink-0">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span
@@ -92,7 +111,7 @@ export function TopicRow({
             <span className="text-[11px] text-subtle">{STATUS_LABEL[topic.status]}</span>
             {noteCount ? (
               <Link
-                href={`/notes?open=`}
+                href={topicHref ?? `/notes`}
                 className="text-[11px] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
               >
                 <StickyNote size={10} /> {noteCount}
@@ -100,7 +119,7 @@ export function TopicRow({
             ) : null}
             {resourceCount ? (
               <Link
-                href={`/resources?subject=${subjectSlug}`}
+                href={topicHref ?? `/resources?subject=${subjectSlug}`}
                 className="text-[11px] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
               >
                 <Link2 size={10} /> {resourceCount}

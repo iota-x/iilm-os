@@ -291,7 +291,7 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
       title: t.title,
       subtitle: n ? `${s.short} · Unit ${n} · ${t.code}` : `${s.short} · ${t.code}`,
       href: n
-        ? `/subjects/${s.slug}/unit-${n}#topic-${t.code}`
+        ? `/subjects/${s.slug}/unit-${n}/${t.code}`
         : `/subjects/${s.slug}#topic-${t.code}`,
       meta: t.in_midsem ? "mid-sem" : undefined,
     });

@@ -133,6 +133,7 @@ export default async function UnitPage({
                   key={t.id}
                   topic={t}
                   subjectSlug={slug}
+                  unitNumber={unit.number}
                   noteCount={allNotes.filter((n) => n.topic_id === t.id).length}
                   resourceCount={allResources.filter((r) => r.topic_id === t.id).length}
                 />

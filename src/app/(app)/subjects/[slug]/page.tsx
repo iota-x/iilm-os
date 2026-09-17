@@ -263,6 +263,7 @@ export default async function SubjectPage({
                         key={t.id}
                         topic={t}
                         subjectSlug={slug}
+                        unitNumber={u.number}
                         noteCount={notes.filter((n) => n.topic_id === t.id).length}
                         resourceCount={resources.filter((r) => r.topic_id === t.id).length}
                       />

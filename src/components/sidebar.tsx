@@ -274,7 +274,7 @@ export function Sidebar({
                               return (
                                 <li key={topic.id}>
                                   <Link
-                                    href={`/subjects/${subject.slug}/unit-${unit.number}#topic-${topic.code}`}
+                                    href={`/subjects/${subject.slug}/unit-${unit.number}/${topic.code}`}
                                     className="flex items-start gap-1.5 rounded-md px-2 py-1 text-[11.5px] leading-snug text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-ring"
                                     title={topic.title}
                                   >

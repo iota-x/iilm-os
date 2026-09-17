@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pull": "tsx scripts/pull-notes.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

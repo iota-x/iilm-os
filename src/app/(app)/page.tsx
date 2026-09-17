@@ -9,6 +9,9 @@ import {
   getSlots,
   getNotes,
 } from "@/lib/queries";
+import { attendanceBySubject } from "@/lib/attendance";
+import { AttendanceToday } from "@/components/attendance-today";
+import { getAttendance, getClassMarks } from "@/lib/queries";
 import { dueForReview, reviewStateOf } from "@/lib/review";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
@@ -47,6 +50,11 @@ export default async function Dashboard() {
   const due = dueForReview(topics);
   const dueMidsem = due.filter((d) => d.topic.in_midsem).length;
   const soon = topics.filter((t) => reviewStateOf(t).bucket === "soon").length;
+
+  const [classMarks, attendanceBaseline] = await Promise.all([getClassMarks(), getAttendance()]);
+  const todayMarks = classMarks.filter((m) => m.on_date === today);
+  const attendanceRows = attendanceBySubject(subjects, classMarks, attendanceBaseline);
+  const atRisk = attendanceRows.filter((r) => r.pct !== null && r.pct < 75);
 
   const todayTasks = await getTasks({ date: today });
   const overdue = (await getTasks({ to: today })).filter(
@@ -128,6 +136,25 @@ export default async function Dashboard() {
                 </p>
               </div>
               <ArrowRight size={15} className="shrink-0 text-subtle" />
+            </div>
+          </Card>
+        </Link>
+      ) : null}
+
+      {atRisk.length ? (
+        <Link href="/attendance" className="block rounded-[14px] focus-ring">
+          <Card className="overflow-hidden border-[var(--warn)]/35 transition-colors hover:bg-surface-2/40">
+            <div className="flex items-center gap-3 px-4 py-2.5">
+              <AlertTriangle size={15} className="shrink-0 text-[var(--warn)]" />
+              <p className="min-w-0 flex-1 text-[12.5px]">
+                <span className="font-medium">
+                  {atRisk.map((r) => r.subject.short_name).join(", ")}
+                </span>{" "}
+                <span className="text-muted">
+                  below 75% — {atRisk[0].needToAttend} in a row to fix the worst of it
+                </span>
+              </p>
+              <ArrowRight size={14} className="shrink-0 text-subtle" />
             </div>
           </Card>
         </Link>
@@ -362,6 +389,18 @@ export default async function Dashboard() {
                 No classes today. Full day for study.
               </p>
             )}
+
+            {todaySlots.length ? (
+              <div className="border-t border-line">
+                <AttendanceToday
+                  date={today}
+                  dayLabel={fullDay(weekday)}
+                  slots={todaySlots}
+                  subjects={subjects}
+                  marks={todayMarks}
+                />
+              </div>
+            ) : null}
           </Card>
 
           <Card>

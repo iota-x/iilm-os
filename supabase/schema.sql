@@ -393,6 +393,28 @@ create index if not exists questions_subject_idx on questions(subject_id);
 create index if not exists attempts_question_idx on attempts(question_id);
 
 -- ════════════════════════════════════════════════════════════════════
+--  Attendance, marked per class. The `attendance` table above stays as a
+--  baseline for whatever was held before you started ticking; the running
+--  total is that plus these rows.
+-- ════════════════════════════════════════════════════════════════════
+-- One row per class you actually mark. Unmarked classes count for nothing —
+-- no row means no assumption either way, which keeps the percentage honest
+-- when you forget a day or a class is cancelled.
+create table if not exists class_marks (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  on_date     date not null,
+  slot_id     uuid not null references timetable_slots(id) on delete cascade,
+  subject_id  uuid references subjects(id) on delete set null,
+  attended    boolean not null,
+  created_at  timestamptz default now(),
+  unique (user_id, on_date, slot_id)
+);
+
+create index if not exists class_marks_date_idx on class_marks(on_date);
+create index if not exists class_marks_subject_idx on class_marks(subject_id);
+
+-- ════════════════════════════════════════════════════════════════════
 --  Row level security — every table is scoped to the owning user.
 -- ════════════════════════════════════════════════════════════════════
 do $$
@@ -401,7 +423,7 @@ begin
   foreach t in array array[
     'profiles','semesters','subjects','outcomes','units','topics','experiments',
     'components','strategies','books','resources','notes','attachments','tasks',
-    'plan_days','study_sessions','timetable_slots','exams','attendance','checkpoints','questions','attempts'
+    'plan_days','study_sessions','timetable_slots','exams','attendance','checkpoints','questions','attempts','class_marks'
   ] loop
     execute format('alter table %I enable row level security', t);
     execute format('drop policy if exists own_all on %I', t);

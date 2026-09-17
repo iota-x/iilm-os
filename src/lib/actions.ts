@@ -442,3 +442,61 @@ export async function deleteAttempt(id: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+/* ─── attendance, marked per class ───────────────────────────
+   Unmarked classes are not counted at all — passing `attended: null`
+   removes the mark rather than recording a miss, so a cancelled class or
+   a day you forgot doesn't drag the percentage down. */
+export async function setClassMark(input: {
+  on_date: string;
+  slot_id: string;
+  subject_id: string | null;
+  attended: boolean | null;
+}) {
+  const { db, userId } = await uid();
+
+  if (input.attended === null) {
+    const { error } = await db
+      .from("class_marks")
+      .delete()
+      .eq("user_id", userId)
+      .eq("on_date", input.on_date)
+      .eq("slot_id", input.slot_id);
+    if (error) throw new Error(error.message);
+  } else {
+    const { error } = await db.from("class_marks").upsert(
+      {
+        user_id: userId,
+        on_date: input.on_date,
+        slot_id: input.slot_id,
+        subject_id: input.subject_id,
+        attended: input.attended,
+      },
+      { onConflict: "user_id,on_date,slot_id" },
+    );
+    if (error) throw new Error(error.message);
+  }
+  revalidatePath("/", "layout");
+}
+
+/** One tap for "I was in today" — marks every class that day the same way. */
+export async function setWholeDay(
+  on_date: string,
+  slots: { slot_id: string; subject_id: string | null }[],
+  attended: boolean,
+) {
+  const { db, userId } = await uid();
+  if (!slots.length) return;
+  const { error } = await db.from("class_marks").upsert(
+    slots.map((s) => ({
+      user_id: userId,
+      on_date,
+      slot_id: s.slot_id,
+      subject_id: s.subject_id,
+      attended,
+    })),
+    { onConflict: "user_id,on_date,slot_id" },
+  );
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}

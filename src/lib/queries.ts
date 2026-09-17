@@ -3,6 +3,7 @@ import type {
   Attendance,
   Attempt,
   Checkpoint,
+  ClassMark,
   Component,
   Exam,
   Experiment,
@@ -71,6 +72,19 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
   // if it hasn't been created yet
   if (error) return [];
   return (data as Checkpoint[]) ?? [];
+}
+
+export async function getClassMarks(opts?: {
+  from?: string;
+  to?: string;
+}): Promise<ClassMark[]> {
+  const db = await createClient();
+  let q = db.from("class_marks").select("*").order("on_date");
+  if (opts?.from) q = q.gte("on_date", opts.from);
+  if (opts?.to) q = q.lte("on_date", opts.to);
+  const { data, error } = await q;
+  if (error) return []; // table may predate this feature
+  return (data as ClassMark[]) ?? [];
 }
 
 export async function getQuestions(opts?: {

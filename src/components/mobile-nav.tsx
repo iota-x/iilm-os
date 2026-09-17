@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  CalendarCheck,
   CalendarRange,
   Dumbbell,
   GraduationCap,
@@ -24,6 +25,7 @@ const LINKS = [
   { href: "/planner", label: "Planner", icon: CalendarRange },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },
+  { href: "/attendance", label: "Attendance", icon: CalendarCheck },
   { href: "/exams", label: "Exams", icon: GraduationCap },
 ];
 

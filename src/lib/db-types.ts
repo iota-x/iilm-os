@@ -100,6 +100,14 @@ export interface Attempt {
   created_at: string;
 }
 
+export interface ClassMark {
+  id: string;
+  on_date: string;
+  slot_id: string;
+  subject_id: string | null;
+  attended: boolean;
+}
+
 export interface Experiment {
   id: string;
   subject_id: string;

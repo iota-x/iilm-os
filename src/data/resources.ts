@@ -19,7 +19,7 @@ export const resources: SeedResource[] = [
     why: "The closest free match to your Units 2–5 that exists. Every section is definition → method → worked examples → practice problems with full solutions. If you read one thing for this subject, read this.",
   },
   {
-    target: "applied-calculus",
+    target: "applied-calculus-u1",
     title: "Paul's Online Math Notes — Calculus I",
     url: "https://tutorial.math.lamar.edu/Classes/CalcI/CalcI.aspx",
     kind: "article",
@@ -37,7 +37,7 @@ export const resources: SeedResource[] = [
     why: "Full video lectures plus problem sets and exams with solutions. Unit 2 (Partial Derivatives) maps almost exactly onto your Units 2–3, including gradient, directional derivatives and Lagrange multipliers.",
   },
   {
-    target: "applied-calculus",
+    target: "applied-calculus-u1",
     title: "MIT 18.01SC Single Variable Calculus",
     url: "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/",
     kind: "video",
@@ -228,7 +228,7 @@ export const resources: SeedResource[] = [
     why: "Listed in your own course plan as a web reference, so it's what the faculty expect you to use.",
   },
   {
-    target: "programming-in-c",
+    target: "programming-in-c-u1",
     title: "NPTEL — Problem Solving through Programming in C (IIT Kharagpur)",
     url: "https://nptel.ac.in/courses/106105171",
     kind: "video",
@@ -353,7 +353,7 @@ export const resources: SeedResource[] = [
   // FOUNDATION OF AI AND AUTOMATION
   // ══════════════════════════════════════════════════════════
   {
-    target: "foundation-of-ai",
+    target: "ai-u1-search",
     title: "NPTEL — Artificial Intelligence: Search Methods for Problem Solving",
     url: "https://nptel.ac.in/courses/106106126",
     kind: "video",
@@ -362,7 +362,7 @@ export const resources: SeedResource[] = [
     why: "Deepak Khemani's course. State space search, uninformed and informed search, heuristics, adversarial search — your entire Unit 1 second half, taught properly.",
   },
   {
-    target: "foundation-of-ai",
+    target: "ai-u1-search",
     title: "AI: Search Methods for Problem Solving — full video playlist",
     url: "https://www.youtube.com/playlist?list=PLEAYkSg4uSQ1FaQoCxoFvmMFnBsHTBokj",
     kind: "playlist",
@@ -371,7 +371,7 @@ export const resources: SeedResource[] = [
     why: "Same course on YouTube if NPTEL's player is slow. Watch only the state space and search lectures — the rest is beyond your syllabus.",
   },
   {
-    target: "foundation-of-ai",
+    target: "ai-u1-problemsolving",
     title: "Artificial Intelligence: A Modern Approach — companion site",
     url: "https://aima.cs.berkeley.edu/",
     kind: "book",
@@ -404,7 +404,7 @@ export const resources: SeedResource[] = [
   // COMPUTATIONAL DESIGN THINKING
   // ══════════════════════════════════════════════════════════
   {
-    target: "computational-design-thinking",
+    target: "cdt-u1-hcd",
     title: "Interaction Design Foundation — Design Thinking",
     url: "https://www.interaction-design.org/literature/topics/design-thinking",
     kind: "article",
@@ -413,7 +413,7 @@ export const resources: SeedResource[] = [
     why: "Free articles on the full design thinking process — empathise, define, ideate, prototype, test — plus empathy maps and POV statements. Covers the second half of your Unit 1 directly.",
   },
   {
-    target: "computational-design-thinking",
+    target: "cdt-u1-hcd",
     title: "Stanford d.school — resources",
     url: "https://dschool.stanford.edu/resources",
     kind: "article",

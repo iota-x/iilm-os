@@ -85,18 +85,24 @@ export function AskChat({ files }: { files: Attachment[] }) {
             name?: string;
             summary?: string;
           };
+          if (ev.type === "tool") changedData = true;
+          // Build a new turn object rather than mutating the existing one —
+          // this updater runs twice under StrictMode, and appending in place
+          // duplicated every chunk of streamed text.
           setTurns((prev) => {
-            const next = [...prev];
-            const last = next[next.length - 1];
+            const last = prev[prev.length - 1];
             if (!last || last.role !== "assistant") return prev;
-            if (ev.type === "text") last.content += ev.text ?? "";
-            else if (ev.type === "tool") {
-              last.tools = [...(last.tools ?? []), ev.summary ?? ev.name ?? "did something"];
-              changedData = true;
+            const updated: Turn = { ...last };
+            if (ev.type === "text") {
+              updated.content = last.content + (ev.text ?? "");
+            } else if (ev.type === "tool") {
+              updated.tools = [...(last.tools ?? []), ev.summary ?? ev.name ?? "did something"];
             } else if (ev.type === "error") {
-              last.content += `\n\n**${ev.text}**`;
+              updated.content = last.content + `\n\n**${ev.text}**`;
+            } else {
+              return prev;
             }
-            return next;
+            return [...prev.slice(0, -1), updated];
           });
         }
       }

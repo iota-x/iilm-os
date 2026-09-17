@@ -139,3 +139,13 @@ export interface SeedExam {
   weightage: number;
   scope: string;
 }
+
+export interface SeedQuestion {
+  /** topic code the question belongs to */
+  target: string;
+  prompt: string;
+  answer: string;
+  marks?: number;
+  kind?: "pyq" | "practice" | "quiz" | "example" | "viva";
+  source?: string;
+}

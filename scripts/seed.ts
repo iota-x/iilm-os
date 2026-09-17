@@ -12,6 +12,7 @@ config({ path: [".env.local", ".env"] });
 import { createClient } from "@supabase/supabase-js";
 import { subjects, SEMESTER, exams } from "../src/data";
 import { slots } from "../src/data/timetable";
+import { questions } from "../src/data/questions";
 import { resources } from "../src/data/resources";
 import { planDays } from "../src/data/plan";
 
@@ -332,6 +333,7 @@ async function main() {
   // ─── curated resources ────────────────────────────────────────────
   await db.from("resources").delete().eq("user_id", userId).eq("is_curated", true);
   const unresolved: string[] = [];
+  const unresolvedQuestions: string[] = [];
   const resourceRows = resources.map((r) => {
     const topicId = topicIdByCode[r.target];
     const unitId = unitIdByKey[r.target];
@@ -365,6 +367,50 @@ async function main() {
   }
   if (checkpointCount) ok("topic checkpoints", checkpointCount);
   ok("curated resources", resourceRows.length);
+
+  // ─── starter questions ────────────────────────────────────────────
+  // Inserted only if that topic doesn't already have a question with the
+  // same prompt, so re-seeding never duplicates them and never touches
+  // the attempts you've logged against them.
+  {
+    const { data: existing } = await db
+      .from("questions")
+      .select("topic_id, prompt")
+      .eq("user_id", userId);
+    const seen = new Set((existing ?? []).map((q) => `${q.topic_id}::${q.prompt}`));
+
+    const rows = questions
+      .map((q) => {
+        const topicId = topicIdByCode[q.target];
+        if (!topicId) {
+          unresolvedQuestions.push(q.target);
+          return null;
+        }
+        if (seen.has(`${topicId}::${q.prompt}`)) return null;
+        return {
+          user_id: userId,
+          subject_id: subjectIdByTopicCode[q.target] ?? null,
+          topic_id: topicId,
+          prompt: q.prompt,
+          answer: q.answer,
+          marks: q.marks ?? null,
+          kind: q.kind ?? "practice",
+          source: q.source ?? "Starter set",
+        };
+      })
+      .filter(Boolean);
+
+    if (rows.length) {
+      const { error } = await db.from("questions").insert(rows as object[]);
+      if (error) die("questions", error);
+    }
+    ok("starter questions", rows.length);
+    if (unresolvedQuestions.length) {
+      console.log(
+        `    \x1b[33m!\x1b[0m ${unresolvedQuestions.length} question target(s) matched no topic: ${[...new Set(unresolvedQuestions)].join(", ")}`,
+      );
+    }
+  }
   if (unresolved.length) {
     console.log(
       `    \x1b[33m!\x1b[0m ${unresolved.length} resource target(s) matched no subject, unit or topic: ${[...new Set(unresolved)].join(", ")}`,

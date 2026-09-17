@@ -6,6 +6,7 @@ import {
   BookOpen,
   CornerDownLeft,
   ExternalLink,
+  Layers,
   LayoutDashboard,
   Link2,
   Search,
@@ -29,6 +30,7 @@ const PAGES: SearchDoc[] = [
 const ICON = {
   page: LayoutDashboard,
   subject: BookOpen,
+  unit: Layers,
   topic: Target,
   note: StickyNote,
   resource: Link2,
@@ -37,12 +39,13 @@ const ICON = {
 const GROUP_LABEL: Record<SearchDoc["kind"], string> = {
   page: "Go to",
   subject: "Subjects",
+  unit: "Units",
   topic: "Topics",
   note: "Notes",
   resource: "Resources",
 };
 
-const GROUP_ORDER: SearchDoc["kind"][] = ["page", "subject", "topic", "note", "resource"];
+const GROUP_ORDER: SearchDoc["kind"][] = ["page", "subject", "unit", "topic", "note", "resource"];
 
 /** Subsequence match — "lim" hits "Limits", "diffeq" hits "Differential equations". */
 function score(query: string, text: string): number {

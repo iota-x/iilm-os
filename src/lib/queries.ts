@@ -233,7 +233,7 @@ export async function getNavTree(): Promise<NavSubject[]> {
 }
 
 export interface SearchDoc {
-  kind: "subject" | "topic" | "note" | "resource" | "page";
+  kind: "subject" | "unit" | "topic" | "note" | "resource" | "page";
   title: string;
   subtitle?: string;
   href: string;
@@ -244,7 +244,7 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
   const db = await createClient();
   const [subjectsRes, topicsRes, notesRes, resourcesRes] = await Promise.all([
     db.from("subjects").select("slug, name, short_name, code").order("sort_order"),
-    db.from("topics").select("subject_id, code, title, in_midsem").order("sort_order"),
+    db.from("topics").select("subject_id, unit_id, code, title, in_midsem").order("sort_order"),
     db.from("notes").select("id, title, subject_id").order("updated_at", { ascending: false }),
     db.from("resources").select("title, url, kind, subject_id").order("rank"),
   ]);
@@ -255,6 +255,11 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
   const idToSlug = new Map<string, { slug: string; short: string }>();
   const subjRows = await db.from("subjects").select("id, slug, short_name");
   for (const s of subjRows.data ?? []) idToSlug.set(s.id, { slug: s.slug, short: s.short_name });
+
+  // unit_id -> unit number, so a topic hit can open the unit it lives in
+  const unitNumber = new Map<string, number>();
+  const unitRows = await db.from("units").select("id, number, title, subject_id");
+  for (const u of unitRows.data ?? []) unitNumber.set(u.id, u.number);
 
   const docs: SearchDoc[] = [];
 
@@ -267,14 +272,27 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
       meta: s.short_name,
     });
   }
+  for (const u of unitRows.data ?? []) {
+    const s = idToSlug.get(u.subject_id);
+    if (!s) continue;
+    docs.push({
+      kind: "unit",
+      title: `Unit ${u.number} — ${u.title}`,
+      subtitle: s.short,
+      href: `/subjects/${s.slug}/unit-${u.number}`,
+    });
+  }
   for (const t of topicsRes.data ?? []) {
     const s = idToSlug.get(t.subject_id);
     if (!s) continue;
+    const n = t.unit_id ? unitNumber.get(t.unit_id) : undefined;
     docs.push({
       kind: "topic",
       title: t.title,
-      subtitle: `${s.short} · ${t.code}`,
-      href: `/subjects/${s.slug}#topic-${t.code}`,
+      subtitle: n ? `${s.short} · Unit ${n} · ${t.code}` : `${s.short} · ${t.code}`,
+      href: n
+        ? `/subjects/${s.slug}/unit-${n}#topic-${t.code}`
+        : `/subjects/${s.slug}#topic-${t.code}`,
       meta: t.in_midsem ? "mid-sem" : undefined,
     });
   }

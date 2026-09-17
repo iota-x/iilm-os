@@ -235,7 +235,12 @@ export default async function SubjectPage({
                   <CardHead
                     title={
                       <span className="flex items-center gap-2">
-                        Unit {u.number} — {u.title}
+                        <Link
+                          href={`/subjects/${slug}/unit-${u.number}`}
+                          className="rounded hover:underline focus-ring"
+                        >
+                          Unit {u.number} — {u.title}
+                        </Link>
                         {u.in_midsem ? <Badge tone="accent">in mid-sem</Badge> : null}
                       </span>
                     }

@@ -251,23 +251,30 @@ export function Sidebar({
                     ) : (
                       subject.units.map((unit) => (
                         <li key={unit.id}>
-                          <div className="flex items-center gap-1.5 px-2 pt-1.5 pb-0.5">
+                          <Link
+                            href={`/subjects/${subject.slug}/unit-${unit.number}`}
+                            className="mt-1.5 flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-ring"
+                            title={`Unit ${unit.number} — ${unit.title}`}
+                          >
                             <span className="text-[10px] font-semibold uppercase tracking-wide text-subtle">
                               Unit {unit.number}
                             </span>
+                            <span className="min-w-0 flex-1 truncate text-[10.5px] text-subtle">
+                              {unit.title}
+                            </span>
                             {unit.in_midsem ? (
-                              <span className="rounded bg-surface-3 px-1 text-[9px] text-muted">
+                              <span className="shrink-0 rounded bg-surface-3 px-1 text-[9px] text-muted">
                                 mid-sem
                               </span>
                             ) : null}
-                          </div>
+                          </Link>
                           <ul>
                             {unit.topics.map((topic) => {
                               const Icon = STATUS_ICON[topic.status];
                               return (
                                 <li key={topic.id}>
                                   <Link
-                                    href={`/subjects/${subject.slug}#topic-${topic.code}`}
+                                    href={`/subjects/${subject.slug}/unit-${unit.number}#topic-${topic.code}`}
                                     className="flex items-start gap-1.5 rounded-md px-2 py-1 text-[11.5px] leading-snug text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-ring"
                                     title={topic.title}
                                   >

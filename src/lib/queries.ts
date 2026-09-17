@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  Attachment,
   Attendance,
   Attempt,
   Checkpoint,
@@ -72,6 +73,18 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
   // if it hasn't been created yet
   if (error) return [];
   return (data as Checkpoint[]) ?? [];
+}
+
+/** Files dropped straight into the inbox — not attached to a note. */
+export async function getInboxFiles(): Promise<Attachment[]> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("attachments")
+    .select("*")
+    .is("note_id", null)
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return (data as Attachment[]) ?? [];
 }
 
 export async function getClassMarks(opts?: {

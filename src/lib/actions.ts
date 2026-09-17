@@ -500,3 +500,33 @@ export async function setWholeDay(
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+export async function deleteAttachment(id: string) {
+  const { db, userId } = await uid();
+  const { data: row } = await db
+    .from("attachments")
+    .select("storage_path")
+    .eq("id", id)
+    .maybeSingle();
+
+  // remove the file first; if that fails the row stays so nothing is orphaned
+  if (row?.storage_path) {
+    const { error: sErr } = await db.storage
+      .from("vault")
+      .remove([row.storage_path as string]);
+    if (sErr) throw new Error(sErr.message);
+  }
+  const { error } = await db.from("attachments").delete().eq("id", id).eq("user_id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function setAttachmentCaption(id: string, caption: string) {
+  const { db } = await uid();
+  const { error } = await db
+    .from("attachments")
+    .update({ caption: caption.trim() || null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}

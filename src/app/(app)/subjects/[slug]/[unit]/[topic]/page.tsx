@@ -71,7 +71,7 @@ export default async function TopicPage({
           Unit {unit.number}
         </Link>
         <ChevronRight size={12} />
-        <span className="text-muted">{topic.code}</span>
+        <span className="max-w-[46ch] truncate text-muted">{topic.title}</span>
       </div>
 
       {/* ── header ─────────────────────────────────────────── */}
@@ -82,9 +82,12 @@ export default async function TopicPage({
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[12px] text-subtle">
           {topic.session ? <span>{topic.session}</span> : null}
+          <span className="flex items-center gap-1.5">
+            <span className="font-mono text-[11px]">{topic.code}</span>
+          </span>
           <span className="flex items-center gap-1">
-            exam weight
-            <span className="flex gap-0.5" aria-label={`Exam weight ${topic.weight} of 5`}>
+            exam weight <span className="tabular-nums text-muted">{topic.weight}/5</span>
+            <span className="flex gap-0.5" aria-hidden>
               {[1, 2, 3, 4, 5].map((n) => (
                 <span
                   key={n}
@@ -101,7 +104,7 @@ export default async function TopicPage({
           ) : null}
         </div>
         {topic.outcome ? (
-          <p className="mt-3 rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[13px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-[78ch] rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[13px] leading-relaxed text-muted">
             <span className="font-medium text-fg">What you need to be able to do: </span>
             {topic.outcome}
           </p>
@@ -115,14 +118,7 @@ export default async function TopicPage({
 
       {/* ── resources ──────────────────────────────────────── */}
       <section>
-        <SectionTitle
-          right={
-            <div className="flex items-center gap-2">
-              <FindMore seed={topic.title} subject={subject.name} />
-              <AddResourceForm subjectId={subject.id} topicId={topic.id} />
-            </div>
-          }
-        >
+        <SectionTitle>
           Resources
           {resources.length ? (
             <span className="ml-1.5 tabular-nums text-subtle">{resources.length}</span>
@@ -130,6 +126,10 @@ export default async function TopicPage({
         </SectionTitle>
 
         <Card className="mt-2 overflow-hidden">
+          <div className="flex flex-wrap items-start gap-2 border-b border-line px-3.5 py-2.5">
+            <FindMore seed={topic.title} subject={subject.name} />
+            <AddResourceForm subjectId={subject.id} topicId={topic.id} />
+          </div>
           {resources.length ? (
             <ul className="divide-y divide-line">
               {resources.map((r) => (
@@ -155,7 +155,7 @@ export default async function TopicPage({
                         <span className="mt-0.5 block text-[11px] text-subtle">{r.source}</span>
                       ) : null}
                       {r.why ? (
-                        <span className="mt-1 block text-[12px] leading-snug text-muted">
+                        <span className="mt-1 block max-w-[86ch] text-[12px] leading-snug text-muted">
                           {r.why}
                         </span>
                       ) : null}

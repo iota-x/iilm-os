@@ -196,7 +196,7 @@ export function Empty({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center text-center px-6 py-12">
+    <div className="flex flex-col items-center text-center px-6 py-8">
       {icon ? <div className="text-subtle mb-3">{icon}</div> : null}
       <p className="text-[13px] font-medium">{title}</p>
       {body ? (

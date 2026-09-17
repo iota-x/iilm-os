@@ -184,7 +184,7 @@ export default async function UnitPage({
                           <span className="mt-0.5 block text-[11px] text-subtle">{r.source}</span>
                         ) : null}
                         {r.why ? (
-                          <span className="mt-1 block text-[12px] leading-snug text-muted">
+                          <span className="mt-1 block max-w-[86ch] text-[12px] leading-snug text-muted">
                             {r.why}
                           </span>
                         ) : null}

@@ -61,8 +61,16 @@ export function fmtDuration(min: number): string {
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
-export function fmtDate(iso: string): string {
-  return new Date(iso + "T00:00:00+05:30").toLocaleDateString("en-GB", {
+/**
+ * Takes either a plain date ("2026-09-17", as the plan and timetable use) or a
+ * full timestamptz ("2026-09-17T01:30:00.42+00:00", as last_studied_at and
+ * updated_at use). Appending a time to the latter produced "Invalid Date".
+ */
+export function fmtDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = iso.includes("T") ? new Date(iso) : new Date(iso + "T00:00:00+05:30");
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", {
     weekday: "short",
     day: "numeric",
     month: "short",

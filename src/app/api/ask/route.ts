@@ -100,7 +100,8 @@ When to use the tools — this matters:
 - Be concise and concrete. He is short on time. No padding, no flattery.
 - Maths renders with KaTeX: use $...$ and $$...$$.`;
 
-  /* ── attached inbox images ── */
+  /* ── attached inbox files: images and PDFs ── */
+  const ATTACHABLE = (m: string) => m.startsWith("image/") || m === "application/pdf";
   const imageParts: { type: "file"; mediaType: string; data: string }[] = [];
   if (resolved.vision && body.attachmentIds?.length) {
     const { data: atts } = await db
@@ -109,7 +110,7 @@ When to use the tools — this matters:
       .in("id", body.attachmentIds.slice(0, 6));
     for (const a of atts ?? []) {
       const mime = (a.mime as string) ?? "";
-      if (!mime.startsWith("image/")) continue;
+      if (!ATTACHABLE(mime)) continue;
       const { data: file } = await db.storage.from("vault").download(a.storage_path as string);
       if (!file) continue;
       imageParts.push({

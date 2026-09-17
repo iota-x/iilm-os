@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUp, Check, ImageIcon, Loader2, Square, Wrench } from "lucide-react";
+import { ArrowUp, Check, FileText, Loader2, Paperclip, Square, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import type { Attachment } from "@/lib/db-types";
 import { Card } from "@/components/ui";
@@ -119,7 +119,11 @@ export function AskChat({ files }: { files: Attachment[] }) {
     }
   }
 
-  const images = files.filter((f) => (f.mime ?? "").startsWith("image/"));
+  // PDFs are attachable too — Gemini reads them directly
+  const attachable = files.filter((f) => {
+    const m = f.mime ?? "";
+    return m.startsWith("image/") || m === "application/pdf";
+  });
 
   return (
     <div className="space-y-3">
@@ -185,12 +189,12 @@ export function AskChat({ files }: { files: Attachment[] }) {
       <div ref={endRef} />
 
       {/* attach from inbox */}
-      {images.length ? (
+      {attachable.length ? (
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="inline-flex items-center gap-1 text-[11px] text-subtle">
-            <ImageIcon size={12} /> attach:
+            <Paperclip size={12} /> attach:
           </span>
-          {images.slice(0, 12).map((f) => {
+          {attachable.slice(0, 12).map((f) => {
             const on = picked.includes(f.id);
             return (
               <button
@@ -204,12 +208,18 @@ export function AskChat({ files }: { files: Attachment[] }) {
                   on ? "border-[var(--accent)] ring-1 ring-[var(--accent)]" : "border-line",
                 )}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/api/vault/${f.storage_path}`}
-                  alt={f.filename ?? ""}
-                  className="h-full w-full object-cover"
-                />
+                {(f.mime ?? "").startsWith("image/") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/vault/${f.storage_path}`}
+                    alt={f.filename ?? ""}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="grid h-full w-full place-items-center bg-surface-2 text-subtle">
+                    <FileText size={15} />
+                  </span>
+                )}
               </button>
             );
           })}

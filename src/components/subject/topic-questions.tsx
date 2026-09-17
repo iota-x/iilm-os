@@ -97,7 +97,9 @@ export function TopicQuestions({
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] leading-snug">{q.prompt}</p>
+                  <div className="prose-note text-[13px] leading-snug">
+                    <Markdown>{q.prompt}</Markdown>
+                  </div>
 
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                     <Badge>{q.kind}</Badge>

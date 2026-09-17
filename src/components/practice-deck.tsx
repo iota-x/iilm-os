@@ -124,7 +124,9 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
           )}
         </div>
 
-        <p className="mt-3 text-[15px] leading-relaxed">{question.prompt}</p>
+        <div className="prose-note mt-3 text-[15px] leading-relaxed">
+          <Markdown>{question.prompt}</Markdown>
+        </div>
 
         {revealed ? (
           <div className="mt-4 rounded-lg border border-line bg-surface-2 px-3.5 py-3">

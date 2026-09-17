@@ -1,0 +1,230 @@
+@import "tailwindcss" source(none);
+@source "../";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+    ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Cascadia Code",
+    "Roboto Mono", monospace;
+
+  --radius-card: 14px;
+}
+
+:root {
+  color-scheme: light;
+
+  --bg: #fbfbfa;
+  --surface: #ffffff;
+  --surface-2: #f5f5f3;
+  --surface-3: #ecebe8;
+  --border: #e4e3df;
+  --border-strong: #d2d1cc;
+
+  --fg: #1a1a18;
+  --fg-muted: #6b6a65;
+  --fg-subtle: #94938d;
+
+  --accent: #4f46e5;
+  --accent-fg: #ffffff;
+  --accent-soft: #eef2ff;
+
+  --good: #067a55;
+  --good-soft: #e6f5ef;
+  --warn: #a8620a;
+  --warn-soft: #fdf3e3;
+  --bad: #c0332f;
+  --bad-soft: #fdeceb;
+
+  --shadow-sm: 0 1px 2px rgb(20 20 18 / 0.05);
+  --shadow: 0 1px 3px rgb(20 20 18 / 0.06), 0 4px 12px -4px rgb(20 20 18 / 0.06);
+
+  /* subject accents — light */
+  --c-violet: #6d4aff;
+  --c-violet-soft: #f0ecff;
+  --c-blue: #1d6fd6;
+  --c-blue-soft: #e7f1fd;
+  --c-emerald: #0a8158;
+  --c-emerald-soft: #e3f5ee;
+  --c-orange: #c2600c;
+  --c-orange-soft: #fdefe0;
+  --c-rose: #c32d63;
+  --c-rose-soft: #fdeaf1;
+  --c-amber: #97700a;
+  --c-amber-soft: #fbf2dc;
+  --c-slate: #5a6472;
+  --c-slate-soft: #eef0f3;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: #0e0e10;
+  --surface: #17171a;
+  --surface-2: #1e1e22;
+  --surface-3: #27272c;
+  --border: #2a2a30;
+  --border-strong: #3a3a42;
+
+  --fg: #ededf0;
+  --fg-muted: #9b9ba4;
+  --fg-subtle: #6e6e78;
+
+  --accent: #8b7cff;
+  --accent-fg: #14141a;
+  --accent-soft: #211f38;
+
+  --good: #4ade9f;
+  --good-soft: #10261f;
+  --warn: #f0b354;
+  --warn-soft: #2a2015;
+  --bad: #f4756f;
+  --bad-soft: #2d1817;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow: 0 1px 3px rgb(0 0 0 / 0.5), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+
+  /* subject accents — dark */
+  --c-violet: #a996ff;
+  --c-violet-soft: #221d3d;
+  --c-blue: #6cb0f5;
+  --c-blue-soft: #14243a;
+  --c-emerald: #55d3a2;
+  --c-emerald-soft: #0f2a22;
+  --c-orange: #f2a45f;
+  --c-orange-soft: #2e2015;
+  --c-rose: #f286ac;
+  --c-rose-soft: #2f1a23;
+  --c-amber: #e0b65c;
+  --c-amber-soft: #2b2416;
+  --c-slate: #9aa4b2;
+  --c-slate-soft: #1e2128;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
+/* ─── utility layer ─────────────────────────────────────────── */
+@layer utilities {
+  .bg-app { background: var(--bg); }
+  .bg-surface { background: var(--surface); }
+  .bg-surface-2 { background: var(--surface-2); }
+  .bg-surface-3 { background: var(--surface-3); }
+  .text-fg { color: var(--fg); }
+  .text-muted { color: var(--fg-muted); }
+  .text-subtle { color: var(--fg-subtle); }
+  .border-line { border-color: var(--border); }
+  .border-strong { border-color: var(--border-strong); }
+  .shadow-card { box-shadow: var(--shadow-sm); }
+  .shadow-pop { box-shadow: var(--shadow); }
+
+  .accent-violet  { --sc: var(--c-violet);  --sc-soft: var(--c-violet-soft); }
+  .accent-blue    { --sc: var(--c-blue);    --sc-soft: var(--c-blue-soft); }
+  .accent-emerald { --sc: var(--c-emerald); --sc-soft: var(--c-emerald-soft); }
+  .accent-orange  { --sc: var(--c-orange);  --sc-soft: var(--c-orange-soft); }
+  .accent-rose    { --sc: var(--c-rose);    --sc-soft: var(--c-rose-soft); }
+  .accent-amber   { --sc: var(--c-amber);   --sc-soft: var(--c-amber-soft); }
+  .accent-slate   { --sc: var(--c-slate);   --sc-soft: var(--c-slate-soft); }
+
+  .text-sc { color: var(--sc, var(--accent)); }
+  .bg-sc { background: var(--sc, var(--accent)); }
+  .bg-sc-soft { background: var(--sc-soft, var(--accent-soft)); }
+  .border-sc { border-color: var(--sc, var(--accent)); }
+
+  .focus-ring {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  .focus-ring:focus-visible {
+    outline-color: var(--accent);
+  }
+}
+
+/* ─── prose for notes and strategies ────────────────────────── */
+.prose-note {
+  color: var(--fg);
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+.prose-note > * + * { margin-top: 0.9em; }
+.prose-note h1 { font-size: 1.4rem; font-weight: 650; letter-spacing: -0.015em; margin-top: 1.6em; }
+.prose-note h2 { font-size: 1.15rem; font-weight: 650; letter-spacing: -0.01em; margin-top: 1.5em; }
+.prose-note h3 { font-size: 1rem; font-weight: 650; margin-top: 1.3em; }
+.prose-note h1:first-child, .prose-note h2:first-child, .prose-note h3:first-child { margin-top: 0; }
+.prose-note p { margin-top: 0.9em; }
+.prose-note ul { list-style: disc; padding-left: 1.3em; }
+.prose-note ol { list-style: decimal; padding-left: 1.3em; }
+.prose-note li { margin-top: 0.35em; }
+.prose-note li::marker { color: var(--fg-subtle); }
+.prose-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose-note strong { font-weight: 650; }
+.prose-note code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--surface-3);
+  padding: 0.12em 0.36em;
+  border-radius: 5px;
+}
+.prose-note pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  font-size: 0.84em;
+}
+.prose-note pre code { background: none; padding: 0; font-size: inherit; }
+.prose-note blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding-left: 1rem;
+  color: var(--fg-muted);
+}
+.prose-note hr { border-color: var(--border); margin: 1.6em 0; }
+.prose-note table { width: 100%; border-collapse: collapse; font-size: 0.9em; display: block; overflow-x: auto; }
+.prose-note th, .prose-note td { border: 1px solid var(--border); padding: 0.45rem 0.7rem; text-align: left; }
+.prose-note th { background: var(--surface-2); font-weight: 600; }
+.prose-note img { border-radius: 10px; border: 1px solid var(--border); max-width: 100%; }
+
+/* KaTeX sizing */
+.katex { font-size: 1.02em; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.4em 0; }
+
+/* ─── misc ──────────────────────────────────────────────────── */
+input, textarea, select, button { font: inherit; }
+
+textarea.editor {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-in { animation: fade-up 0.22s ease-out both; }
+
+/* thin scrollbars */
+@supports (scrollbar-width: thin) {
+  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+}

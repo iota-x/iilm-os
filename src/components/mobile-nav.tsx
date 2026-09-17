@@ -14,6 +14,7 @@ import {
   NotebookPen,
   Repeat2,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { cn, daysUntil, MIDSEM_START } from "@/lib/utils";
 import { SearchTrigger } from "@/components/command-palette";
@@ -24,6 +25,7 @@ const LINKS = [
   { href: "/review", label: "Review", icon: Repeat2 },
   { href: "/practice", label: "Practice", icon: Dumbbell },
   { href: "/planner", label: "Planner", icon: CalendarRange },
+  { href: "/ask", label: "Ask", icon: Sparkles },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },

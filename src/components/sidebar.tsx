@@ -23,6 +23,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { useLocalStorage } from "@/lib/client-hooks";
 import type { NavSubject } from "@/lib/queries";
@@ -36,6 +37,7 @@ const LINKS = [
   { href: "/review", label: "Review", icon: Repeat2 },
   { href: "/practice", label: "Practice", icon: Dumbbell },
   { href: "/planner", label: "Planner", icon: CalendarRange },
+  { href: "/ask", label: "Ask", icon: Sparkles },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },

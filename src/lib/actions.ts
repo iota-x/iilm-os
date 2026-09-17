@@ -343,3 +343,26 @@ export async function deleteCheckpoint(id: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+/* ─── review ─────────────────────────────────────────────────
+   Recording a review is the one thing that moves a topic's next due date:
+   it stamps last_studied_at and takes your honest confidence, which sets
+   how long until it comes back. Editing confidence alone deliberately does
+   NOT count as a review — otherwise fiddling with the slider would push
+   things out of the queue without you having studied them. */
+export async function markReviewed(id: string, confidence: number) {
+  const { db } = await uid();
+  const c = Math.max(1, Math.min(5, Math.round(confidence)));
+
+  const { data: topic } = await db.from("topics").select("status").eq("id", id).maybeSingle();
+  // a reviewed topic is at least "revising"; never demote something already solid
+  const status =
+    topic?.status === "mastered" ? "mastered" : c >= 5 ? "mastered" : "revising";
+
+  const { error } = await db
+    .from("topics")
+    .update({ confidence: c, status, last_studied_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}

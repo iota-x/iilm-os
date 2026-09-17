@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Link2,
   NotebookPen,
+  Repeat2,
   Settings,
 } from "lucide-react";
 import { cn, daysUntil, MIDSEM_START } from "@/lib/utils";
@@ -17,6 +18,7 @@ import { SearchTrigger } from "@/components/command-palette";
 const LINKS = [
   { href: "/", label: "Today", icon: LayoutDashboard, exact: true },
   { href: "/subjects", label: "Subjects", icon: BookOpen },
+  { href: "/review", label: "Review", icon: Repeat2 },
   { href: "/planner", label: "Planner", icon: CalendarRange },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },

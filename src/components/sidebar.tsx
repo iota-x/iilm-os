@@ -16,6 +16,7 @@ import {
   Link2,
   LogOut,
   NotebookPen,
+  Repeat2,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -29,6 +30,7 @@ import { ThemeToggle } from "@/components/theme";
 
 const LINKS = [
   { href: "/", label: "Today", icon: LayoutDashboard, exact: true },
+  { href: "/review", label: "Review", icon: Repeat2 },
   { href: "/planner", label: "Planner", icon: CalendarRange },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },

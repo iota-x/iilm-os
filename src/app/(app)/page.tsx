@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, Clock, MapPin } from "lucide-react";
+import { AlertTriangle, ArrowRight, Clock, MapPin, Repeat2 } from "lucide-react";
 import {
   getProfile,
   getSubjects,
@@ -9,6 +9,7 @@ import {
   getSlots,
   getNotes,
 } from "@/lib/queries";
+import { dueForReview, reviewStateOf } from "@/lib/review";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
 import { Badge, Bar, Card, CardHead, Ring } from "@/components/ui";
@@ -42,6 +43,10 @@ export default async function Dashboard() {
   const weekday = istWeekday();
   const now = istNowMinutes();
   const group = profile?.lab_group ?? 2;
+
+  const due = dueForReview(topics);
+  const dueMidsem = due.filter((d) => d.topic.in_midsem).length;
+  const soon = topics.filter((t) => reviewStateOf(t).bucket === "soon").length;
 
   const todayTasks = await getTasks({ date: today });
   const overdue = (await getTasks({ to: today })).filter(
@@ -101,6 +106,32 @@ export default async function Dashboard() {
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
       </div>
+
+      {/* ── review queue ───────────────────────────────────── */}
+      {due.length ? (
+        <Link href="/review" className="block focus-ring rounded-[14px]">
+          <Card className="overflow-hidden transition-colors hover:bg-surface-2/40">
+            <div className="flex items-center gap-3.5 px-4 py-3.5">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+                <Repeat2 size={17} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13.5px] font-semibold leading-tight">
+                  {due.length} topic{due.length === 1 ? "" : "s"} due for review
+                </p>
+                <p className="mt-0.5 text-[12px] leading-tight text-muted">
+                  {dueMidsem ? `${dueMidsem} in the mid-sem scope · ` : ""}
+                  {due[0].review.daysUntilDue !== null && due[0].review.daysUntilDue < 0
+                    ? `oldest is ${-due[0].review.daysUntilDue} day${due[0].review.daysUntilDue === -1 ? "" : "s"} overdue`
+                    : "all due today"}
+                  {soon ? ` · ${soon} more within 2 days` : ""}
+                </p>
+              </div>
+              <ArrowRight size={15} className="shrink-0 text-subtle" />
+            </div>
+          </Card>
+        </Link>
+      ) : null}
 
       {/* ── countdown strip ────────────────────────────────── */}
       <Card className="overflow-hidden">

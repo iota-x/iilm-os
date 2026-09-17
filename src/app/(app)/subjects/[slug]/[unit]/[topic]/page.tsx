@@ -17,6 +17,7 @@ import {
   getTopics,
   getUnits,
 } from "@/lib/queries";
+import { reviewLabel, reviewStateOf } from "@/lib/review";
 import { cn, fmtDate } from "@/lib/utils";
 
 function parseUnit(segment: string): number | null {
@@ -53,6 +54,7 @@ export default async function TopicPage({
   const resources = allResources.filter((r) => r.topic_id === topic.id);
   const notes = allNotes.filter((n) => n.topic_id === topic.id);
   const checkpoints = await getCheckpoints([topic.id]);
+  const review = reviewStateOf(topic);
 
   const i = siblings.findIndex((t) => t.id === topic.id);
   const prev = i > 0 ? siblings[i - 1] : null;
@@ -104,6 +106,11 @@ export default async function TopicPage({
           </span>
           {topic.last_studied_at ? (
             <span>last touched {fmtDate(topic.last_studied_at)}</span>
+          ) : null}
+          {review.bucket !== "unstarted" ? (
+            <span className={cn(review.bucket === "overdue" && "text-[var(--warn)]")}>
+              {reviewLabel(review)}
+            </span>
           ) : null}
         </div>
         {topic.outcome ? (

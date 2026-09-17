@@ -121,6 +121,10 @@ async function main() {
   const subjectIdBySlug: Record<string, string> = {};
   const unitIdByKey: Record<string, string> = {};
   const topicIdByCode: Record<string, string> = {};
+  // A resource's `target` may name a unit or a topic rather than a subject, so
+  // remember which subject each of those belongs to.
+  const subjectIdByUnitKey: Record<string, string> = {};
+  const subjectIdByTopicCode: Record<string, string> = {};
 
   for (const [i, s] of subjects.entries()) {
     const { data: sub, error } = await db
@@ -197,6 +201,7 @@ async function main() {
       if (ue) die(`unit ${s.slug} U${u.number}`, ue);
       const unitId = unit!.id as string;
       unitIdByKey[`${s.slug}-u${u.number}`] = unitId;
+      subjectIdByUnitKey[`${s.slug}-u${u.number}`] = subjectId;
 
       if (u.topics.length) {
         const { data: rows, error: te } = await db
@@ -218,7 +223,10 @@ async function main() {
           )
           .select("id, code");
         if (te) die(`topics ${s.slug} U${u.number}`, te);
-        for (const r of rows ?? []) topicIdByCode[r.code as string] = r.id as string;
+        for (const r of rows ?? []) {
+          topicIdByCode[r.code as string] = r.id as string;
+          subjectIdByTopicCode[r.code as string] = subjectId;
+        }
       }
     }
 
@@ -303,16 +311,19 @@ async function main() {
 
   // ─── curated resources ────────────────────────────────────────────
   await db.from("resources").delete().eq("user_id", userId).eq("is_curated", true);
+  const unresolved: string[] = [];
   const resourceRows = resources.map((r) => {
     const topicId = topicIdByCode[r.target];
     const unitId = unitIdByKey[r.target];
+    // A unit- or topic-targeted resource still belongs to its subject. Resolving
+    // it here is what keeps it out of the subject filters and off the subject
+    // page when the target isn't a plain slug.
     const subjectId =
       subjectIdBySlug[r.target] ??
-      (topicId ? subjects.find((s) => s.units.some((u) => u.topics.some((t) => t.code === r.target)))
-        ? subjectIdBySlug[
-            subjects.find((s) => s.units.some((u) => u.topics.some((t) => t.code === r.target)))!.slug
-          ]
-        : null : null);
+      subjectIdByTopicCode[r.target] ??
+      subjectIdByUnitKey[r.target] ??
+      null;
+    if (!subjectId) unresolved.push(r.target);
     return {
       user_id: userId,
       subject_id: subjectId ?? null,
@@ -333,6 +344,11 @@ async function main() {
     if (error) die("resources", error);
   }
   ok("curated resources", resourceRows.length);
+  if (unresolved.length) {
+    console.log(
+      `    \x1b[33m!\x1b[0m ${unresolved.length} resource target(s) matched no subject, unit or topic: ${[...new Set(unresolved)].join(", ")}`,
+    );
+  }
 
   // ─── timetable ────────────────────────────────────────────────────
   await db.from("timetable_slots").delete().eq("semester_id", semesterId);

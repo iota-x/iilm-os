@@ -324,14 +324,26 @@ async function main() {
     }
 
     // attendance placeholder
-    await db
-      .from("attendance")
-      .upsert({ user_id: userId, subject_id: subjectId }, { onConflict: "user_id,subject_id" });
+    {
+      const { error } = await db
+        .from("attendance")
+        .upsert({ user_id: userId, subject_id: subjectId }, { onConflict: "user_id,subject_id" });
+      if (error) die(`attendance ${s.slug}`, error);
+    }
   }
   ok("subjects, outcomes, units, topics, experiments, components, strategies, books", subjects.length);
 
   // ─── curated resources ────────────────────────────────────────────
-  await db.from("resources").delete().eq("user_id", userId).eq("is_curated", true);
+  // `resources` has no unique key, so a silently-failed delete here would
+  // duplicate every curated link on the next run.
+  {
+    const { error } = await db
+      .from("resources")
+      .delete()
+      .eq("user_id", userId)
+      .eq("is_curated", true);
+    if (error) die("clearing curated resources", error);
+  }
   const unresolved: string[] = [];
   const unresolvedQuestions: string[] = [];
   const resourceRows = resources.map((r) => {

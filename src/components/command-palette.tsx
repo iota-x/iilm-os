@@ -72,9 +72,12 @@ function score(query: string, text: string): number {
   return 400 - Math.min(gaps, 200);
 }
 
-export function CommandPalette({ docs }: { docs: SearchDoc[] }) {
+export function CommandPalette() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [docs, setDocs] = useState<SearchDoc[]>([]);
+  const [loading, setLoading] = useState(false);
+  const loadedRef = useRef(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
@@ -153,6 +156,14 @@ export function CommandPalette({ docs }: { docs: SearchDoc[] }) {
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => inputRef.current?.focus());
+    if (!open || loadedRef.current) return;
+    loadedRef.current = true;
+    setLoading(true);
+    fetch("/api/search-index")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d: SearchDoc[]) => setDocs(d))
+      .catch(() => loadedRef.current = false) // let a failed load retry next open
+      .finally(() => setLoading(false));
   }, [open]);
 
   useEffect(() => {
@@ -208,7 +219,9 @@ export function CommandPalette({ docs }: { docs: SearchDoc[] }) {
         </div>
 
         <div ref={listRef} className="max-h-[52vh] overflow-y-auto py-1.5">
-          {results.length === 0 ? (
+          {loading && !docs.length ? (
+            <p className="px-4 py-8 text-center text-[13px] text-subtle">Loading…</p>
+          ) : results.length === 0 ? (
             <p className="px-4 py-8 text-center text-[13px] text-subtle">
               Nothing matches “{query}”.
             </p>

@@ -2,15 +2,11 @@ import Link from "next/link";
 import { CommandPalette } from "@/components/command-palette";
 import { MobileNav } from "@/components/mobile-nav";
 import { Sidebar } from "@/components/sidebar";
-import { getNavTree, getProfile, getSearchIndex } from "@/lib/queries";
+import { getNavTree, getProfile } from "@/lib/queries";
 import { daysUntil, MIDSEM_START } from "@/lib/utils";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const [tree, docs, profile] = await Promise.all([
-    getNavTree(),
-    getSearchIndex(),
-    getProfile(),
-  ]);
+  const [tree, profile] = await Promise.all([getNavTree(), getProfile()]);
   const left = daysUntil(MIDSEM_START);
 
   return (
@@ -41,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </footer>
       </div>
 
-      <CommandPalette docs={docs} />
+      <CommandPalette />
     </div>
   );
 }

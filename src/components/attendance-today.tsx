@@ -1,8 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Minus, X } from "lucide-react";
+import { Check, Minus, X } from "lucide-react";
 import { toast } from "sonner";
 import { setClassMark, setWholeDay } from "@/lib/actions";
 import type { ClassMark, Slot, Subject } from "@/lib/db-types";
@@ -22,22 +22,26 @@ export function AttendanceToday({
   marks: ClassMark[];
 }) {
   const router = useRouter();
-  const [pending, start] = useTransition();
+  const [, start] = useTransition();
 
-  const markOf = (slotId: string) => marks.find((m) => m.slot_id === slotId) ?? null;
+  // Ticks land immediately; the write happens behind them.
+  type Patch = { slotId: string; attended: boolean | null };
+  const [optimistic, applyOptimistic] = useOptimistic(
+    marks,
+    (prev: ClassMark[], p: Patch) => {
+      const rest = prev.filter((m) => m.slot_id !== p.slotId);
+      if (p.attended === null) return rest;
+      const existing = prev.find((m) => m.slot_id === p.slotId);
+      return [
+        ...rest,
+        { ...(existing ?? ({ id: `tmp-${p.slotId}`, on_date: date, slot_id: p.slotId, subject_id: null } as ClassMark)), attended: p.attended },
+      ];
+    },
+  );
+
+  const markOf = (slotId: string) => optimistic.find((m) => m.slot_id === slotId) ?? null;
   const marked = slots.filter((s) => markOf(s.id)).length;
   const present = slots.filter((s) => markOf(s.id)?.attended).length;
-
-  function run(fn: () => Promise<unknown>) {
-    start(async () => {
-      try {
-        await fn();
-        router.refresh();
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Couldn't save that");
-      }
-    });
-  }
 
   if (!slots.length) {
     return (
@@ -50,28 +54,34 @@ export function AttendanceToday({
   const payload = slots.map((s) => ({ slot_id: s.id, subject_id: s.subject_id }));
 
   return (
-    <div className={cn(pending && "opacity-70")}>
+    <div>
       <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5">
         <button
-          onClick={() => run(() => setWholeDay(date, payload, true))}
+          onClick={() =>
+            start(async () => {
+              for (const p of payload) applyOptimistic({ slotId: p.slot_id, attended: true });
+              try { await setWholeDay(date, payload, true); router.refresh(); }
+              catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
+            })
+          }
           className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[12px] font-medium transition-colors hover:border-[var(--good)] hover:text-[var(--good)] focus-ring"
         >
           <Check size={13} /> I was in today
         </button>
         <button
-          onClick={() => run(() => setWholeDay(date, payload, false))}
+          onClick={() =>
+            start(async () => {
+              for (const p of payload) applyOptimistic({ slotId: p.slot_id, attended: false });
+              try { await setWholeDay(date, payload, false); router.refresh(); }
+              catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
+            })
+          }
           className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[12px] transition-colors hover:border-[var(--bad)] hover:text-[var(--bad)] focus-ring"
         >
           <X size={13} /> Missed the day
         </button>
         <span className="ml-auto text-[11px] text-subtle">
-          {pending ? (
-            <Loader2 size={12} className="animate-spin" />
-          ) : marked ? (
-            `${present}/${marked} marked present`
-          ) : (
-            "not marked yet"
-          )}
+          {marked ? `${present}/${marked} marked present` : "not marked yet"}
         </span>
       </div>
 
@@ -99,32 +109,32 @@ export function AttendanceToday({
                   tone="good"
                   label="Present"
                   icon={<Check size={12} />}
-                  onClick={() =>
-                    run(() =>
-                      setClassMark({
-                        on_date: date,
-                        slot_id: s.id,
-                        subject_id: s.subject_id,
-                        attended: state === "in" ? null : true,
-                      }),
-                    )
-                  }
+                  onClick={() => {
+                    const next = state === "in" ? null : true;
+                    start(async () => {
+                      applyOptimistic({ slotId: s.id, attended: next });
+                      try {
+                        await setClassMark({ on_date: date, slot_id: s.id, subject_id: s.subject_id, attended: next });
+                        router.refresh();
+                      } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
+                    });
+                  }}
                 />
                 <Toggle
                   active={state === "out"}
                   tone="bad"
                   label="Missed"
                   icon={<X size={12} />}
-                  onClick={() =>
-                    run(() =>
-                      setClassMark({
-                        on_date: date,
-                        slot_id: s.id,
-                        subject_id: s.subject_id,
-                        attended: state === "out" ? null : false,
-                      }),
-                    )
-                  }
+                  onClick={() => {
+                    const next = state === "out" ? null : false;
+                    start(async () => {
+                      applyOptimistic({ slotId: s.id, attended: next });
+                      try {
+                        await setClassMark({ on_date: date, slot_id: s.id, subject_id: s.subject_id, attended: next });
+                        router.refresh();
+                      } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
+                    });
+                  }}
                 />
               </div>
             </li>

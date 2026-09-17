@@ -325,7 +325,8 @@ export async function setCheckpointDone(id: string, done: boolean) {
   const { db } = await uid();
   const { error } = await db.from("checkpoints").update({ done }).eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/", "layout");
+  // no revalidate: the caller updates optimistically and nothing in the
+  // sidebar depends on this. Navigating refetches anyway.
 }
 
 export async function renameCheckpoint(id: string, title: string) {
@@ -476,7 +477,8 @@ export async function setClassMark(input: {
     );
     if (error) throw new Error(error.message);
   }
-  revalidatePath("/", "layout");
+  // no revalidate: the caller updates optimistically and nothing in the
+  // sidebar depends on this. Navigating refetches anyway.
 }
 
 /** One tap for "I was in today" — marks every class that day the same way. */
@@ -498,7 +500,8 @@ export async function setWholeDay(
     { onConflict: "user_id,on_date,slot_id" },
   );
   if (error) throw new Error(error.message);
-  revalidatePath("/", "layout");
+  // no revalidate: the caller updates optimistically and nothing in the
+  // sidebar depends on this. Navigating refetches anyway.
 }
 
 export async function deleteAttachment(id: string) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { Check, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -26,8 +26,16 @@ export function TopicChecklist({
   const [editDraft, setEditDraft] = useState("");
   const [pending, start] = useTransition();
 
-  const done = checkpoints.filter((c) => c.done).length;
-  const pct = checkpoints.length ? Math.round((done / checkpoints.length) * 100) : 0;
+  // The tick lands immediately; the server catches up behind it. Without this
+  // every checkbox waited on a round-trip plus a full layout revalidation.
+  const [items, toggleOptimistic] = useOptimistic(
+    checkpoints,
+    (prev: Checkpoint[], id: string) =>
+      prev.map((c) => (c.id === id ? { ...c, done: !c.done } : c)),
+  );
+
+  const done = items.filter((c) => c.done).length;
+  const pct = items.length ? Math.round((done / items.length) * 100) : 0;
 
   function run(fn: () => Promise<void>, onOk?: () => void) {
     start(async () => {
@@ -41,9 +49,9 @@ export function TopicChecklist({
   }
 
   return (
-    <div className={cn(pending && "opacity-70")}>
+    <div>{/* no dimming: the optimistic tick is the feedback */}
       {/* progress */}
-      {checkpoints.length ? (
+      {items.length ? (
         <div className="flex items-center gap-3 border-b border-line px-3.5 py-2.5">
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-3">
             <div
@@ -52,17 +60,26 @@ export function TopicChecklist({
             />
           </div>
           <span className="shrink-0 text-[11px] tabular-nums text-muted">
-            {done}/{checkpoints.length} done
+            {done}/{items.length} done
           </span>
         </div>
       ) : null}
 
       {/* steps */}
       <ul className="divide-y divide-line">
-        {checkpoints.map((c) => (
+        {items.map((c) => (
           <li key={c.id} className="group flex items-start gap-2.5 px-3.5 py-2">
             <button
-              onClick={() => run(() => setCheckpointDone(c.id, !c.done))}
+              onClick={() =>
+                start(async () => {
+                  toggleOptimistic(c.id);
+                  try {
+                    await setCheckpointDone(c.id, !c.done);
+                  } catch (e) {
+                    toast.error(e instanceof Error ? e.message : "Couldn't save that");
+                  }
+                })
+              }
               aria-label={c.done ? `Mark "${c.title}" not done` : `Mark "${c.title}" done`}
               className={cn(
                 "mt-[1px] grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border transition-colors focus-ring",

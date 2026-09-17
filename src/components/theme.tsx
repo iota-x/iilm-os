@@ -3,6 +3,7 @@
 import type * as React from "react";
 import { ThemeProvider as NextThemes, useTheme } from "next-themes";
 import { Monitor, Moon, Sun } from "lucide-react";
+import { useHydrated } from "@/lib/client-hooks";
 import { cn } from "@/lib/utils";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -20,9 +21,12 @@ const OPTIONS = [
 ] as const;
 
 export function ThemeToggle({ full = false }: { full?: boolean }) {
-  // next-themes leaves `theme` undefined until it has read localStorage, which
-  // is exactly the "not mounted yet" signal — no extra state needed.
+  // next-themes can resolve the stored theme on the very first client render,
+  // while the server has no idea what it is — so aria-checked/className differ
+  // and React reports a hydration mismatch. Hold the server's answer (nothing
+  // selected) until after mount, then switch to the real one.
   const { theme, setTheme } = useTheme();
+  const mounted = useHydrated();
 
   return (
     <div
@@ -34,7 +38,7 @@ export function ThemeToggle({ full = false }: { full?: boolean }) {
       aria-label="Theme"
     >
       {OPTIONS.map(({ key, icon: Icon, label }) => {
-        const active = theme === key;
+        const active = mounted && theme === key;
         return (
           <button
             key={key}

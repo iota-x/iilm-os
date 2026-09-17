@@ -31,8 +31,12 @@ export function TopicRow({
 
   return (
     <li
+      id={`topic-${topic.code}`}
       className={cn(
         "group px-4 py-2.5 hover:bg-surface-2/60 transition-colors",
+        // room for the sticky header when linked to directly, plus a flash
+        // so you can see which row the link meant
+        "scroll-mt-24 target:bg-[var(--accent-soft)]",
         pending && "opacity-50",
       )}
     >

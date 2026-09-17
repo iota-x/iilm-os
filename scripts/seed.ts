@@ -71,11 +71,27 @@ async function main() {
 
   const userId = await getOrCreateUser();
 
-  // profile
-  await db
+  // profile — never clobber what you've set in Settings. The display name comes
+  // from SEED_DISPLAY_NAME, else the email local-part, and only on first insert.
+  const { data: existingProfile } = await db
     .from("profiles")
-    .upsert({ id: userId, display_name: "Manvendra", lab_group: 2 }, { onConflict: "id" });
-  ok("profile");
+    .select("display_name, lab_group")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const fallbackName =
+    process.env.SEED_DISPLAY_NAME?.trim() || EMAIL!.split("@")[0];
+
+  const { error: profileErr } = await db.from("profiles").upsert(
+    {
+      id: userId,
+      display_name: existingProfile?.display_name ?? fallbackName,
+      lab_group: existingProfile?.lab_group ?? 2,
+    },
+    { onConflict: "id" },
+  );
+  if (profileErr) die("profile", profileErr);
+  ok(`profile (${existingProfile?.display_name ?? fallbackName})`);
 
   // ─── semester ─────────────────────────────────────────────────────
   const { data: sem, error: semErr } = await db

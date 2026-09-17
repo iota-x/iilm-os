@@ -155,3 +155,145 @@ export async function getAttendance(): Promise<Attendance[]> {
   const { data } = await db.from("attendance").select("*");
   return (data as Attendance[]) ?? [];
 }
+
+/* ─── navigation tree + search index ───────────────────────────
+   One round trip for the sidebar and the ⌘K palette. Deliberately
+   selects narrow columns — this loads on every signed-in page. */
+
+export interface NavTopic {
+  id: string;
+  code: string;
+  title: string;
+  status: Topic["status"];
+  in_midsem: boolean;
+  weight: number;
+}
+export interface NavUnit {
+  id: string;
+  number: number;
+  title: string;
+  in_midsem: boolean;
+  topics: NavTopic[];
+}
+export interface NavSubject {
+  id: string;
+  slug: string;
+  name: string;
+  short_name: string;
+  color: string;
+  status: Subject["status"];
+  has_lab: boolean;
+  units: NavUnit[];
+}
+
+export async function getNavTree(): Promise<NavSubject[]> {
+  const db = await createClient();
+  const [subjectsRes, unitsRes, topicsRes] = await Promise.all([
+    db
+      .from("subjects")
+      .select("id, slug, name, short_name, color, status, has_lab")
+      .order("sort_order"),
+    db.from("units").select("id, subject_id, number, title, in_midsem").order("number"),
+    db
+      .from("topics")
+      .select("id, subject_id, unit_id, code, title, status, in_midsem, weight")
+      .order("sort_order"),
+  ]);
+
+  const units = unitsRes.data ?? [];
+  const topics = topicsRes.data ?? [];
+
+  return (subjectsRes.data ?? []).map((s) => ({
+    id: s.id,
+    slug: s.slug,
+    name: s.name,
+    short_name: s.short_name,
+    color: s.color,
+    status: s.status,
+    has_lab: s.has_lab,
+    units: units
+      .filter((u) => u.subject_id === s.id)
+      .map((u) => ({
+        id: u.id,
+        number: u.number,
+        title: u.title,
+        in_midsem: u.in_midsem,
+        topics: topics
+          .filter((t) => t.unit_id === u.id)
+          .map((t) => ({
+            id: t.id,
+            code: t.code,
+            title: t.title,
+            status: t.status,
+            in_midsem: t.in_midsem,
+            weight: t.weight,
+          })),
+      })),
+  })) as NavSubject[];
+}
+
+export interface SearchDoc {
+  kind: "subject" | "topic" | "note" | "resource" | "page";
+  title: string;
+  subtitle?: string;
+  href: string;
+  meta?: string;
+}
+
+export async function getSearchIndex(): Promise<SearchDoc[]> {
+  const db = await createClient();
+  const [subjectsRes, topicsRes, notesRes, resourcesRes] = await Promise.all([
+    db.from("subjects").select("slug, name, short_name, code").order("sort_order"),
+    db.from("topics").select("subject_id, code, title, in_midsem").order("sort_order"),
+    db.from("notes").select("id, title, subject_id").order("updated_at", { ascending: false }),
+    db.from("resources").select("title, url, kind, subject_id").order("rank"),
+  ]);
+
+  const subjects = subjectsRes.data ?? [];
+
+  // subject_id -> slug, needed to build topic/note links
+  const idToSlug = new Map<string, { slug: string; short: string }>();
+  const subjRows = await db.from("subjects").select("id, slug, short_name");
+  for (const s of subjRows.data ?? []) idToSlug.set(s.id, { slug: s.slug, short: s.short_name });
+
+  const docs: SearchDoc[] = [];
+
+  for (const s of subjects) {
+    docs.push({
+      kind: "subject",
+      title: s.name,
+      subtitle: s.code ?? undefined,
+      href: `/subjects/${s.slug}`,
+      meta: s.short_name,
+    });
+  }
+  for (const t of topicsRes.data ?? []) {
+    const s = idToSlug.get(t.subject_id);
+    if (!s) continue;
+    docs.push({
+      kind: "topic",
+      title: t.title,
+      subtitle: `${s.short} · ${t.code}`,
+      href: `/subjects/${s.slug}#topic-${t.code}`,
+      meta: t.in_midsem ? "mid-sem" : undefined,
+    });
+  }
+  for (const n of notesRes.data ?? []) {
+    docs.push({
+      kind: "note",
+      title: n.title || "Untitled",
+      subtitle: n.subject_id ? idToSlug.get(n.subject_id)?.short : undefined,
+      href: `/notes?open=${n.id}`,
+    });
+  }
+  for (const r of resourcesRes.data ?? []) {
+    docs.push({
+      kind: "resource",
+      title: r.title,
+      subtitle: r.subject_id ? idToSlug.get(r.subject_id)?.short : r.kind,
+      href: r.url,
+      meta: r.kind,
+    });
+  }
+  return docs;
+}

@@ -8,10 +8,13 @@ import {
   TopicStatusControl,
 } from "@/components/subject/topic-actions";
 import { TopicChecklist } from "@/components/subject/topic-checklist";
+import { TopicQuestions } from "@/components/subject/topic-questions";
 import { Badge, Card, Empty, SectionTitle } from "@/components/ui";
 import {
+  getAttempts,
   getCheckpoints,
   getNotes,
+  getQuestions,
   getResources,
   getSubjectBySlug,
   getTopics,
@@ -55,6 +58,8 @@ export default async function TopicPage({
   const notes = allNotes.filter((n) => n.topic_id === topic.id);
   const checkpoints = await getCheckpoints([topic.id]);
   const review = reviewStateOf(topic);
+  const questions = await getQuestions({ topicId: topic.id });
+  const attempts = await getAttempts(questions.map((q) => q.id));
 
   const i = siblings.findIndex((t) => t.id === topic.id);
   const prev = i > 0 ? siblings[i - 1] : null;
@@ -144,6 +149,31 @@ export default async function TopicPage({
             </p>
           ) : null}
           <TopicChecklist topicId={topic.id} checkpoints={checkpoints} />
+        </Card>
+      </section>
+
+      {/* ── questions ──────────────────────────────────────── */}
+      <section>
+        <SectionTitle>
+          Questions
+          {questions.length ? (
+            <span className="ml-1.5 tabular-nums text-subtle">{questions.length}</span>
+          ) : null}
+        </SectionTitle>
+        <Card className="mt-2 overflow-hidden">
+          {questions.length === 0 ? (
+            <p className="px-3.5 pt-3 text-[12.5px] leading-relaxed text-muted">
+              Put the questions you might actually be asked here — past papers, tutorial sheets,
+              anything your teacher drilled. Log how each attempt went and the app can tell you
+              what you keep getting wrong.
+            </p>
+          ) : null}
+          <TopicQuestions
+            subjectId={subject.id}
+            topicId={topic.id}
+            questions={questions}
+            attempts={attempts}
+          />
         </Card>
       </section>
 

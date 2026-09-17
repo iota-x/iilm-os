@@ -356,6 +356,43 @@ create table if not exists checkpoints (
 create index if not exists checkpoints_topic_idx on checkpoints(topic_id);
 
 -- ════════════════════════════════════════════════════════════════════
+--  Questions and attempts: what you might be asked, and how each go at
+--  it actually went. Attempts are rows, not a flag, so "wrong twice then
+--  right" survives.
+-- ════════════════════════════════════════════════════════════════════
+-- A question you might be asked. Tied to a topic so the app can tell you
+-- which topic you keep failing, not just which question.
+create table if not exists questions (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  subject_id  uuid references subjects(id) on delete cascade,
+  topic_id    uuid references topics(id) on delete set null,
+  prompt      text not null,
+  answer      text,
+  source      text,
+  marks       smallint,
+  kind        text default 'practice'
+              check (kind in ('pyq','practice','quiz','example','viva')),
+  created_at  timestamptz default now()
+);
+
+-- Every attempt is its own row. That is the whole point: a flag on the
+-- question would be overwritten and you'd lose the fact that you got it
+-- wrong twice before getting it right.
+create table if not exists attempts (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid not null references auth.users(id) on delete cascade,
+  question_id  uuid not null references questions(id) on delete cascade,
+  outcome      text not null check (outcome in ('correct','partial','wrong')),
+  note         text,
+  created_at   timestamptz default now()
+);
+
+create index if not exists questions_topic_idx on questions(topic_id);
+create index if not exists questions_subject_idx on questions(subject_id);
+create index if not exists attempts_question_idx on attempts(question_id);
+
+-- ════════════════════════════════════════════════════════════════════
 --  Row level security — every table is scoped to the owning user.
 -- ════════════════════════════════════════════════════════════════════
 do $$
@@ -364,7 +401,7 @@ begin
   foreach t in array array[
     'profiles','semesters','subjects','outcomes','units','topics','experiments',
     'components','strategies','books','resources','notes','attachments','tasks',
-    'plan_days','study_sessions','timetable_slots','exams','attendance','checkpoints'
+    'plan_days','study_sessions','timetable_slots','exams','attendance','checkpoints','questions','attempts'
   ] loop
     execute format('alter table %I enable row level security', t);
     execute format('drop policy if exists own_all on %I', t);

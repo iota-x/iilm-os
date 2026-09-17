@@ -77,6 +77,29 @@ export interface Checkpoint {
   sort_order: number;
 }
 
+export type QuestionKind = "pyq" | "practice" | "quiz" | "example" | "viva";
+export type AttemptOutcome = "correct" | "partial" | "wrong";
+
+export interface Question {
+  id: string;
+  subject_id: string | null;
+  topic_id: string | null;
+  prompt: string;
+  answer: string | null;
+  source: string | null;
+  marks: number | null;
+  kind: QuestionKind;
+  created_at: string;
+}
+
+export interface Attempt {
+  id: string;
+  question_id: string;
+  outcome: AttemptOutcome;
+  note: string | null;
+  created_at: string;
+}
+
 export interface Experiment {
   id: string;
   subject_id: string;

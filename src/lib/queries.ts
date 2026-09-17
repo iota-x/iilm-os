@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
   Attendance,
+  Attempt,
   Checkpoint,
   Component,
   Exam,
@@ -10,6 +11,7 @@ import type {
   Book,
   PlanDay,
   Profile,
+  Question,
   Resource,
   Slot,
   Strategy,
@@ -69,6 +71,31 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
   // if it hasn't been created yet
   if (error) return [];
   return (data as Checkpoint[]) ?? [];
+}
+
+export async function getQuestions(opts?: {
+  topicId?: string;
+  subjectId?: string;
+}): Promise<Question[]> {
+  const db = await createClient();
+  let q = db.from("questions").select("*").order("created_at", { ascending: false });
+  if (opts?.topicId) q = q.eq("topic_id", opts.topicId);
+  if (opts?.subjectId) q = q.eq("subject_id", opts.subjectId);
+  const { data, error } = await q;
+  if (error) return []; // table may predate this feature
+  return (data as Question[]) ?? [];
+}
+
+export async function getAttempts(questionIds?: string[]): Promise<Attempt[]> {
+  const db = await createClient();
+  let q = db.from("attempts").select("*").order("created_at", { ascending: false });
+  if (questionIds) {
+    if (!questionIds.length) return [];
+    q = q.in("question_id", questionIds);
+  }
+  const { data, error } = await q;
+  if (error) return [];
+  return (data as Attempt[]) ?? [];
 }
 
 export async function getExperiments(subjectId?: string): Promise<Experiment[]> {

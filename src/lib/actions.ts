@@ -366,3 +366,79 @@ export async function markReviewed(id: string, confidence: number) {
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+/* ─── questions and attempts ─────────────────────────────────
+   An attempt is a row, never a column on the question — so getting
+   something wrong twice before getting it right stays visible, which is
+   the only reason this table earns its keep. */
+export async function addQuestion(input: {
+  prompt: string;
+  answer?: string | null;
+  subject_id?: string | null;
+  topic_id?: string | null;
+  source?: string | null;
+  marks?: number | null;
+  kind?: string;
+}) {
+  const { db, userId } = await uid();
+  const prompt = input.prompt.trim();
+  if (!prompt) throw new Error("The question needs some text");
+
+  const { data, error } = await db
+    .from("questions")
+    .insert({
+      user_id: userId,
+      prompt,
+      answer: input.answer?.trim() || null,
+      subject_id: input.subject_id || null,
+      topic_id: input.topic_id || null,
+      source: input.source?.trim() || null,
+      marks: input.marks ?? null,
+      kind: input.kind || "practice",
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+  return data.id as string;
+}
+
+export async function updateQuestion(
+  id: string,
+  patch: { prompt?: string; answer?: string | null; source?: string | null; marks?: number | null },
+) {
+  const { db } = await uid();
+  const { error } = await db.from("questions").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function deleteQuestion(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("questions").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function logAttempt(input: {
+  question_id: string;
+  outcome: "correct" | "partial" | "wrong";
+  note?: string | null;
+}) {
+  const { db, userId } = await uid();
+  const { error } = await db.from("attempts").insert({
+    user_id: userId,
+    question_id: input.question_id,
+    outcome: input.outcome,
+    note: input.note?.trim() || null,
+  });
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function deleteAttempt(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("attempts").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}

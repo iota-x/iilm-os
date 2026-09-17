@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
   Attendance,
+  Checkpoint,
   Component,
   Exam,
   Experiment,
@@ -54,6 +55,20 @@ export async function getUnits(subjectId?: string): Promise<Unit[]> {
   if (subjectId) q = q.eq("subject_id", subjectId);
   const { data } = await q;
   return (data as Unit[]) ?? [];
+}
+
+export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]> {
+  const db = await createClient();
+  let q = db.from("checkpoints").select("*").order("sort_order");
+  if (topicIds) {
+    if (!topicIds.length) return [];
+    q = q.in("topic_id", topicIds);
+  }
+  const { data, error } = await q;
+  // the table is newer than the rest of the schema; don't take the page down
+  // if it hasn't been created yet
+  if (error) return [];
+  return (data as Checkpoint[]) ?? [];
 }
 
 export async function getExperiments(subjectId?: string): Promise<Experiment[]> {

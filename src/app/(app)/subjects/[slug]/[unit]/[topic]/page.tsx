@@ -7,8 +7,10 @@ import {
   NewNoteButton,
   TopicStatusControl,
 } from "@/components/subject/topic-actions";
+import { TopicChecklist } from "@/components/subject/topic-checklist";
 import { Badge, Card, Empty, SectionTitle } from "@/components/ui";
 import {
+  getCheckpoints,
   getNotes,
   getResources,
   getSubjectBySlug,
@@ -50,6 +52,7 @@ export default async function TopicPage({
 
   const resources = allResources.filter((r) => r.topic_id === topic.id);
   const notes = allNotes.filter((n) => n.topic_id === topic.id);
+  const checkpoints = await getCheckpoints([topic.id]);
 
   const i = siblings.findIndex((t) => t.id === topic.id);
   const prev = i > 0 ? siblings[i - 1] : null;
@@ -115,6 +118,27 @@ export default async function TopicPage({
       <Card className="p-4">
         <TopicStatusControl topic={topic} />
       </Card>
+
+      {/* ── the steps inside this topic ────────────────────── */}
+      <section>
+        <SectionTitle>
+          Breakdown
+          {checkpoints.length ? (
+            <span className="ml-1.5 tabular-nums text-subtle">
+              {checkpoints.filter((c) => c.done).length}/{checkpoints.length}
+            </span>
+          ) : null}
+        </SectionTitle>
+        <Card className="mt-2 overflow-hidden">
+          {checkpoints.length === 0 ? (
+            <p className="px-3.5 pt-3 text-[12.5px] leading-relaxed text-muted">
+              Break this topic into the things you actually have to be able to do, then tick them
+              off. {topic.outcome ? "The line above is a good place to start." : null}
+            </p>
+          ) : null}
+          <TopicChecklist topicId={topic.id} checkpoints={checkpoints} />
+        </Card>
+      </section>
 
       {/* ── resources ──────────────────────────────────────── */}
       <section>

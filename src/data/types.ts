@@ -15,6 +15,8 @@ export interface SeedTopic {
   inMidsem: boolean;
   /** one-line "what you actually need to be able to do" */
   outcome?: string;
+  /** the steps inside this topic, in the order you'd work them */
+  subtopics?: string[];
 }
 
 export interface SeedUnit {

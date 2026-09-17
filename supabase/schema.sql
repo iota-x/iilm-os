@@ -338,6 +338,24 @@ create trigger notes_touch before update on notes
   for each row execute function touch_updated_at();
 
 -- ════════════════════════════════════════════════════════════════════
+--  Checkpoints: the sub-steps inside a topic. A topic like "Limit,
+--  Continuity, Differentiability" is several things to learn, not one —
+--  these make it a checklist you can work down.
+-- ════════════════════════════════════════════════════════════════════
+create table if not exists checkpoints (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  topic_id    uuid not null references topics(id) on delete cascade,
+  title       text not null,
+  done        boolean not null default false,
+  sort_order  smallint default 0,
+  created_at  timestamptz default now(),
+  unique (topic_id, title)
+);
+
+create index if not exists checkpoints_topic_idx on checkpoints(topic_id);
+
+-- ════════════════════════════════════════════════════════════════════
 --  Row level security — every table is scoped to the owning user.
 -- ════════════════════════════════════════════════════════════════════
 do $$
@@ -346,7 +364,7 @@ begin
   foreach t in array array[
     'profiles','semesters','subjects','outcomes','units','topics','experiments',
     'components','strategies','books','resources','notes','attachments','tasks',
-    'plan_days','study_sessions','timetable_slots','exams','attendance'
+    'plan_days','study_sessions','timetable_slots','exams','attendance','checkpoints'
   ] loop
     execute format('alter table %I enable row level security', t);
     execute format('drop policy if exists own_all on %I', t);

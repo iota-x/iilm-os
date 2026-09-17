@@ -123,6 +123,7 @@ async function main() {
   const topicIdByCode: Record<string, string> = {};
   // A resource's `target` may name a unit or a topic rather than a subject, so
   // remember which subject each of those belongs to.
+  let checkpointCount = 0;
   const subjectIdByUnitKey: Record<string, string> = {};
   const subjectIdByTopicCode: Record<string, string> = {};
 
@@ -226,6 +227,25 @@ async function main() {
         for (const r of rows ?? []) {
           topicIdByCode[r.code as string] = r.id as string;
           subjectIdByTopicCode[r.code as string] = subjectId;
+        }
+
+        // Checkpoints — the steps inside a topic. Upserted on
+        // (topic_id, title) so re-seeding never unticks what you've done,
+        // and anything you added in the app is left alone.
+        const cps = u.topics.flatMap((t) =>
+          (t.subtopics ?? []).map((title, k) => ({
+            user_id: userId,
+            topic_id: topicIdByCode[t.code],
+            title,
+            sort_order: k,
+          })),
+        );
+        if (cps.length) {
+          const { error: ce } = await db
+            .from("checkpoints")
+            .upsert(cps, { onConflict: "topic_id,title", ignoreDuplicates: true });
+          if (ce) die(`checkpoints ${s.slug} U${u.number}`, ce);
+          checkpointCount += cps.length;
         }
       }
     }
@@ -343,6 +363,7 @@ async function main() {
     const { error } = await db.from("resources").insert(resourceRows);
     if (error) die("resources", error);
   }
+  if (checkpointCount) ok("topic checkpoints", checkpointCount);
   ok("curated resources", resourceRows.length);
   if (unresolved.length) {
     console.log(

@@ -292,3 +292,54 @@ export async function addTopic(input: {
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+/* ─── checkpoints (the steps inside a topic) ─────────────────── */
+export async function addCheckpoint(input: { topic_id: string; title: string }) {
+  const { db, userId } = await uid();
+  const title = input.title.trim();
+  if (!title) throw new Error("Give the step a name");
+
+  const { data: last } = await db
+    .from("checkpoints")
+    .select("sort_order")
+    .eq("topic_id", input.topic_id)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { error } = await db.from("checkpoints").insert({
+    user_id: userId,
+    topic_id: input.topic_id,
+    title,
+    sort_order: (last?.sort_order ?? -1) + 1,
+  });
+  if (error) {
+    // unique (topic_id, title)
+    if (error.code === "23505") throw new Error("That step is already on the list");
+    throw new Error(error.message);
+  }
+  revalidatePath("/", "layout");
+}
+
+export async function setCheckpointDone(id: string, done: boolean) {
+  const { db } = await uid();
+  const { error } = await db.from("checkpoints").update({ done }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function renameCheckpoint(id: string, title: string) {
+  const { db } = await uid();
+  const next = title.trim();
+  if (!next) throw new Error("Give the step a name");
+  const { error } = await db.from("checkpoints").update({ title: next }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}
+
+export async function deleteCheckpoint(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("checkpoints").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
+}

@@ -69,6 +69,14 @@ export interface Topic {
   sort_order: number;
 }
 
+export interface Checkpoint {
+  id: string;
+  topic_id: string;
+  title: string;
+  done: boolean;
+  sort_order: number;
+}
+
 export interface Experiment {
   id: string;
   subject_id: string;

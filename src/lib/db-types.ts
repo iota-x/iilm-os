@@ -281,3 +281,29 @@ export interface StudySession {
   minutes: number | null;
   kind: string;
 }
+
+/* ─── class board (shared across the section) ───────────────── */
+export type PostKind = "discussion" | "question" | "resource" | "notice";
+export interface Post {
+  id: string;
+  user_id: string;
+  subject_slug: string | null;
+  kind: PostKind;
+  title: string;
+  body: string;
+  url: string | null;
+  pinned: boolean;
+  created_at: string;
+  updated_at: string;
+  /** joined from member_names */
+  author: string;
+  reply_count: number;
+}
+export interface Reply {
+  id: string;
+  post_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+  author: string;
+}

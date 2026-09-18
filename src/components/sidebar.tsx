@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Users,
   BookOpen,
   CalendarCheck,
   CalendarRange,
@@ -40,6 +41,7 @@ const LINKS = [
   { href: "/planner", label: "Planner", icon: CalendarRange },
   { href: "/ask", label: "Ask", icon: Sparkles },
   { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/class", label: "Class", icon: Users },
   { href: "/notes", label: "Notes", icon: NotebookPen },
   { href: "/resources", label: "Resources", icon: Link2 },
   { href: "/attendance", label: "Attendance", icon: CalendarCheck },

@@ -560,3 +560,55 @@ export async function setAttachmentCaption(id: string, caption: string) {
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
+
+/* ─── class board ───────────────────────────────────────────── */
+export async function createPost(input: {
+  title: string;
+  body?: string;
+  url?: string | null;
+  kind?: string;
+  subject_slug?: string | null;
+}) {
+  const { db, userId } = await uid();
+  const title = input.title.trim();
+  if (!title) throw new Error("Give it a title.");
+  const { data, error } = await db
+    .from("posts")
+    .insert({
+      user_id: userId,
+      title,
+      body: (input.body ?? "").trim(),
+      url: input.url?.trim() || null,
+      kind: input.kind ?? "discussion",
+      subject_slug: input.subject_slug || null,
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  revalidatePath("/class");
+  return data.id as string;
+}
+
+export async function deletePost(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("posts").delete().eq("id", id); // RLS: own rows only
+  if (error) throw new Error(error.message);
+  revalidatePath("/class");
+}
+
+export async function createReply(postId: string, body: string) {
+  const { db, userId } = await uid();
+  const text = body.trim();
+  if (!text) throw new Error("Write something first.");
+  const { error } = await db.from("replies").insert({ post_id: postId, user_id: userId, body: text });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/class/${postId}`);
+  revalidatePath("/class");
+}
+
+export async function deleteReply(id: string, postId: string) {
+  const { db } = await uid();
+  const { error } = await db.from("replies").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/class/${postId}`);
+}

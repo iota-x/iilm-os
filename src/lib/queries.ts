@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  Post,
+  Reply,
   Attachment,
   Attendance,
   Attempt,
@@ -82,6 +84,56 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
   // if it hasn't been created yet
   if (error) return [];
   return (data as Checkpoint[]) ?? [];
+}
+
+/* ─── class board ───────────────────────────────────────────── */
+
+async function namesFor(db: Awaited<ReturnType<typeof createClient>>, ids: string[]) {
+  if (!ids.length) return new Map<string, string>();
+  const { data } = await db.from("member_names").select("id, display_name").in("id", ids);
+  return new Map((data ?? []).map((m) => [m.id as string, (m.display_name as string) || "Someone"]));
+}
+
+export async function getPosts(subjectSlug?: string): Promise<Post[]> {
+  const db = await createClient();
+  let q = db
+    .from("posts")
+    .select("*, replies(count)")
+    .order("pinned", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (subjectSlug) q = q.eq("subject_slug", subjectSlug);
+  const { data, error } = await q;
+  if (error || !data) return [];
+  const names = await namesFor(db, [...new Set(data.map((p) => p.user_id as string))]);
+  return data.map((p) => ({
+    ...(p as Omit<Post, "author" | "reply_count">),
+    author: names.get(p.user_id as string) ?? "Someone",
+    reply_count: ((p as { replies?: { count: number }[] }).replies?.[0]?.count ?? 0) as number,
+  }));
+}
+
+export async function getPost(id: string): Promise<{ post: Post; replies: Reply[] } | null> {
+  const db = await createClient();
+  const [{ data: p }, { data: rs }] = await Promise.all([
+    db.from("posts").select("*").eq("id", id).maybeSingle(),
+    db.from("replies").select("*").eq("post_id", id).order("created_at"),
+  ]);
+  if (!p) return null;
+  const names = await namesFor(db, [
+    ...new Set([p.user_id as string, ...(rs ?? []).map((r) => r.user_id as string)]),
+  ]);
+  return {
+    post: {
+      ...(p as Omit<Post, "author" | "reply_count">),
+      author: names.get(p.user_id as string) ?? "Someone",
+      reply_count: rs?.length ?? 0,
+    },
+    replies: (rs ?? []).map((r) => ({
+      ...(r as Omit<Reply, "author">),
+      author: names.get(r.user_id as string) ?? "Someone",
+    })),
+  };
 }
 
 /** Files dropped straight into the inbox — not attached to a note. */

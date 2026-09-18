@@ -6,6 +6,68 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const MIDSEM_START = new Date("2026-10-05T00:00:00+05:30");
+/** Last day of the mid-sem window. Both dates are the unconfirmed 5–11 Oct. */
+export const MIDSEM_END = new Date("2026-10-11T00:00:00+05:30");
+/** Not announced yet. Set it and every countdown switches over after mid-sems. */
+export const ENDSEM_START: Date | null = null;
+
+export type ExamPhase = "before" | "today" | "during" | "after";
+
+/**
+ * What the countdown should say right now. One place, so the chip in the
+ * top bar, the dashboard figure and the landing headline can't disagree.
+ */
+export function examCountdown(): {
+  phase: ExamPhase;
+  days: number;
+  /** "Mid-sems in 17 days." — a full sentence for the landing hero */
+  headline: string;
+  /** "17" + "days to mid-sems" — for the small chip; null means don't show one */
+  chip: { n: string; label: string } | null;
+  /** the second line under the figure */
+  note: string;
+} {
+  const toMid = daysUntil(MIDSEM_START);
+  const toEnd = daysUntil(MIDSEM_END);
+  if (toMid > 0) {
+    return {
+      phase: "before",
+      days: toMid,
+      headline: `Mid-sems in ${toMid} day${toMid === 1 ? "" : "s"}.`,
+      chip: { n: String(toMid), label: `day${toMid === 1 ? "" : "s"} to mid-sems` },
+      note: "5–11 Oct, unconfirmed",
+    };
+  }
+  if (toMid === 0) {
+    return { phase: "today", days: 0, headline: "Mid-sems start today.", chip: { n: "Today", label: "mid-sems begin" }, note: "5–11 Oct" };
+  }
+  if (toEnd >= 0) {
+    return {
+      phase: "during",
+      days: toEnd,
+      headline: "Mid-sem week.",
+      chip: { n: String(toEnd + 1), label: `day${toEnd === 0 ? "" : "s"} of mid-sems left` },
+      note: "revise tomorrow's paper only",
+    };
+  }
+  if (ENDSEM_START) {
+    const n = daysUntil(ENDSEM_START);
+    return {
+      phase: "after",
+      days: n,
+      headline: n > 0 ? `End-sems in ${n} day${n === 1 ? "" : "s"}.` : "End-sems start today.",
+      chip: { n: String(Math.max(0, n)), label: "days to end-sems" },
+      note: "the whole syllabus, one paper",
+    };
+  }
+  return {
+    phase: "after",
+    days: 0,
+    headline: "Mid-sems done. End-sems next.",
+    chip: null,
+    note: "end-sem dates not announced yet",
+  };
+}
 
 /** Whole days from today (IST) until the given date. */
 export function daysUntil(target: Date | string): number {

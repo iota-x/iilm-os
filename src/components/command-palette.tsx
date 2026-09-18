@@ -202,10 +202,10 @@ export function CommandPalette() {
       <button
         aria-hidden
         tabIndex={-1}
-        className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
+        className="animate-in absolute inset-0 bg-black/45 backdrop-blur-[2px]"
         onClick={() => setOpen(false)}
       />
-      <div className="relative w-full max-w-[560px] overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
+      <div className="scale-in relative w-full max-w-[560px] overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
         <div className="flex items-center gap-2.5 border-b border-line px-3.5">
           <Search size={16} className="shrink-0 text-subtle" />
           <input

@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Camera, CalendarClock, ExternalLink, FolderCheck, Sparkles, Target } from "lucide-react";
-import { daysBetween, distribute, minutesFor, summarise } from "@/lib/goals";
+import { ArrowRight, Camera, ExternalLink, FolderCheck, Sparkles, Target } from "lucide-react";
 import { Mark } from "@/components/mark";
 import { ThemeToggle } from "@/components/theme";
 import { LandingWeek } from "@/components/landing-week";
+import { LandingGoal } from "@/components/landing-goal";
+import { LandingFile } from "@/components/landing-file";
 import { subjects as seedSubjects, exams as seedExams } from "@/data";
 import { slots as seedSlots } from "@/data/timetable";
 import type { Slot, Subject } from "@/lib/db-types";
-import { ACCENT_CLASS, cn, daysUntil, MIDSEM_START } from "@/lib/utils";
+import { ACCENT_CLASS, cn, examCountdown, MIDSEM_START } from "@/lib/utils";
 
 /**
  * The front door. Everything on it is the real data the app runs on — the
@@ -39,7 +40,7 @@ export default function LandingPage() {
   const topicCount = seedSubjects.reduce((n, s) => n + topicsOf(s), 0);
   const experimentCount = seedSubjects.reduce((n, s) => n + s.experiments.length, 0);
   const maxLoad = Math.max(...seedSubjects.map((s) => topicsOf(s) + s.experiments.length));
-  const left = daysUntil(MIDSEM_START);
+  const countdown = examCountdown();
   const bySlug = new Map(seedSubjects.map((s) => [s.slug, s]));
 
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -60,21 +61,13 @@ export default function LandingPage() {
       color: e.subject ? bySlug.get(e.subject)?.color ?? "slate" : "slate",
     }));
 
-  // A live example goal: Calculus mid-sem scope, by the day before mid-sems start.
+  // The Goals demo works from the real Calculus mid-sem scope, up to the day before mid-sems.
   const calc = seedSubjects.find((x) => x.slug === "applied-calculus")!;
   const calcTopics = calc.units
     .flatMap((u) => u.topics)
     .filter((t) => t.inMidsem)
     .map((t, i) => ({ weight: t.weight, sort_order: i }));
-  const goalEnd = new Date(MIDSEM_START.getTime() - 86_400_000); // the day before
-  const goalEndIso = goalEnd.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD in IST
-  const goalDays = daysBetween(today, goalEndIso);
-  const goalPlan = distribute(calcTopics, goalDays);
-  const goalSummary = summarise(
-    calcTopics.length,
-    goalDays.length,
-    calcTopics.reduce((n, t) => n + minutesFor(t), 0),
-  );
+  const goalEndIso = new Date(MIDSEM_START.getTime() - 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 
   const cta =
     "inline-flex items-center gap-2 rounded-[var(--radius-control)] bg-[var(--accent)] px-4 py-2.5 text-[length:var(--text-body)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring";
@@ -82,7 +75,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-dvh overflow-x-clip">
       {/* ── top bar ─────────────────────────────────────────── */}
-      <header className="sticky top-0 z-20 border-b border-line/60 bg-app/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-line/60 bg-[var(--bg)]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-2.5">
             <Mark size={30} />
@@ -113,21 +106,22 @@ export default function LandingPage() {
         <section className="mx-auto max-w-[1280px] px-5 pt-14 sm:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
             <div>
-              <p className="text-[length:var(--text-small)] text-muted">
+              <p className="reveal text-[length:var(--text-small)] text-muted" style={{ "--i": 0 } as React.CSSProperties}>
                 B.Tech CSE · Semester I · Section E
               </p>
-              <h1 className="mt-4 font-serif text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem]">
-                Mid-sems in{" "}
-                <span className="whitespace-nowrap tabular-nums">{left} days.</span>
+              <h1 style={{ "--i": 1 } as React.CSSProperties} className="reveal mt-4 font-serif text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem]">
+                <span className="tabular-nums">{countdown.headline}</span>
                 <br />
-                This already knows what&rsquo;s on them.
+                {countdown.phase === "after"
+                  ? "Everything from this semester, still in one place."
+                  : "This already knows what\u2019s on them."}
               </h1>
-              <p className="mt-6 max-w-[46ch] text-[length:var(--text-lead)] leading-relaxed text-muted">
+              <p className="reveal mt-6 max-w-[46ch] text-[length:var(--text-lead)] leading-relaxed text-muted" style={{ "--i": 2 } as React.CSSProperties}>
                 Every syllabus from the course plans. Board photos that file themselves to the
                 lecture they came from. An assistant that has read all of it. Built by a classmate,
                 for this section.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="reveal mt-8 flex flex-wrap items-center gap-4" style={{ "--i": 3 } as React.CSSProperties}>
                 <Link href="/login?mode=up" className={cta}>
                   Create your account <ArrowRight size={16} />
                 </Link>
@@ -137,7 +131,7 @@ export default function LandingPage() {
               </div>
 
               {soon.length ? (
-                <div className="mt-10">
+                <div className="reveal mt-10" style={{ "--i": 4 } as React.CSSProperties}>
                   <p className="text-[length:var(--text-micro)] text-subtle">Coming up</p>
                   <ul className="mt-2 space-y-1.5">
                     {soon.map((e) => (
@@ -160,7 +154,7 @@ export default function LandingPage() {
             </div>
 
             {/* the week, framed like the screen it is — bleeds off the right edge on wide screens */}
-            <div className="relative">
+            <div className="reveal relative" style={{ "--i": 3 } as React.CSSProperties}>
               <div className="rounded-[var(--radius-panel)] border border-line bg-surface p-3 shadow-pop sm:p-4">
                 <LandingWeek slots={slots} subjects={subjects} />
               </div>
@@ -220,44 +214,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* the example, live: real scope, real dates */}
-            <div className={cn("rounded-[var(--radius-panel)] border border-line bg-surface p-5 shadow-pop sm:p-6", ACCENT_CLASS.violet)}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-serif text-[length:var(--text-lead)] font-semibold">Calculus mid-sem scope</p>
-                  <p className="mt-1 text-[length:var(--text-small)] text-muted">
-                    Units I–III · by{" "}
-                    {goalEnd.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}
-                  </p>
-                </div>
-                <p className="text-[length:var(--text-small)] font-medium text-sc">{goalSummary.text}</p>
-              </div>
-
-              {/* one cell per day; dots are topics */}
-              <ol className="mt-5 grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
-                {goalPlan.slice(0, 16).map((d, i) => (
-                  <li
-                    key={d.date}
-                    className={cn(
-                      "flex aspect-square flex-col items-center justify-between rounded-md border border-line px-1 py-1.5",
-                      i === 0 ? "bg-sc-soft" : "bg-surface-2",
-                    )}
-                    title={`${d.date}: ${d.topics.length} topic${d.topics.length === 1 ? "" : "s"}`}
-                  >
-                    <span className="text-[10px] tabular-nums text-subtle">{d.date.slice(8).replace(/^0/, "")}</span>
-                    <span className="flex gap-0.5">
-                      {d.topics.map((_, j) => (
-                        <span key={j} className="h-1.5 w-1.5 rounded-full bg-sc" />
-                      ))}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-3 text-[length:var(--text-micro)] text-subtle">
-                Each dot is one topic. Today is highlighted. This is computed from the real syllabus
-                and today&rsquo;s date — it&rsquo;s the plan you&rsquo;d get.
-              </p>
-            </div>
+            <LandingGoal topics={calcTopics} today={today} latest={goalEndIso} color={ACCENT_CLASS.violet} />
           </div>
         </section>
 
@@ -362,32 +319,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <ol className="grid gap-3 sm:grid-cols-3">
-              {[
-                { icon: Camera, k: "Taken", v: "Wed 16 Sept, 11:40", sub: "read from the photo itself" },
-                { icon: CalendarClock, k: "Timetable says", v: "DE+CO lecture, 11:10–12:10", sub: "your group, that weekday" },
-                { icon: FolderCheck, k: "Filed to", v: "DE+CO · Wed 16 Sept", sub: "one row per lecture, on the subject page" },
-              ].map((s, i) => (
-                <li
-                  key={s.k}
-                  className={cn(
-                    "relative rounded-[var(--radius-card)] border border-line bg-surface p-4",
-                    i === 2 && ACCENT_CLASS.orange,
-                  )}
-                >
-                  <s.icon size={18} className={i === 2 ? "text-sc" : "text-subtle"} />
-                  <p className="mt-3 text-[length:var(--text-micro)] text-subtle">{s.k}</p>
-                  <p className="mt-0.5 text-[length:var(--text-small)] font-medium">{s.v}</p>
-                  <p className="mt-1 text-[length:var(--text-micro)] text-muted">{s.sub}</p>
-                  {i < 2 ? (
-                    <ArrowRight
-                      size={14}
-                      className="absolute -right-3 top-1/2 hidden -translate-y-1/2 text-subtle sm:block"
-                    />
-                  ) : null}
-                </li>
-              ))}
-            </ol>
+            <LandingFile slots={slots} subjects={subjects} />
           </div>
         </section>
 

@@ -88,7 +88,7 @@ export function TopicChecklist({
                   : "border-line hover:border-muted",
               )}
             >
-              {c.done ? <Check size={12} strokeWidth={3} /> : null}
+              {c.done ? <Check size={12} strokeWidth={3} className="pop" /> : null}
             </button>
 
             {editingId === c.id ? (

@@ -17,15 +17,15 @@ import { dueForReview, reviewStateOf } from "@/lib/review";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
 import { Badge, Card, CardHead, Ring } from "@/components/ui";
+import { CountUp } from "@/components/count-up";
 import {
   ACCENT_CLASS,
   cn,
-  daysUntil,
   fmtTime,
   istNowMinutes,
   istToday,
   istWeekday,
-  MIDSEM_START,
+  examCountdown,
   progressOf,
   toMinutes,
   relativeDay,
@@ -63,7 +63,7 @@ export default async function Dashboard() {
   );
 
   const plan = planDays.find((d) => d.date === today);
-  const left = daysUntil(MIDSEM_START);
+  const countdown = examCountdown();
 
   const todaySlots = slots
     .filter((s) => s.day === weekday && (s.lab_group === null || s.lab_group === group))
@@ -142,10 +142,10 @@ export default async function Dashboard() {
       {/* ── the four numbers worth glancing at ─────────────── */}
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] bg-[var(--border)] shadow-card sm:grid-cols-4 dark:shadow-none">
         <Figure
-          value={String(left)}
-          unit="days"
-          label="to mid-sems"
-          note="5–11 Oct, unconfirmed"
+          value={countdown.chip?.n ?? "—"}
+          unit={countdown.chip && /^\d+$/.test(countdown.chip.n) ? "days" : undefined}
+          label={countdown.chip?.label.replace(/^days? /, "") ?? "mid-sems done"}
+          note={countdown.note}
           href="/exams"
         />
         <Figure
@@ -476,7 +476,7 @@ function Figure({
           emphasis ? "text-[var(--accent)]" : "text-fg",
         )}
       >
-        {value}
+        {/^\d+$/.test(value) ? <CountUp value={value} /> : value}
         {unit ? (
           <span className="ml-1.5 align-baseline text-[length:var(--text-small)] font-normal tracking-normal text-subtle">
             {unit}

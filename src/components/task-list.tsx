@@ -108,7 +108,7 @@ function TaskRow({
               : "border-strong hover:border-sc bg-surface",
           )}
         >
-          {done ? <Check size={12} strokeWidth={3} /> : null}
+          {done ? <Check size={12} strokeWidth={3} className="pop" /> : null}
         </button>
 
         <div className="min-w-0 flex-1">

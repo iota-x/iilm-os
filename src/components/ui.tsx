@@ -129,7 +129,7 @@ export function Bar({
     >
       <div
         className={cn(
-          "h-full rounded-full transition-[width] duration-500",
+          "bar-fill h-full rounded-full transition-[width] duration-500",
           tone === "subject" ? "bg-sc" : "bg-[var(--accent)]",
         )}
         style={{ width: `${Math.max(value * 100, value > 0 ? 3 : 0)}%` }}
@@ -173,7 +173,8 @@ export function Ring({
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - value)}
-          className="transition-[stroke-dashoffset] duration-700"
+          style={{ "--ring-c": c } as React.CSSProperties}
+          className="ring-fill transition-[stroke-dashoffset] duration-700"
         />
       </svg>
       <span className="absolute inset-0 grid place-items-center text-[length:var(--text-micro)] font-semibold tabular-nums">

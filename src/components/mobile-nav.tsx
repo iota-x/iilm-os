@@ -19,7 +19,7 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import { cn, daysUntil, MIDSEM_START } from "@/lib/utils";
+import { cn, examCountdown } from "@/lib/utils";
 import { SearchTrigger } from "@/components/command-palette";
 
 const LINKS = [
@@ -40,7 +40,7 @@ const LINKS = [
 
 export function MobileNav() {
   const pathname = usePathname();
-  const left = daysUntil(MIDSEM_START);
+  const countdown = examCountdown();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-app/85 backdrop-blur-xl md:hidden">
@@ -49,13 +49,13 @@ export function MobileNav() {
           <Mark size={28} />
         </Link>
         <SearchTrigger className="flex-1 justify-start" />
-        {left > 0 ? (
+        {countdown.chip ? (
           <Link
             href="/exams"
             className="shrink-0 rounded-lg border border-line bg-surface-2 px-2 py-1 text-[length:var(--text-micro)] tabular-nums"
             title="Days until mid-semester exams begin"
           >
-            {left}d
+            {/^\d+$/.test(countdown.chip.n) ? `${countdown.chip.n}d` : countdown.chip.n}
           </Link>
         ) : null}
         <Link href="/settings" aria-label="Settings" className="shrink-0 p-1.5 text-subtle">

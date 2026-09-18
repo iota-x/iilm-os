@@ -73,51 +73,52 @@
 .dark {
   color-scheme: dark;
 
-  /* The same paper, at night. Light mode is a warm cream, so dark has to sit
-     in the same hue family — a cool slate ground under warm content is what
-     made the earlier attempts feel like a different product. Everything here
-     is a warm charcoal, the steps between levels are small, and the borders
-     are hairlines rather than lines. */
-  --bg: #161513;
-  --surface: #1e1c1a;
-  --surface-2: #262320;
-  --surface-3: #302c28;
-  --border: #2b2825;
-  --border-strong: #3e3a35;
+  /* Near-black with no tint, zinc greys, and real contrast — the register of
+     Linear, Vercel and Raycast rather than a dimmed version of the light
+     theme. Two earlier attempts tinted the ground (violet, then warm) and
+     both read as muddy. Elevation is a hairline of white at low alpha, not
+     a lighter grey; text is close to white so the hierarchy has room. */
+  --bg: #09090b;
+  --surface: #101012;
+  --surface-2: #17171a;
+  --surface-3: #1f1f23;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
 
-  --fg: #edeae3;
-  --fg-muted: #a8a199;
-  --fg-subtle: #7c766e;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #6f6f78;
 
-  --accent: #a092f5;
-  --accent-fg: #17141f;
-  --accent-soft: #262040;
+  --accent: #8b93ff;
+  --accent-fg: #0b0b12;
+  --accent-soft: rgb(139 147 255 / 0.14);
 
-  --good: #6fd3a3;
-  --good-soft: #16281f;
-  --warn: #e8b45f;
-  --warn-soft: #2a2114;
-  --bad: #f08b82;
-  --bad-soft: #2c1a17;
+  --good: #4ade80;
+  --good-soft: rgb(74 222 128 / 0.12);
+  --warn: #fbbf24;
+  --warn-soft: rgb(251 191 36 / 0.12);
+  --bad: #f87171;
+  --bad-soft: rgb(248 113 113 / 0.12);
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
-  --shadow: 0 2px 6px rgb(0 0 0 / 0.5), 0 16px 36px -16px rgb(0 0 0 / 0.75);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.6);
+  --shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 16px 40px -12px rgb(0 0 0 / 0.8);
 
-  /* subject accents — dark */
-  --c-violet: #afa0ff;
-  --c-violet-soft: #252040;
-  --c-blue: #7db4ee;
-  --c-blue-soft: #15242f;
-  --c-emerald: #62cfa0;
-  --c-emerald-soft: #12291f;
-  --c-orange: #eda76a;
-  --c-orange-soft: #2d2015;
-  --c-rose: #ef90ae;
-  --c-rose-soft: #2e1b22;
-  --c-amber: #dcba6a;
-  --c-amber-soft: #2a2315;
-  --c-slate: #a5a39c;
-  --c-slate-soft: #232120;
+  /* subject accents — dark. Soft tints are the accent at low alpha so they
+     sit on any surface without a second set of hand-mixed greys. */
+  --c-violet: #a78bfa;
+  --c-violet-soft: rgb(167 139 250 / 0.14);
+  --c-blue: #60a5fa;
+  --c-blue-soft: rgb(96 165 250 / 0.14);
+  --c-emerald: #34d399;
+  --c-emerald-soft: rgb(52 211 153 / 0.13);
+  --c-orange: #fb923c;
+  --c-orange-soft: rgb(251 146 60 / 0.14);
+  --c-rose: #fb7185;
+  --c-rose-soft: rgb(251 113 133 / 0.14);
+  --c-amber: #fbbf24;
+  --c-amber-soft: rgb(251 191 36 / 0.13);
+  --c-slate: #a1a1aa;
+  --c-slate-soft: rgb(161 161 170 / 0.12);
 }
 
 * {

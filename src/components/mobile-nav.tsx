@@ -1,5 +1,6 @@
 "use client";
 
+import { Mark } from "@/components/mark";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -41,9 +42,7 @@ export function MobileNav() {
     <header className="sticky top-0 z-40 border-b border-line bg-app/85 backdrop-blur-xl md:hidden">
       <div className="flex h-14 items-center gap-2 px-3">
         <Link href="/" className="flex shrink-0 items-center gap-2 focus-ring rounded">
-          <span className="grid h-7 w-7 place-items-center rounded-[7px] bg-[var(--accent)] text-[length:var(--text-micro)] font-bold text-[var(--accent-fg)]">
-            I
-          </span>
+          <Mark size={28} />
         </Link>
         <SearchTrigger className="flex-1 justify-start" />
         {left > 0 ? (

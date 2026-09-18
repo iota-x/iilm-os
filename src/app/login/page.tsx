@@ -1,5 +1,6 @@
 "use client";
 
+import { Mark } from "@/components/mark";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -52,12 +53,10 @@ function LoginForm() {
       <div className="w-full max-w-[380px]">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--accent)] text-[var(--accent-fg)] text-[13px] font-bold">
-              I
-            </span>
+            <Mark size={32} />
             <div>
-              <p className="text-[14px] font-semibold tracking-tight leading-tight">IILM OS</p>
-              <p className="text-[11.5px] text-muted leading-tight">B.Tech CSE · Semester I</p>
+              <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">IILM OS</p>
+              <p className="text-[length:var(--text-micro)] text-muted leading-tight">B.Tech CSE, Semester I</p>
             </div>
           </div>
           <ThemeToggle />
@@ -66,7 +65,7 @@ function LoginForm() {
         <Card className="p-5">
           <form onSubmit={submit} className="space-y-3">
             <div>
-              <label className="text-[12px] font-medium text-muted" htmlFor="email">
+              <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="email">
                 Email
               </label>
               <input
@@ -81,7 +80,7 @@ function LoginForm() {
               />
             </div>
             <div>
-              <label className="text-[12px] font-medium text-muted" htmlFor="password">
+              <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="password">
                 Password
               </label>
               <input
@@ -98,12 +97,12 @@ function LoginForm() {
             </div>
 
             {error ? (
-              <p className="text-[12px] text-[var(--bad)] bg-[var(--bad-soft)] rounded-lg px-3 py-2">
+              <p className="text-[length:var(--text-micro)] text-[var(--bad)] bg-[var(--bad-soft)] rounded-lg px-3 py-2">
                 {error}
               </p>
             ) : null}
             {info ? (
-              <p className="text-[12px] text-[var(--good)] bg-[var(--good-soft)] rounded-lg px-3 py-2">
+              <p className="text-[length:var(--text-micro)] text-[var(--good)] bg-[var(--good-soft)] rounded-lg px-3 py-2">
                 {info}
               </p>
             ) : null}
@@ -118,7 +117,7 @@ function LoginForm() {
               setMode(mode === "in" ? "up" : "in");
               setError(null);
             }}
-            className="mt-3 w-full text-[12px] text-muted hover:text-fg transition-colors focus-ring rounded"
+            className="mt-3 w-full text-[length:var(--text-micro)] text-muted hover:text-fg transition-colors focus-ring rounded"
           >
             {mode === "in" ? "Need an account? Sign up" : "Already have an account? Sign in"}
           </button>

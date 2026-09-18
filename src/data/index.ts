@@ -108,6 +108,17 @@ export const exams: SeedExam[] = [
     scope: "Karnaugh maps — plotting from Σm/ΠM, grouping with wrap-around, don't-cares, essential prime implicants, minimal SOP and POS. Marks assume the standard 10-mark class test; unconfirmed.",
   },
   {
+    key: "viva1-c-lab",
+    name: "Programming in C Lab — Viva",
+    kind: "viva",
+    subject: "programming-in-c",
+    date: null,
+    window: "Week of 21 Sept 2026",
+    maxMarks: 10,
+    weightage: 10,
+    scope: "Basic C syntax, operators, conditional statements, switch-case, break and continue, goto, and the three loops. Bring the lab file as a PDF — Q1 to Q20 with your name and URN visible in every output. Absence scores zero. Marks assume one of the five 10-mark execution-and-viva sittings.",
+  },
+  {
     key: "mse-deco",
     name: "Digital Electronics & Computer Organization — Mid-Term",
     kind: "mse",

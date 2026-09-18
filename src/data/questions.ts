@@ -253,4 +253,249 @@ export const questions: SeedQuestion[] = [
       "**Call by value** passes a *copy*. The function above exchanges its own local copies; the caller's variables are untouched, so nothing appears to happen.\n\nC only ever passes by value — \"call by reference\" is simulated by passing an address:\n\n```c\nvoid swap(int *a, int *b) {\n    int t = *a;\n    *a = *b;\n    *b = t;\n}\n/* called as swap(&x, &y); */\n```\n\nNow the value being copied is an *address*, and dereferencing it reaches the caller's variables.\n\n**The sentence to write in an exam:** C is strictly call by value; passing pointers gives the effect of call by reference.",
     marks: 5,
   },
+
+  /* ── Programming in C · Lab viva (week of 21 Sept) ──────── */
+  {
+    target: "c-u2-tokens",
+    prompt: "What does `#include <stdio.h>` do, and what happens if you remove it from a program that calls `printf`?",
+    answer:
+      "It pastes the standard I/O header into your file before compilation, which is where `printf` and `scanf` are *declared*. Remove it and the compiler sees a call to an undeclared function — a warning on old compilers, an error on modern ones (C99 removed implicit declarations). The program may still link, because the *definition* lives in the C library, but you're relying on luck.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-tokens",
+    prompt: "What is the purpose of `main()`? Why does it `return 0`?",
+    answer:
+      "`main` is the entry point — execution starts there, nowhere else. Its return value goes back to the operating system as the exit status: `0` means success by convention, non-zero means failure. That's what a shell script or a Makefile checks.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-tokens",
+    prompt: "What is the difference between compiling and running a program?",
+    answer:
+      "Compiling translates your source into machine code and reports errors in *syntax and types* — nothing executes. Running executes that machine code with real input, which is where *logic* errors show up. A program can compile cleanly and still be wrong; it cannot run without compiling first.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-tokens",
+    prompt: "What does a semicolon do in C? What happens if the one after `printf(...)` is missing?",
+    answer:
+      "It terminates a statement. Without it the compiler keeps reading, tries to make `printf(...) return 0;` a single statement, and fails with a syntax error — typically reported on the *next* line, which is why a missing semicolon error often points one line past the mistake.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-tokens",
+    prompt: "What are the braces `{ }` for in `main`?",
+    answer:
+      "They delimit a block: the body of the function. Everything between them is what `main` does. The same braces group the body of an `if`, a loop, or any compound statement.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "What is a variable? How is it different from a constant?",
+    answer:
+      "A variable is a named piece of memory whose value can change while the program runs. A constant's value is fixed — either a literal like `10`, a `#define`d name, or a `const`-qualified variable the compiler will refuse to let you assign to.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "Name the basic data types in C and the usual size of each.",
+    answer:
+      "`char` (1 byte), `int` (usually 4), `float` (4), `double` (8). Modifiers change them: `short int` (2), `long int` (4 or 8), `long long` (8), `unsigned` variants of each. Sizes are implementation-defined — `sizeof` is the only reliable answer.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "Why does `5 / 2` give `2` in C? How do you get `2.5`?",
+    answer:
+      "Both operands are `int`, so integer division is performed and the fraction is discarded. Make either operand floating-point — `5.0 / 2` or `(float)5 / 2` — and the other is promoted, giving `2.5`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "What is the difference between `=` and `==`?",
+    answer:
+      "`=` is assignment: it stores the right side in the left. `==` is comparison: it yields 1 if equal, 0 otherwise. Writing `if (x = 5)` compiles, assigns 5 to `x`, and the condition is always true — a classic bug.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "Difference between `++i` and `i++`.",
+    answer:
+      "Both add one to `i`. `++i` increments *first* and the expression's value is the new `i`; `i++` uses the *old* value in the expression and increments afterwards. Alone on a line they're identical — the difference only shows inside a larger expression, e.g. `y = i++` versus `y = ++i`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "What does the modulus operator `%` do, and what is `7 % 3`? Can it be applied to floats?",
+    answer:
+      "It gives the remainder of integer division: `7 % 3` is `1`. It works only on integers; for floating-point remainders you need `fmod()` from `<math.h>`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "What do the relational operators return in C?",
+    answer:
+      "An `int`: `1` for true, `0` for false. There is no separate boolean result type in classic C — which is why `printf(\"%d\", 5 > 3)` prints `1`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-datatypes",
+    prompt: "Explain `&&`, `||` and `!` — and what is short-circuit evaluation?",
+    answer:
+      "`&&` is logical AND (true only if both sides are non-zero), `||` is logical OR (true if either is), `!` negates. Short-circuiting: `&&` stops as soon as the left side is false, `||` as soon as it is true — the right side is *not evaluated*. So `if (n != 0 && 10 / n > 1)` never divides by zero.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-precedence",
+    prompt: "What is operator precedence and associativity? What is `2 + 3 * 4`, and what is `10 - 4 - 3`?",
+    answer:
+      "Precedence decides which operator binds first: `*` before `+`, so `2 + 3 * 4` is `14`. Associativity decides the order among operators of *equal* precedence: `-` is left-to-right, so `10 - 4 - 3` is `(10 - 4) - 3 = 3`, not `10 - (4 - 3) = 9`. Assignment is right-to-left, which is why `a = b = 5` works.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u2-precedence",
+    prompt: "What is the difference between implicit and explicit type conversion?",
+    answer:
+      "Implicit (coercion) is done by the compiler without being asked: in `int x = 3.7;` the value is silently truncated to `3`; in `5 / 2.0` the 5 is promoted to `double`. Explicit is a cast you write yourself — `(float) total / count` — and it converts *that operand only*, before the division happens.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-if",
+    prompt: "Difference between `if-else` and the conditional operator `?:`.",
+    answer:
+      "`if-else` is a statement — it chooses which block *runs*. `cond ? a : b` is an expression — it produces a *value*, so it can sit inside an assignment or a `printf`: `max = (a > b) ? a : b;`. Anything `?:` can do, `if-else` can do; the reverse is not true.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-nested",
+    prompt: "What is a nested if? Give the classic bug with a dangling `else`.",
+    answer:
+      "An `if` inside another `if`'s body. The dangling-else problem: in `if (a) if (b) x(); else y();` the `else` binds to the *nearest* unmatched `if` — `if (b)` — regardless of indentation. Braces fix it.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-switch",
+    prompt: "When would you use `switch` instead of `if-else`? What can the `case` label be?",
+    answer:
+      "When one integer expression is tested against several constant values — menu choices, grades, opcodes. `case` labels must be compile-time integer constants (including `char` literals); you cannot `switch` on a range, a string, or a float. For `x > 10` you still need `if`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-switch",
+    prompt: "What does `default` do in a `switch`? Is it required?",
+    answer:
+      "It runs when no `case` matches. It is optional, and can appear anywhere in the switch — but if you leave it out and nothing matches, the switch simply does nothing, silently.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-switch",
+    prompt: "What is fall-through in a `switch`? Why does every `case` usually end in `break`?",
+    answer:
+      "After a matching `case`, execution continues into the *next* case's statements unless something stops it — that's fall-through. `break` is the stop. Forget it and choosing option 1 also runs option 2's code. Occasionally it's used deliberately, to let several cases share one body.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-while",
+    prompt: "Difference between `while` and `do-while`. When does that matter?",
+    answer:
+      "`while` tests the condition *before* each pass, so the body may run zero times. `do-while` tests *after*, so the body always runs at least once. That's exactly what a menu loop wants: show the menu, read a choice, then decide whether to go round again.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-while",
+    prompt: "What is an infinite loop? Give two ways one happens by accident.",
+    answer:
+      "A loop whose condition never becomes false. Accidentally: forgetting to update the loop variable (`while (i < 10) { ... }` with no `i++`), or a semicolon straight after the condition — `while (i < 10);` — which makes an empty body the loop repeats forever.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-for",
+    prompt: "Explain the three parts of a `for` loop header. Can any of them be left empty?",
+    answer:
+      "`for (init; condition; update)`: `init` runs once before the loop; `condition` is tested before each pass; `update` runs after each pass. All three are optional — `for (;;)` is a legal infinite loop, and a `for` with only a condition is just a `while`.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-for",
+    prompt: "Difference between `break` and `continue`.",
+    answer:
+      "`break` leaves the loop (or `switch`) entirely — execution resumes after it. `continue` abandons the *current pass* only and jumps to the next iteration: to the update expression in a `for`, to the condition test in a `while`. Both apply to the innermost enclosing loop only.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-for",
+    prompt: "What does `goto` do, and why is it discouraged?",
+    answer:
+      "It jumps unconditionally to a label in the same function: `goto end;` … `end:`. It's discouraged because it breaks structured flow — you can no longer tell where a line is reached from by reading the code above it — and every use can be replaced with a loop, a `break`, or a function. The one defensible use is escaping several nested loops at once.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-for",
+    prompt: "What is the difference between `exit()` and `return` in `main`?",
+    answer:
+      "In `main` they end the program the same way and both hand a status to the OS. The difference shows elsewhere: `return` leaves only the *current function*; `exit()` — from `<stdlib.h>` — terminates the *whole program* from anywhere, running cleanup handlers first.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
+  {
+    target: "c-u3-for",
+    prompt: "How would you print a pattern like a right-angled triangle of stars using nested loops?",
+    answer:
+      "Outer loop over rows `i = 1..n`; inner loop prints `i` stars, then a newline:\n\n```c\nfor (int i = 1; i <= n; i++) {\n    for (int j = 1; j <= i; j++) printf(\"* \");\n    printf(\"\\n\");\n}\n```\n\nEvery pattern question is this shape — the only thing that changes is the inner loop's bounds and what it prints.",
+    marks: 2,
+    kind: "viva",
+    source: "C lab viva, week of 21 Sept 2026",
+  },
 ];

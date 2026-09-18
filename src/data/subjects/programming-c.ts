@@ -1039,6 +1039,11 @@ export const programmingC: SeedSubject = {
   ],
   strategies: [
     {
+      title: "Lab viva next week — what it will actually ask",
+      body:
+        "The viva is on the seven things in the announcement: basic syntax, operators, conditionals, switch-case, break and continue, goto, and for/while/do-while. That is Labs 1–8 and theory Units 2–3, nothing further. Two parts to it. First, the soft copy: Q1–Q20 from the lab question sheet (C/sheets/Programing C LAB Ques.docx) as a single PDF, with your name and URN visible in every program's output — put them in a printf at the top of each program, then it's in the screenshot automatically. Keep it on your phone and on Drive; being unable to open it counts the same as not having it. Second, the questions: they are concept questions asked at the machine, not programming tasks — what break does versus continue, why 5/2 is 2, when do-while beats while, what fall-through is. Practice has a viva set for exactly these; run it until the answers are one sentence each. Being absent scores zero, so the date matters more than the prep.",
+    },
+    {
       title: "The lab is worth as much as the theory paper, and it is all continuous",
       body:
         "Programming in C Lab is a separate 2-credit course with its own code (CSE26108P) and no end-sem paper at all — 50 marks of quizzes across ten compulsory sittings, and 50 marks of execution and viva across five. Miss a session and those marks cannot be made up later. The plan also says the previous experiment's lab file is checked at the end of every lab, so the write-up is due before the next class, not at the end of term.",
@@ -1125,6 +1130,7 @@ Practical tip: write your C on your Mac with \`gcc\` (or \`clang\`, already inst
   localFiles: [
     "C/lec_Course Plan_Programming in C.pdf",
     "C/Lab_Course Plan_Programming in C.pdf",
+    "C/sheets/Programing C LAB Ques.docx",
   ],
   gaps: [],
 };

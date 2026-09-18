@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { MARK_PATH } from "@/components/mark";
 
 // iOS home-screen icon. Rendered as a PNG at build time because Apple
 // ignores SVG touch icons.
@@ -15,14 +16,13 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#4f46e5",
-          color: "#fff",
-          fontSize: 104,
-          fontWeight: 700,
-          letterSpacing: "-0.02em",
+          background: "#4b3bd6",
         }}
       >
-        I
+        {/* iOS masks its own corners; the mark just needs the letter. */}
+        <svg width="180" height="180" viewBox="0 0 64 64">
+          <path d={MARK_PATH} fill="#f7f5f1" />
+        </svg>
       </div>
     ),
     size,

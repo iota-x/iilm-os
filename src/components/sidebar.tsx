@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useLocalStorage } from "@/lib/client-hooks";
 import type { NavSubject } from "@/lib/queries";
+import { Mark } from "@/components/mark";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { SearchTrigger } from "@/components/command-palette";
@@ -141,10 +142,8 @@ export function Sidebar({
       {/* brand + collapse */}
       <div className="flex h-14 shrink-0 items-center gap-2 px-3">
         <Link href="/" className="flex min-w-0 items-center gap-2 focus-ring rounded">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] bg-[var(--accent)] text-[length:var(--text-micro)] font-bold text-[var(--accent-fg)]">
-            I
-          </span>
-          <span className="truncate text-[length:var(--text-body)] font-semibold tracking-tight">IILM OS</span>
+          <Mark size={28} />
+          <span className="truncate font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">IILM OS</span>
         </Link>
         <button
           onClick={() => setCollapsed(true)}

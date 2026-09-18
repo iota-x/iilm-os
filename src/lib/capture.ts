@@ -125,9 +125,18 @@ export function matchSession<S extends SlotLike>(
     .filter((s) => s.lab_group === null || s.lab_group === labGroup)
     .sort((a, b) => toMin(a.start_time) - toMin(b.start_time));
   const minute = at.getHours() * 60 + at.getMinutes();
-  const slot =
-    candidates.find(
-      (s) => minute >= toMin(s.start_time) - 10 && minute <= toMin(s.end_time) + 40,
-    ) ?? null;
-  return { slot, candidates, day };
+  // Precedence: the class that's running, then the one that just ended,
+  // then the one about to start. Boards are photographed on the way out,
+  // so a photo in the gap between two classes belongs to the earlier one —
+  // and a running class always beats one that ended 40 minutes ago.
+  const running = candidates.find(
+    (s) => minute >= toMin(s.start_time) && minute <= toMin(s.end_time),
+  );
+  const justEnded = candidates.find(
+    (s) => minute > toMin(s.end_time) && minute <= toMin(s.end_time) + 40,
+  );
+  const aboutToStart = candidates.find(
+    (s) => minute >= toMin(s.start_time) - 10 && minute < toMin(s.start_time),
+  );
+  return { slot: running ?? justEnded ?? aboutToStart ?? null, candidates, day };
 }

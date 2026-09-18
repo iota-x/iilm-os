@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import Link from "next/link";
 import { Circle, CircleDashed, CircleDot, CheckCircle2, Link2, StickyNote } from "lucide-react";
 import { setTopicStatus } from "@/lib/actions";
@@ -29,8 +29,10 @@ export function TopicRow({
   /** When known, the title and the count chips open the topic's own page. */
   unitNumber?: number;
 }) {
-  const [pending, start] = useTransition();
-  const Icon = ICON[topic.status];
+  const [, start] = useTransition();
+  // show the next status straight away; the write follows
+  const [status, setStatusOptimistic] = useOptimistic(topic.status);
+  const Icon = ICON[status];
   const topicHref =
     unitNumber !== undefined
       ? `/subjects/${subjectSlug}/unit-${unitNumber}/${topic.code}`
@@ -44,20 +46,25 @@ export function TopicRow({
         // room for the sticky header when linked to directly, plus a flash
         // so you can see which row the link meant
         "scroll-mt-24 target:bg-[var(--accent-soft)]",
-        pending && "opacity-50",
       )}
     >
       <div className="flex items-start gap-3">
         <button
-          onClick={() => start(async () => setTopicStatus(topic.id, nextStatus(topic.status)))}
-          title={`${STATUS_LABEL[topic.status]} — click to advance`}
-          aria-label={`Status: ${STATUS_LABEL[topic.status]}`}
+          onClick={() =>
+            start(async () => {
+              const next = nextStatus(status);
+              setStatusOptimistic(next as typeof status);
+              await setTopicStatus(topic.id, next);
+            })
+          }
+          title={`${STATUS_LABEL[status]} — click to advance`}
+          aria-label={`Status: ${STATUS_LABEL[status]}`}
           className={cn(
             "mt-0.5 shrink-0 transition-colors focus-ring rounded-full",
-            topic.status === "not_started" && "text-subtle hover:text-sc",
-            topic.status === "learning" && "text-[var(--warn)]",
-            topic.status === "revising" && "text-sc",
-            topic.status === "mastered" && "text-[var(--good)]",
+            status === "not_started" && "text-subtle hover:text-sc",
+            status === "learning" && "text-[var(--warn)]",
+            status === "revising" && "text-sc",
+            status === "mastered" && "text-[var(--good)]",
           )}
         >
           <Icon size={17} strokeWidth={2} />
@@ -70,7 +77,7 @@ export function TopicRow({
                 href={topicHref}
                 className={cn(
                   "text-[13px] leading-snug hover:underline focus-ring rounded",
-                  topic.status === "mastered" && "text-muted",
+                  status === "mastered" && "text-muted",
                 )}
               >
                 {topic.title}
@@ -79,7 +86,7 @@ export function TopicRow({
               <p
                 className={cn(
                   "text-[13px] leading-snug",
-                  topic.status === "mastered" && "text-muted",
+                  status === "mastered" && "text-muted",
                 )}
               >
                 {topic.title}
@@ -108,7 +115,7 @@ export function TopicRow({
               <span className="text-[11px] text-subtle font-mono">{topic.session}</span>
             ) : null}
             {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
-            <span className="text-[11px] text-subtle">{STATUS_LABEL[topic.status]}</span>
+            <span className="text-[11px] text-subtle">{STATUS_LABEL[status]}</span>
             {noteCount ? (
               <Link
                 href={topicHref ?? `/notes`}

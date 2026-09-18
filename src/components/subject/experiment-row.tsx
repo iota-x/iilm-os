@@ -1,23 +1,31 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { Check, ChevronDown, FileCheck2 } from "lucide-react";
 import { setExperiment } from "@/lib/actions";
 import type { Experiment } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui";
 
-export function ExperimentRow({ exp }: { exp: Experiment }) {
+export function ExperimentRow({ exp: experiment }: { exp: Experiment }) {
   const [open, setOpen] = useState(false);
-  const [pending, start] = useTransition();
+  const [, start] = useTransition();
+  const [exp, applyOptimistic] = useOptimistic(
+    experiment,
+    (prev, patch: Partial<Experiment>) => ({ ...prev, ...patch }),
+  );
   const done = exp.status === "done";
 
   return (
-    <li className={cn("px-4 py-3", pending && "opacity-50")}>
+    <li className="px-4 py-3">
       <div className="flex items-start gap-3">
         <button
           onClick={() =>
-            start(async () => setExperiment(exp.id, { status: done ? "not_started" : "done" }))
+            start(async () => {
+              const next: Experiment["status"] = done ? "not_started" : "done";
+              applyOptimistic({ status: next });
+              await setExperiment(exp.id, { status: next });
+            })
           }
           aria-label={done ? "Mark not done" : "Mark done"}
           className={cn(
@@ -50,7 +58,12 @@ export function ExperimentRow({ exp }: { exp: Experiment }) {
             {exp.co ? <Badge tone="neutral">{exp.co}</Badge> : null}
             {exp.in_midsem ? <Badge tone="accent">expected by now</Badge> : null}
             <button
-              onClick={() => start(async () => setExperiment(exp.id, { file_done: !exp.file_done }))}
+              onClick={() =>
+                start(async () => {
+                  applyOptimistic({ file_done: !exp.file_done });
+                  await setExperiment(exp.id, { file_done: !exp.file_done });
+                })
+              }
               className={cn(
                 "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium transition-colors focus-ring",
                 exp.file_done

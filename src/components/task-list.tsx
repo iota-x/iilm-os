@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { Check, Trash2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -69,12 +69,16 @@ function TaskRow({
 }) {
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
-  const done = task.status === "done";
+  // tick now, persist behind it
+  const [status, setStatusOptimistic] = useOptimistic(task.status);
+  const done = status === "done";
   const details = (task.detail ?? "").split("\n").filter(Boolean);
 
   function toggle() {
+    const next = done ? "todo" : "done";
     start(async () => {
-      await setTaskStatus(task.id, done ? "todo" : "done");
+      setStatusOptimistic(next as typeof status);
+      await setTaskStatus(task.id, next);
     });
   }
 
@@ -90,7 +94,7 @@ function TaskRow({
       className={cn(
         "group px-4 py-2.5 transition-opacity",
         subject ? ACCENT_CLASS[subject.color] : "",
-        pending && "opacity-50",
+        pending && !open && "opacity-100",
       )}
     >
       <div className="flex items-start gap-3">

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemes attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <NextThemes attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       {children}
     </NextThemes>
   );

@@ -66,7 +66,7 @@ export default function LandingPage() {
     <div className="min-h-dvh overflow-x-clip">
       {/* ── top bar ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-20 border-b border-line/60 bg-app/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1120px] items-center justify-between px-5 py-3.5">
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-2.5">
             <Mark size={30} />
             <span className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">
@@ -93,8 +93,8 @@ export default function LandingPage() {
 
       <main>
         {/* ── hero: the copy, and the product itself ────────── */}
-        <section className="mx-auto max-w-[1120px] px-5 pt-14 sm:pt-20">
-          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <section className="mx-auto max-w-[1280px] px-5 pt-14 sm:pt-20">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
             <div>
               <p className="text-[length:var(--text-small)] text-muted">
                 B.Tech CSE · Semester I · Section E
@@ -143,7 +143,7 @@ export default function LandingPage() {
             </div>
 
             {/* the week, framed like the screen it is — bleeds off the right edge on wide screens */}
-            <div className="relative lg:-mr-24 xl:-mr-40">
+            <div className="relative">
               <div className="rounded-[var(--radius-panel)] border border-line bg-surface p-3 shadow-pop sm:p-4">
                 <LandingWeek slots={slots} subjects={subjects} />
               </div>
@@ -155,7 +155,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── why this exists ───────────────────────────────── */}
-        <section className="mx-auto max-w-[1120px] px-5 pt-24">
+        <section className="mx-auto max-w-[1280px] px-5 pt-24">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div>
               <h2 className="font-serif text-[2rem] font-semibold leading-[1.15] tracking-tight">
@@ -187,7 +187,7 @@ export default function LandingPage() {
 
         {/* ── ask: a dark band, with a real exchange ────────── */}
         <section className="dark mt-24 border-y border-line bg-app text-fg">
-          <div className="mx-auto grid max-w-[1120px] gap-12 px-5 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+          <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
             <div>
               <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
                 <Sparkles size={15} /> Ask
@@ -269,7 +269,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── photos: the mechanism, drawn ──────────────────── */}
-        <section className="mx-auto max-w-[1120px] px-5 pt-24">
+        <section className="mx-auto max-w-[1280px] px-5 pt-24">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
             <div>
               <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
@@ -316,7 +316,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── what's loaded: the syllabus, as bars ──────────── */}
-        <section className="mx-auto max-w-[1120px] px-5 pt-24">
+        <section className="mx-auto max-w-[1280px] px-5 pt-24">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="font-serif text-[2rem] font-semibold leading-[1.15] tracking-tight">
               What&rsquo;s loaded.
@@ -356,7 +356,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── close ─────────────────────────────────────────── */}
-        <section className="mx-auto max-w-[1120px] px-5 pb-24 pt-24">
+        <section className="mx-auto max-w-[1280px] px-5 pb-24 pt-24">
           <div className="rounded-[var(--radius-panel)] border border-line bg-surface p-8 shadow-card sm:p-12">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
               <div>
@@ -383,7 +383,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-line bg-surface/60">
-        <div className="mx-auto max-w-[1120px] px-5 pb-8 pt-14">
+        <div className="mx-auto max-w-[1280px] px-5 pb-8 pt-14">
           <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)]">
             <div>
               <div className="flex items-center gap-2.5">

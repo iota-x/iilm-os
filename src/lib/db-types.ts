@@ -225,7 +225,8 @@ export interface Task {
   minutes: number | null;
   kind: TaskKind;
   status: TaskStatus;
-  source: "plan" | "manual";
+  source: "plan" | "manual" | "goal";
+  goal_id: string | null;
   sort_order: number;
   completed_at: string | null;
 }
@@ -313,4 +314,18 @@ export interface Reply {
   author: string;
   helpful: number;
   mine: boolean;
+}
+
+/* ─── goals ─────────────────────────────────────────────────── */
+export interface Goal {
+  id: string;
+  user_id: string;
+  title: string;
+  subject_id: string | null;
+  unit_id: string | null;
+  scope: "midsem" | "unit" | "subject";
+  deadline: string;
+  daily_minutes: number;
+  status: "active" | "done" | "dropped";
+  created_at: string;
 }

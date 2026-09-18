@@ -2,6 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { daysBetween, distribute, minutesFor, remaining } from "@/lib/goals";
+import { istToday } from "@/lib/utils";
+import type { Topic } from "@/lib/db-types";
 
 async function uid() {
   const db = await createClient();
@@ -640,4 +643,122 @@ export async function toggleHelpful(target: "post" | "reply", id: string): Promi
   const { error } = await db.from(table).insert({ [col]: id, user_id: userId });
   if (error) throw new Error(error.message);
   return true;
+}
+
+/* ─── goals ─────────────────────────────────────────────────── */
+
+/** The topics a goal covers, in syllabus order. */
+async function goalTopics(
+  db: Awaited<ReturnType<typeof createClient>>,
+  goal: { subject_id: string | null; unit_id: string | null; scope: string },
+): Promise<Topic[]> {
+  if (!goal.subject_id) return [];
+  let q = db.from("topics").select("*").eq("subject_id", goal.subject_id).order("sort_order");
+  if (goal.scope === "unit" && goal.unit_id) q = q.eq("unit_id", goal.unit_id);
+  if (goal.scope === "midsem") q = q.eq("in_midsem", true);
+  const { data } = await q;
+  return (data as Topic[]) ?? [];
+}
+
+/**
+ * Lay the goal's remaining topics across the days from today to the
+ * deadline as one task each. Existing future tasks for this goal are
+ * replaced; done ones are kept as the record they are.
+ */
+async function planGoal(
+  db: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  goal: { id: string; subject_id: string | null; unit_id: string | null; scope: string; deadline: string },
+) {
+  const today = istToday();
+  const start = today <= goal.deadline ? today : goal.deadline;
+  const days = daysBetween(start, goal.deadline);
+
+  await db.from("tasks").delete().eq("goal_id", goal.id).neq("status", "done");
+  const { data: units } = await db.from("units").select("id, number").eq("subject_id", goal.subject_id ?? "");
+  const unitRank = new Map((units ?? []).map((u) => [u.id as string, u.number as number]));
+  const topics = remaining(await goalTopics(db, goal), unitRank);
+  // topics already ticked off as tasks under this goal don't come back
+  const { data: done } = await db.from("tasks").select("topic_id").eq("goal_id", goal.id).eq("status", "done");
+  const doneIds = new Set((done ?? []).map((t) => t.topic_id as string));
+  const todo = topics.filter((t) => !doneIds.has(t.id));
+
+  const plan = distribute(todo, days);
+  const rows = plan.flatMap((day, di) =>
+    day.topics.map((t, j) => ({
+      user_id: userId,
+      goal_id: goal.id,
+      subject_id: t.subject_id,
+      topic_id: t.id,
+      title: t.title,
+      detail: t.outcome ?? null,
+      topic_codes: [t.code],
+      due_date: day.date,
+      minutes: minutesFor(t),
+      kind: t.status === "not_started" ? "learn" : "revise",
+      source: "goal",
+      sort_order: 50 + di * 20 + j,
+    })),
+  );
+  if (rows.length) {
+    const { error } = await db.from("tasks").insert(rows);
+    if (error) throw new Error(error.message);
+  }
+  return { topics: todo.length, days: days.length, minutes: todo.reduce((n, t) => n + minutesFor(t), 0) };
+}
+
+export async function createGoal(input: {
+  title: string;
+  subject_id: string;
+  unit_id?: string | null;
+  scope: "midsem" | "unit" | "subject";
+  deadline: string;
+}) {
+  const { db, userId } = await uid();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.deadline)) throw new Error("Pick a deadline.");
+  if (input.deadline < istToday()) throw new Error("That deadline has already passed.");
+  const { data, error } = await db
+    .from("goals")
+    .insert({
+      user_id: userId,
+      title: input.title.trim() || "Goal",
+      subject_id: input.subject_id,
+      unit_id: input.scope === "unit" ? input.unit_id ?? null : null,
+      scope: input.scope,
+      deadline: input.deadline,
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  const plan = await planGoal(db, userId, data);
+  revalidatePath("/", "layout");
+  return { id: data.id as string, ...plan };
+}
+
+/** Rebuild the remaining days from what's still not done. */
+export async function replanGoal(id: string) {
+  const { db, userId } = await uid();
+  const { data: goal } = await db.from("goals").select("*").eq("id", id).single();
+  if (!goal) throw new Error("Goal not found");
+  const plan = await planGoal(db, userId, goal);
+  revalidatePath("/", "layout");
+  return plan;
+}
+
+export async function setGoalStatus(id: string, status: "active" | "done" | "dropped") {
+  const { db } = await uid();
+  const { error } = await db.from("goals").update({ status }).eq("id", id);
+  if (error) throw new Error(error.message);
+  if (status !== "active") {
+    // a finished or dropped goal takes its unfinished tasks off the calendar
+    await db.from("tasks").delete().eq("goal_id", id).neq("status", "done");
+  }
+  revalidatePath("/", "layout");
+}
+
+export async function deleteGoal(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("goals").delete().eq("id", id); // tasks cascade
+  if (error) throw new Error(error.message);
+  revalidatePath("/", "layout");
 }

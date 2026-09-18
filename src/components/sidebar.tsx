@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Users,
+  Target,
   BookOpen,
   CalendarCheck,
   CalendarRange,
@@ -36,6 +37,7 @@ import { ThemeToggle } from "@/components/theme";
 
 const LINKS = [
   { href: "/", label: "Today", icon: LayoutDashboard, exact: true },
+  { href: "/goals", label: "Goals", icon: Target },
   { href: "/review", label: "Review", icon: Repeat2 },
   { href: "/practice", label: "Practice", icon: Dumbbell },
   { href: "/planner", label: "Planner", icon: CalendarRange },

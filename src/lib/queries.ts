@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  Goal,
   Post,
   Reply,
   Attachment,
@@ -291,6 +292,12 @@ export async function getTasks(opts?: { date?: string; from?: string; to?: strin
   if (opts?.to) q = q.lte("due_date", opts.to);
   const { data } = await q;
   return (data as Task[]) ?? [];
+}
+
+export async function getGoals(): Promise<Goal[]> {
+  const db = await createClient();
+  const { data } = await db.from("goals").select("*").order("deadline");
+  return (data as Goal[]) ?? [];
 }
 
 export async function getPlanDays(): Promise<PlanDay[]> {

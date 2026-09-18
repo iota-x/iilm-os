@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Camera, CalendarClock, ExternalLink, FolderCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Camera, CalendarClock, ExternalLink, FolderCheck, Sparkles, Target } from "lucide-react";
+import { daysBetween, distribute, minutesFor, summarise } from "@/lib/goals";
 import { Mark } from "@/components/mark";
 import { ThemeToggle } from "@/components/theme";
 import { LandingWeek } from "@/components/landing-week";
@@ -41,7 +42,7 @@ export default function LandingPage() {
   const left = daysUntil(MIDSEM_START);
   const bySlug = new Map(seedSubjects.map((s) => [s.slug, s]));
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
   const soon = seedExams
     .filter((e) => e.kind !== "mse" && e.kind !== "ese" && (e.date ? e.date >= today : Boolean(e.window)))
     .slice(0, 3)
@@ -58,6 +59,22 @@ export default function LandingPage() {
       subject: e.subject ? bySlug.get(e.subject)?.shortName ?? "" : "",
       color: e.subject ? bySlug.get(e.subject)?.color ?? "slate" : "slate",
     }));
+
+  // A live example goal: Calculus mid-sem scope, by the day before mid-sems start.
+  const calc = seedSubjects.find((x) => x.slug === "applied-calculus")!;
+  const calcTopics = calc.units
+    .flatMap((u) => u.topics)
+    .filter((t) => t.inMidsem)
+    .map((t, i) => ({ weight: t.weight, sort_order: i }));
+  const goalEnd = new Date(MIDSEM_START.getTime() - 86_400_000); // the day before
+  const goalEndIso = goalEnd.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // YYYY-MM-DD in IST
+  const goalDays = daysBetween(today, goalEndIso);
+  const goalPlan = distribute(calcTopics, goalDays);
+  const goalSummary = summarise(
+    calcTopics.length,
+    goalDays.length,
+    calcTopics.reduce((n, t) => n + minutesFor(t), 0),
+  );
 
   const cta =
     "inline-flex items-center gap-2 rounded-[var(--radius-control)] bg-[var(--accent)] px-4 py-2.5 text-[length:var(--text-body)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring";
@@ -182,6 +199,65 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        {/* ── goals: a deadline, turned into days ───────────── */}
+        <section className="mx-auto max-w-[1280px] px-5 pt-24">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+            <div>
+              <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
+                <Target size={15} /> Goals
+              </p>
+              <h2 className="mt-3 font-serif text-[2rem] font-semibold leading-[1.15] tracking-tight">
+                Say what to finish and by when. Get today&rsquo;s share.
+              </h2>
+              <p className="mt-4 max-w-[46ch] text-[length:var(--text-body)] leading-relaxed text-muted">
+                Pick a subject, a scope — the mid-sem units, one unit, the whole thing — and a date.
+                It lays the topics across the days in syllabus order so no day is a cliff, and
+                puts each day&rsquo;s share on your Today page. Miss a day and hit Replan: what&rsquo;s
+                left spreads over the days that remain. You see the daily load before you commit.
+              </p>
+            </div>
+
+            {/* the example, live: real scope, real dates */}
+            <div className={cn("rounded-[var(--radius-panel)] border border-line bg-surface p-5 shadow-pop sm:p-6", ACCENT_CLASS.violet)}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="font-serif text-[length:var(--text-lead)] font-semibold">Calculus mid-sem scope</p>
+                  <p className="mt-1 text-[length:var(--text-small)] text-muted">
+                    Units I–III · by{" "}
+                    {goalEnd.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}
+                  </p>
+                </div>
+                <p className="text-[length:var(--text-small)] font-medium text-sc">{goalSummary.text}</p>
+              </div>
+
+              {/* one cell per day; dots are topics */}
+              <ol className="mt-5 grid grid-cols-8 gap-1.5 sm:grid-cols-[repeat(16,minmax(0,1fr))]">
+                {goalPlan.slice(0, 16).map((d, i) => (
+                  <li
+                    key={d.date}
+                    className={cn(
+                      "flex aspect-square flex-col items-center justify-between rounded-md border border-line px-1 py-1.5",
+                      i === 0 ? "bg-sc-soft" : "bg-surface-2",
+                    )}
+                    title={`${d.date}: ${d.topics.length} topic${d.topics.length === 1 ? "" : "s"}`}
+                  >
+                    <span className="text-[10px] tabular-nums text-subtle">{d.date.slice(8).replace(/^0/, "")}</span>
+                    <span className="flex gap-0.5">
+                      {d.topics.map((_, j) => (
+                        <span key={j} className="h-1.5 w-1.5 rounded-full bg-sc" />
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-[length:var(--text-micro)] text-subtle">
+                Each dot is one topic. Today is highlighted. This is computed from the real syllabus
+                and today&rsquo;s date — it&rsquo;s the plan you&rsquo;d get.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -415,7 +491,7 @@ export default function LandingPage() {
             <div>
               <p className="text-[length:var(--text-micro)] font-medium text-muted">Inside</p>
               <ul className="mt-3 space-y-2 text-[length:var(--text-small)] text-muted">
-                <li>Planner</li>
+                <li>Planner &amp; Goals</li>
                 <li>Practice &amp; Review</li>
                 <li>Inbox &amp; Ask</li>
                 <li>Class board</li>

@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Inbox,
   Users,
+  Target,
   LayoutDashboard,
   Link2,
   NotebookPen,
@@ -24,7 +25,8 @@ import { SearchTrigger } from "@/components/command-palette";
 const LINKS = [
   { href: "/", label: "Today", icon: LayoutDashboard, exact: true },
   { href: "/subjects", label: "Subjects", icon: BookOpen },
-  { href: "/review", label: "Review", icon: Repeat2 },
+    { href: "/goals", label: "Goals", icon: Target },
+{ href: "/review", label: "Review", icon: Repeat2 },
   { href: "/practice", label: "Practice", icon: Dumbbell },
   { href: "/planner", label: "Planner", icon: CalendarRange },
   { href: "/ask", label: "Ask", icon: Sparkles },

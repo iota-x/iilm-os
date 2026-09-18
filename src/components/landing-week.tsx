@@ -4,6 +4,7 @@ import { useState } from "react";
 import { WeekGrid } from "@/components/planner/week-grid";
 import type { Slot, Subject } from "@/lib/db-types";
 import { cn } from "@/lib/utils";
+import { TryIt } from "@/components/try-it";
 
 /** The section's real week, drawn to scale, with a group switch. */
 export function LandingWeek({ slots, subjects }: { slots: Slot[]; subjects: Subject[] }) {
@@ -12,9 +13,10 @@ export function LandingWeek({ slots, subjects }: { slots: Slot[]; subjects: Subj
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-[length:var(--text-small)] text-muted">
-          Section E, this semester. Free time is drawn, not implied.
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <TryIt>Live — switch your group</TryIt>
+          <p className="text-[length:var(--text-small)] text-muted">Section E, this semester.</p>
+        </div>
         <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
           {([1, 2] as const).map((g) => (
             <button

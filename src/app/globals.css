@@ -301,7 +301,22 @@ textarea.editor {
 button:not(:disabled):active, a[role="button"]:active { transform: scale(0.985); }
 button, a { transition-property: color, background-color, border-color, opacity, transform, box-shadow; transition-duration: 140ms; transition-timing-function: ease-out; }
 
+/* the landing demos' sliders: a fat accent thumb that reads as "drag me" */
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+}
+.slider { -webkit-appearance: none; appearance: none; height: 10px; border-radius: 999px; background: var(--surface-3); outline: none; cursor: grab; }
+.slider:active { cursor: grabbing; }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 999px; background: var(--accent); border: 4px solid var(--surface); box-shadow: 0 2px 8px rgb(0 0 0 / 0.25), 0 0 0 1px var(--border-strong); cursor: grab; transition: transform 120ms ease-out; }
+.slider::-moz-range-thumb { width: 28px; height: 28px; border-radius: 999px; background: var(--accent); border: 4px solid var(--surface); box-shadow: 0 2px 8px rgb(0 0 0 / 0.25), 0 0 0 1px var(--border-strong); cursor: grab; }
+.slider:hover::-webkit-slider-thumb, .slider:focus-visible::-webkit-slider-thumb { transform: scale(1.12); }
+.slider.nudge::-webkit-slider-thumb { animation: nudge 1.1s ease-in-out 0.8s 2; }
+.slider.nudge::-moz-range-thumb { animation: nudge 1.1s ease-in-out 0.8s 2; }
+
 @media (prefers-reduced-motion: reduce) {
+  .slider.nudge::-webkit-slider-thumb, .slider.nudge::-moz-range-thumb { animation: none; }
   .animate-in, .reveal, .pop, .bar-fill, .ring-fill, .scale-in { animation: none !important; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
   button:not(:disabled):active { transform: none; }

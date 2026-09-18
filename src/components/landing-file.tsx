@@ -5,6 +5,7 @@ import { ArrowRight, Camera, CalendarClock, FolderCheck } from "lucide-react";
 import { matchSession } from "@/lib/capture";
 import type { Slot, Subject } from "@/lib/db-types";
 import { ACCENT_CLASS, cn, fmtTime } from "@/lib/utils";
+import { TryIt } from "@/components/try-it";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
 
@@ -16,6 +17,7 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
 export function LandingFile({ slots, subjects }: { slots: Slot[]; subjects: Subject[] }) {
   const [day, setDay] = useState<(typeof DAYS)[number]>("Wed");
   const [minute, setMinute] = useState(11 * 60 + 40);
+  const [touched, setTouched] = useState(false);
 
   // build a Date on that weekday at that time — the matcher only reads weekday and time
   const base = new Date("2026-09-14T00:00:00+05:30"); // a Monday
@@ -26,15 +28,16 @@ export function LandingFile({ slots, subjects }: { slots: Slot[]; subjects: Subj
   const mm = String(minute % 60).padStart(2, "0");
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="rounded-[var(--radius-panel)] border border-line bg-surface p-5 shadow-pop sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <TryIt>Try it — pick a day, drag the time</TryIt>
         <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
           {DAYS.map((d) => (
             <button
               key={d}
-              onClick={() => setDay(d)}
+              onClick={() => { setDay(d); setTouched(true); }}
               className={cn(
-                "rounded-[7px] px-2.5 py-1 text-[length:var(--text-micro)] font-medium transition-colors focus-ring",
+                "rounded-[7px] px-3 py-1.5 text-[length:var(--text-small)] font-medium transition-colors focus-ring",
                 day === d ? "bg-surface text-fg shadow-card" : "text-subtle hover:text-fg",
               )}
             >
@@ -42,23 +45,30 @@ export function LandingFile({ slots, subjects }: { slots: Slot[]; subjects: Subj
             </button>
           ))}
         </div>
-        <label className="flex flex-1 items-center gap-3 text-[length:var(--text-micro)] text-subtle">
-          <span className="shrink-0">Taken at</span>
-          <input
-            type="range"
-            min={8 * 60}
-            max={18 * 60}
-            step={5}
-            value={minute}
-            onChange={(e) => setMinute(Number(e.target.value))}
-            className="w-full accent-[var(--accent)]"
-            aria-label="Time the photo was taken"
-          />
-          <span className="w-12 shrink-0 text-right tabular-nums text-fg">{fmtTime(`${hh}:${mm}`)}</span>
-        </label>
       </div>
 
-      <ol className="grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 flex items-end justify-between gap-4">
+        <p className="text-[length:var(--text-small)] text-muted">A photo taken on <span className="text-fg">{day}</span> at</p>
+        <p key={minute} className="pop text-[length:var(--text-figure)] font-semibold leading-none tabular-nums tracking-[-0.03em]">
+          {fmtTime(`${hh}:${mm}`)}
+        </p>
+      </div>
+      <input
+        type="range"
+        min={8 * 60}
+        max={18 * 60}
+        step={5}
+        value={minute}
+        onPointerDown={() => setTouched(true)}
+        onChange={(e) => { setTouched(true); setMinute(Number(e.target.value)); }}
+        className={cn("slider mt-2 w-full", !touched && "nudge")}
+        aria-label="Time the photo was taken"
+      />
+      <div className="mt-1 flex justify-between text-[length:var(--text-micro)] text-subtle">
+        <span>8am</span><span>1pm</span><span>6pm</span>
+      </div>
+
+      <ol className="mt-5 grid gap-3 sm:grid-cols-3">
         <Step icon={Camera} k="Taken" v={`${day} ${fmtTime(`${hh}:${mm}`)}`} sub="read from the photo itself" />
         <Step
           icon={CalendarClock}
@@ -67,6 +77,7 @@ export function LandingFile({ slots, subjects }: { slots: Slot[]; subjects: Subj
           sub={m.slot ? "your group, that weekday" : `${m.candidates.length} classes that day to pick from`}
         />
         <Step
+          key={subject?.id ?? "none"}
           icon={FolderCheck}
           k="Filed to"
           v={subject ? `${subject.short_name} · ${day}` : "asks which class"}
@@ -98,7 +109,7 @@ function Step({
   last?: boolean;
 }) {
   return (
-    <li className={cn("relative rounded-[var(--radius-card)] border border-line bg-surface p-4 transition-colors", lit && "bg-sc-soft", className)}>
+    <li className={cn("relative rounded-[var(--radius-card)] border border-line bg-surface p-4 transition-colors", lit && "bg-sc-soft", last && "pop", className)}>
       <Icon size={18} className={lit ? "text-sc" : "text-subtle"} />
       <p className="mt-3 text-[length:var(--text-micro)] text-subtle">{k}</p>
       <p className="mt-0.5 text-[length:var(--text-small)] font-medium">{v}</p>

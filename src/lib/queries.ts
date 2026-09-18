@@ -30,7 +30,16 @@ export async function getProfile(): Promise<Profile | null> {
   } = await db.auth.getUser();
   if (!user) return null;
   const { data } = await db.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  return (data as Profile) ?? { id: user.id, display_name: null, lab_group: 2, theme: "system" };
+  return (
+    (data as Profile) ?? {
+      id: user.id,
+      display_name: null,
+      lab_group: 2,
+      theme: "system",
+      section: null,
+      must_change_password: false,
+    }
+  );
 }
 
 export async function getSubjects(): Promise<Subject[]> {
@@ -76,12 +85,11 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
 }
 
 /** Files dropped straight into the inbox — not attached to a note. */
-export async function getInboxFiles(): Promise<Attachment[]> {
+export async function getInboxFiles(subjectId?: string): Promise<Attachment[]> {
   const db = await createClient();
-  const { data, error } = await db
-    .from("attachments")
-    .select("*")
-    .is("note_id", null)
+  let q = db.from("attachments").select("*").is("note_id", null);
+  if (subjectId) q = q.eq("subject_id", subjectId);
+  const { data, error } = await q
     .order("taken_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
   if (error) return [];

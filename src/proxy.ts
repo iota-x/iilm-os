@@ -41,6 +41,23 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // A fresh account can't go anywhere until it has its own password. One
+  // small query per request; profiles is own-row-only under RLS so this
+  // is the user's own flag.
+  if (user && !pathname.startsWith("/welcome") && !pathname.startsWith("/api/")) {
+    const { data: p } = await supabase
+      .from("profiles")
+      .select("must_change_password")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (p?.must_change_password) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/welcome";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+  }
+
   if (user && pathname === "/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/";

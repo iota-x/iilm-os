@@ -209,6 +209,20 @@ export async function setLabGroup(group: 1 | 2) {
   revalidatePath("/", "layout");
 }
 
+/** First login: set your own password, then the rest of the app opens. */
+export async function setOwnPassword(password: string) {
+  if (password.length < 8) throw new Error("At least 8 characters.");
+  const { db, userId } = await uid();
+  const { error } = await db.auth.updateUser({ password });
+  if (error) throw new Error(error.message);
+  const { error: pErr } = await db
+    .from("profiles")
+    .update({ must_change_password: false })
+    .eq("id", userId);
+  if (pErr) throw new Error(pErr.message);
+  revalidatePath("/", "layout");
+}
+
 export async function setDisplayName(name: string) {
   const { db, userId } = await uid();
   await db.from("profiles").update({ display_name: name }).eq("id", userId);

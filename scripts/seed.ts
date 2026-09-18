@@ -25,10 +25,6 @@ if (!URL || !SERVICE) {
   console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local");
   process.exit(1);
 }
-if (!EMAIL) {
-  console.error("Missing SEED_EMAIL in .env.local");
-  process.exit(1);
-}
 
 const db = createClient(URL, SERVICE, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -67,32 +63,13 @@ async function getOrCreateUser(): Promise<string> {
   return data.user!.id;
 }
 
-async function main() {
-  console.log("\n\x1b[1mSeeding IILM OS\x1b[0m\n");
-
-  const userId = await getOrCreateUser();
-
-  // profile — never clobber what you've set in Settings. The display name comes
-  // from SEED_DISPLAY_NAME, else the email local-part, and only on first insert.
-  const { data: existingProfile } = await db
-    .from("profiles")
-    .select("display_name, lab_group")
-    .eq("id", userId)
-    .maybeSingle();
-
-  const fallbackName =
-    process.env.SEED_DISPLAY_NAME?.trim() || EMAIL!.split("@")[0];
-
-  const { error: profileErr } = await db.from("profiles").upsert(
-    {
-      id: userId,
-      display_name: existingProfile?.display_name ?? fallbackName,
-      lab_group: existingProfile?.lab_group ?? 2,
-    },
-    { onConflict: "id" },
-  );
-  if (profileErr) die("profile", profileErr);
-  ok(`profile (${existingProfile?.display_name ?? fallbackName})`);
+/**
+ * Everything the curriculum says, for one user: subjects, units, topics,
+ * experiments, components, strategies, books, resources, questions,
+ * timetable and exams. The personal 18-day plan is opt-in — it was written
+ * for one person's situation and shouldn't land in sixty accounts.
+ */
+export async function seedUser(userId: string, opts: { plan: boolean } = { plan: true }) {
 
   // ─── semester ─────────────────────────────────────────────────────
   const { data: sem, error: semErr } = await db
@@ -507,6 +484,7 @@ async function main() {
   ok("exams", exams.length);
 
   // ─── study plan ───────────────────────────────────────────────────
+  if (!opts.plan) return;
   await db.from("tasks").delete().eq("user_id", userId).eq("source", "plan");
   let taskCount = 0;
   for (const d of planDays) {
@@ -544,8 +522,49 @@ async function main() {
   }
   ok("plan days", planDays.length);
   ok("plan tasks", taskCount);
+}
 
+/** Make sure a profile row exists; never clobber a name or group set in Settings. */
+export async function ensureProfile(
+  userId: string,
+  defaults: { display_name: string; lab_group: 1 | 2; section?: string; must_change_password?: boolean },
+) {
+  const { data: existing } = await db
+    .from("profiles")
+    .select("display_name, lab_group")
+    .eq("id", userId)
+    .maybeSingle();
+  const { error } = await db.from("profiles").upsert(
+    {
+      id: userId,
+      display_name: existing?.display_name ?? defaults.display_name,
+      lab_group: existing?.lab_group ?? defaults.lab_group,
+      ...(defaults.section ? { section: defaults.section } : {}),
+      ...(existing ? {} : { must_change_password: defaults.must_change_password ?? false }),
+    },
+    { onConflict: "id" },
+  );
+  if (error) die("profile", error);
+  return existing?.display_name ?? defaults.display_name;
+}
+
+async function main() {
+  if (!EMAIL) {
+    console.error("Missing SEED_EMAIL in .env.local");
+    process.exit(1);
+  }
+  console.log("\n\x1b[1mSeeding IILM OS\x1b[0m\n");
+  const userId = await getOrCreateUser();
+  const name = await ensureProfile(userId, {
+    display_name: process.env.SEED_DISPLAY_NAME?.trim() || EMAIL.split("@")[0],
+    lab_group: 2,
+  });
+  ok(`profile (${name})`);
+  await seedUser(userId, { plan: true });
   console.log("\n\x1b[1m\x1b[32mDone.\x1b[0m Run `npm run dev` and sign in as " + EMAIL + "\n");
 }
 
-main().catch((e) => die("seed", e));
+// Only run as a CLI; scripts/onboard.ts imports seedUser instead.
+if (process.argv[1] && /seed\.ts$/.test(process.argv[1])) {
+  main().catch((e) => die("seed", e));
+}

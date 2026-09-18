@@ -19,6 +19,7 @@ import {
   getSubjectBySlug,
   getSubjects,
   getSlots,
+  getInboxFiles,
   getTopics,
   getUnits,
   getProfile,
@@ -26,6 +27,8 @@ import {
 import { TopicRow } from "@/components/subject/topic-row";
 import { ExperimentRow } from "@/components/subject/experiment-row";
 import { MarksTable } from "@/components/subject/marks-table";
+import { PhotoWall } from "@/components/subject/photo-wall";
+import { Camera } from "lucide-react";
 import { FindMore } from "@/components/subject/find-more";
 import { ResourceList } from "@/components/resource-list";
 import { QuickAdd } from "@/components/quick-add";
@@ -35,7 +38,7 @@ import { ACCENT_CLASS, cn, fmtTime, progressOf, relativeDay } from "@/lib/utils"
 
 export const dynamic = "force-dynamic";
 
-const TABS = ["syllabus", "strategy", "resources", "notes", "marks", "lab"] as const;
+const TABS = ["syllabus", "strategy", "resources", "notes", "photos", "marks", "lab"] as const;
 type Tab = (typeof TABS)[number];
 
 export default async function SubjectPage({
@@ -64,6 +67,7 @@ export default async function SubjectPage({
     notes,
     slots,
     profile,
+    photos,
   ] = await Promise.all([
     getSubjects(),
     getUnits(subject.id),
@@ -77,6 +81,7 @@ export default async function SubjectPage({
     getNotes({ subjectId: subject.id }),
     getSlots(),
     getProfile(),
+    getInboxFiles(subject.id),
   ]);
 
   const hasLab = subject.has_lab && experiments.length > 0;
@@ -100,6 +105,7 @@ export default async function SubjectPage({
     { key: "strategy", label: "Strategy", count: strategies.length || undefined },
     { key: "resources", label: "Resources", count: resources.length || undefined },
     { key: "notes", label: "Notes", count: notes.length || undefined },
+    { key: "photos", label: "Photos", count: photos.length || undefined },
     { key: "marks", label: "Marks" },
     ...(hasLab ? [{ key: "lab" as Tab, label: "Lab", count: experiments.length }] : []),
   ];
@@ -437,6 +443,20 @@ export default async function SubjectPage({
             )}
           </Card>
         </div>
+      ) : null}
+
+      {tab === "photos" ? (
+        photos.length ? (
+          <PhotoWall files={photos} slots={slots} topics={topics} />
+        ) : (
+          <Card>
+            <Empty
+              icon={<Camera size={26} strokeWidth={1.5} />}
+              title="No photos for this subject yet"
+              body="Share board photos from your phone and the ones taken during this subject's classes will appear here, one row per lecture."
+            />
+          </Card>
+        )
       ) : null}
 
       {tab === "marks" ? (

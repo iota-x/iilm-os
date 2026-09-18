@@ -43,3 +43,6 @@ next-env.d.ts
 # class material dropped in for Claude to read — not part of the app
 /inbox/*
 !/inbox/README.md
+
+# sixty classmates' names and emails — never committed
+scripts/roster.csv

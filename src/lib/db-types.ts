@@ -15,6 +15,8 @@ export interface Profile {
   display_name: string | null;
   lab_group: 1 | 2;
   theme: string;
+  section: string | null;
+  must_change_password: boolean;
 }
 
 export interface Subject {

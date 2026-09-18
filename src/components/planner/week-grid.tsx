@@ -23,9 +23,12 @@ const FREE_FLOOR_MIN = 60;
 export function WeekGrid({
   slots,
   subjects,
+  dense = false,
 }: {
   slots: Slot[];
   subjects: Subject[];
+  /** narrower columns, no room numbers — for when the grid is a picture, not a tool */
+  dense?: boolean;
 }) {
   const subjectById = new Map(subjects.map((s) => [s.id, s]));
 
@@ -43,7 +46,7 @@ export function WeekGrid({
 
   return (
     <div className="overflow-x-auto">
-      <div className="min-w-[820px]">
+      <div className={dense ? "min-w-[600px]" : "min-w-[820px]"}>
         {/* day names */}
         <div className="grid grid-cols-[46px_repeat(5,1fr)] border-b border-line">
           <div />
@@ -125,7 +128,7 @@ export function WeekGrid({
                   const subject = s.subject_id ? subjectById.get(s.subject_id) : null;
                   const start = toMinutes(s.start_time);
                   const mins = toMinutes(s.end_time) - start;
-                  const tight = mins < ROOM_FLOOR_MIN;
+                  const tight = dense || mins < ROOM_FLOOR_MIN;
                   return (
                     <Link
                       key={s.id}

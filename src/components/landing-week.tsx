@@ -30,7 +30,7 @@ export function LandingWeek({ slots, subjects }: { slots: Slot[]; subjects: Subj
           ))}
         </div>
       </div>
-      <WeekGrid slots={mine} subjects={subjects} />
+      <WeekGrid slots={mine} subjects={subjects} dense />
     </div>
   );
 }

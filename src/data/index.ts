@@ -97,6 +97,17 @@ export const exams: SeedExam[] = [
     scope: "Units 1, 2, 3 & 4 — conceptual, analytical and application-based questions. CO1, CO2.",
   },
   {
+    key: "ct1-deco",
+    name: "DE+CO — Class Test on K-maps",
+    kind: "class_test",
+    subject: "digital-electronics",
+    date: "2026-09-21",
+    window: null,
+    maxMarks: 10,
+    weightage: 10,
+    scope: "Karnaugh maps — plotting from Σm/ΠM, grouping with wrap-around, don't-cares, essential prime implicants, minimal SOP and POS. Marks assume the standard 10-mark class test; unconfirmed.",
+  },
+  {
     key: "mse-deco",
     name: "Digital Electronics & Computer Organization — Mid-Term",
     kind: "mse",

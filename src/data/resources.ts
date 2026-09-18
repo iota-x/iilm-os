@@ -462,4 +462,47 @@ export const resources: SeedResource[] = [
     rank: 3,
     why: "Topic-wise written notes covering number systems, Boolean algebra, K-maps, combinational and sequential circuits. Good for revision once you know the scope.",
   },
+
+  // ══════════════════════════════════════════════════════════
+  // DE+CO — K-maps (class test Mon 21 Sept)
+  // ══════════════════════════════════════════════════════════
+  {
+    target: "deco-u1-kmap",
+    title: "Neso Academy — Digital Electronics playlist (Karnaugh map lectures)",
+    url: "https://www.youtube.com/playlist?list=PLBlnK6fEyqRjMH3mWf6kwqiTbT798eAOm",
+    kind: "playlist",
+    source: "Neso Academy",
+    rank: 1,
+    why: "The standard Indian-engineering treatment, and it matches how the topic is taught in class: 2-variable, 3-variable, 4-variable maps, then don't-cares and POS, each with worked examples. Search the playlist for \"K-Map\" — the run of lectures is contiguous.",
+  },
+  {
+    target: "deco-u1-kmap",
+    title: "Karnaugh Map Solver",
+    url: "https://charlie-coleman.com/experiments/kmap/",
+    kind: "tool",
+    source: "charlie-coleman.com",
+    rank: 2,
+    minutes: 5,
+    why: "Type the minterms and don't-cares, it draws the map and the minimal SOP/POS. Use it to mark your own practice answers — do the map by hand first, then check.",
+  },
+  {
+    target: "deco-u1-kmap",
+    title: "Introduction of K-Map (Karnaugh Map)",
+    url: "https://www.geeksforgeeks.org/digital-logic/introduction-of-k-map-karnaugh-map/",
+    kind: "article",
+    source: "GeeksforGeeks",
+    rank: 3,
+    minutes: 15,
+    why: "Compact written reference for the rules — Gray-code ordering, grouping sizes, wrap-around — with SOP and POS examples. Good the night before, not as the first read.",
+  },
+  {
+    target: "deco-u1-implicants",
+    title: "Karnaugh Maps, Truth Tables, and Boolean Expressions",
+    url: "https://www.allaboutcircuits.com/textbook/digital/chpt-8/karnaugh-maps-truth-tables-boolean-expressions/",
+    kind: "article",
+    source: "All About Circuits",
+    rank: 1,
+    minutes: 40,
+    why: "The chapter that explains *why* adjacent cells differ in one bit and why that lets a group drop a variable — which is what prime and essential prime implicants rest on. Read this if grouping feels like guessing.",
+  },
 ];

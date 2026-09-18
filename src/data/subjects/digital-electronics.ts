@@ -8,7 +8,7 @@ export const digitalElectronics: SeedSubject = {
   credits: 3,
   ltpc: "3-0-2-4",
   color: "orange",
-  status: "empty",
+  status: "partial",
   teacher: "Dr Puja Acharya",
   labTeacher: "Dr. Sambhavi",
   hasLab: true,
@@ -16,12 +16,94 @@ export const digitalElectronics: SeedSubject = {
   labCode: null,
   labLtpc: "0-0-2-1",
   overview:
-    "No material yet. You have three lectures and one lab a week for this subject and nothing in your folder — this is the biggest gap in your semester, not the smallest.",
-  midsemScope: "Unknown. Get the course plan.",
+    "Still no course plan. What is known: the class is on Karnaugh maps right now, and there is a class test on them on Monday 21 September. Unit 1 below is reconstructed backwards from that — Boolean algebra is what K-maps minimise, canonical forms are what you draw them from — and is the only part of this subject with any structure yet. Three lectures and a two-hour lab a week.",
+  midsemScope: "Unknown until the course plan arrives. Unit 1 as listed will be in it whatever the plan says.",
   midsemConfirmed: false,
   objectives: [],
   outcomes: [],
-  units: [],
+  units: [
+    {
+      // Reconstructed, not from a course plan: the class test on Monday 21 Sept
+      // is on K-maps, so this unit is the material a K-map test requires,
+      // in the order it has to be learned. Replace when the plan arrives.
+      number: 1,
+      title: "Boolean Algebra and Logic Minimisation (reconstructed)",
+      sessions: 0,
+      co: "Unknown",
+      assessment: "Class test on K-maps — Mon 21 Sept",
+      inMidsem: true,
+      topics: [
+        {
+          code: "deco-u1-boolean",
+          session: "—",
+          title: "Boolean algebra: laws, theorems and De Morgan",
+          weight: 4,
+          inMidsem: true,
+          outcome:
+            "Simplify a Boolean expression by hand using the identities, and apply De Morgan's theorems in both directions.",
+        },
+        {
+          code: "deco-u1-gates",
+          session: "—",
+          title: "Logic gates and truth tables; NAND and NOR as universal gates",
+          weight: 3,
+          inMidsem: true,
+          outcome: "Write the truth table for any gate and build any gate from NAND alone.",
+        },
+        {
+          code: "deco-u1-canonical",
+          session: "—",
+          title: "Minterms, maxterms, and canonical SOP and POS forms",
+          weight: 4,
+          inMidsem: true,
+          outcome:
+            "Convert between a truth table, Σm(...) / ΠM(...) notation, and a canonical expression without error.",
+        },
+        {
+          code: "deco-u1-kmap",
+          session: "—",
+          title: "Karnaugh maps: 2, 3 and 4 variables",
+          weight: 5,
+          inMidsem: true,
+          outcome:
+            "Lay out the Gray-code ordered map, plot the minterms, group in powers of two including wrap-around, and read off the minimal SOP.",
+        },
+        {
+          code: "deco-u1-kmap-pos",
+          session: "—",
+          title: "POS minimisation with K-maps (grouping the zeros)",
+          weight: 4,
+          inMidsem: true,
+          outcome: "Produce the minimal POS from the same map, and know when it beats the SOP.",
+        },
+        {
+          code: "deco-u1-kmap-dontcare",
+          session: "—",
+          title: "Don't-care conditions",
+          weight: 4,
+          inMidsem: true,
+          outcome: "Use X cells to enlarge a group only when it shortens the result.",
+        },
+        {
+          code: "deco-u1-implicants",
+          session: "—",
+          title: "Prime implicants, essential prime implicants and redundant groups",
+          weight: 4,
+          inMidsem: true,
+          outcome:
+            "Identify every essential prime implicant first, then cover what remains with the fewest extra groups — and explain why a group is redundant.",
+        },
+        {
+          code: "deco-u1-kmap5",
+          session: "—",
+          title: "5-variable K-maps (two 4-variable maps)",
+          weight: 2,
+          inMidsem: true,
+          outcome: "Extend the method to five variables using two stacked maps.",
+        },
+      ],
+    },
+  ],
   experiments: [],
   components: [
     {
@@ -63,6 +145,18 @@ export const digitalElectronics: SeedSubject = {
   ],
   strategies: [
     {
+      title: "Monday's test — what a K-map question actually asks",
+      body: `A K-map question almost always comes as **F(A,B,C,D) = Σm(0, 2, 5, 7, 8, 10, 13, 15)**, sometimes with **+ d(...)** for don't-cares, and asks for the minimal SOP (or POS). The marks are for the *method*, so show all of it:
+
+1. Draw the 4×4 map with **Gray code** ordering on both axes (00, 01, 11, 10 — never 00, 01, 10, 11). Getting this wrong loses every mark after it.
+2. Plot 1s at the minterms, X at the don't-cares, 0 elsewhere.
+3. Group in powers of two — 1, 2, 4, 8, 16 — as large as possible, edges wrap around, corners are a group of four.
+4. Mark the **essential** prime implicants first (a 1 covered by exactly one group), then cover the leftovers with the fewest groups.
+5. Write each group as a product term: variables that don't change across the group survive, the rest drop.
+
+Practise until step 1 is automatic. Then do ten timed ones; the solver link under Resources checks your answers.`,
+    },
+    {
       title: "Read this one first — this is your actual emergency",
       body: `You told me to leave this blank because you have no resources for it. Here's why that's the wrong call.
 
@@ -103,7 +197,7 @@ Don't build notes deep on this guess. Build on number systems, K-maps and Boolea
   references: [],
   localFiles: [],
   gaps: [
-    "Everything. No course plan, no syllabus, no units, no slides, no lab experiment list, no course code.",
+    "The course plan. Unit 1 above is reconstructed from the fact that the class is on K-maps — the real unit list, session plan, mid-sem scope, marking scheme and course code are all still unknown.",
     "There is a lab (Thursday 14:00–16:10, Lab 7-B2-104, Dr. Sambhavi) with a lab file you have no record of.",
     "You started a month late — find out how many lectures and lab sessions have already happened.",
   ],

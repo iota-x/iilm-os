@@ -9,7 +9,8 @@
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
     "typecheck": "tsc --noEmit",
-    "pull": "tsx scripts/pull-notes.ts"
+    "pull": "tsx scripts/pull-notes.ts",
+    "intake": "tsx scripts/intake.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.56",

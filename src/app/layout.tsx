@@ -29,9 +29,41 @@ const sans = Inter({
   display: "swap",
 });
 
+const SITE = "https://iilm-os.vercel.app";
+const DESCRIPTION =
+  "Section E's semester in one place: every syllabus from the course plans, the mid-sem scope for each, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
+
 export const metadata: Metadata = {
-  title: "IILM OS",
-  description: "Syllabus, notes, planner and resources for B.Tech CSE Semester I.",
+  metadataBase: new URL(SITE),
+  title: {
+    default: "IILM OS",
+    template: "%s · IILM OS",
+  },
+  description: DESCRIPTION,
+  applicationName: "IILM OS",
+  openGraph: {
+    type: "website",
+    siteName: "IILM OS",
+    title: "IILM OS — Section E's semester, in one place",
+    description: DESCRIPTION,
+    url: SITE,
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IILM OS — Section E's semester, in one place",
+    description: DESCRIPTION,
+    creator: "@iota_xx",
+  },
+  // icon files under app/ are picked up automatically; this pins the order
+  // Safari and older browsers fall back through.
+  icons: {
+    icon: [
+      { url: "/icon1.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon0.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-icon",
+  },
 };
 
 export const viewport: Viewport = {

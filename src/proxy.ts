@@ -3,7 +3,19 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // manifest, icons and the service worker have to load before sign-in, or
 // Android can't install the app.
-const PUBLIC = ["/login", "/auth", "/landing", "/manifest.webmanifest", "/sw.js", "/api/pwa-icon", "/api/signup"];
+const PUBLIC = [
+  "/login",
+  "/auth",
+  "/landing",
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/api/pwa-icon",
+  "/api/signup",
+  "/opengraph-image",
+  "/twitter-image",
+  "/apple-icon",
+  "/icon",
+];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

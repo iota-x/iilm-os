@@ -95,44 +95,74 @@ async function namesFor(db: Awaited<ReturnType<typeof createClient>>, ids: strin
   return new Map((data ?? []).map((m) => [m.id as string, (m.display_name as string) || "Someone"]));
 }
 
-export async function getPosts(subjectSlug?: string): Promise<Post[]> {
+export async function getPosts(subjectSlug?: string, sort: "new" | "helpful" = "new"): Promise<Post[]> {
   const db = await createClient();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
   let q = db
     .from("posts")
-    .select("*, replies(count)")
+    .select("*, replies(count), post_votes(count)")
     .order("pinned", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(200);
   if (subjectSlug) q = q.eq("subject_slug", subjectSlug);
-  const { data, error } = await q;
+  const [{ data, error }, { data: mine }] = await Promise.all([
+    q,
+    user ? db.from("post_votes").select("post_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+  ]);
   if (error || !data) return [];
+  const voted = new Set((mine ?? []).map((v) => v.post_id as string));
   const names = await namesFor(db, [...new Set(data.map((p) => p.user_id as string))]);
-  return data.map((p) => ({
-    ...(p as Omit<Post, "author" | "reply_count">),
-    author: names.get(p.user_id as string) ?? "Someone",
-    reply_count: ((p as { replies?: { count: number }[] }).replies?.[0]?.count ?? 0) as number,
+  type Row = Omit<Post, "author" | "reply_count" | "helpful" | "mine"> & {
+    replies?: { count: number }[];
+    post_votes?: { count: number }[];
+  };
+  const posts = (data as Row[]).map((p) => ({
+    ...p,
+    author: names.get(p.user_id) ?? "Someone",
+    reply_count: p.replies?.[0]?.count ?? 0,
+    helpful: p.post_votes?.[0]?.count ?? 0,
+    mine: voted.has(p.id),
   }));
+  if (sort === "helpful") {
+    posts.sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.helpful - a.helpful || b.created_at.localeCompare(a.created_at));
+  }
+  return posts;
 }
 
 export async function getPost(id: string): Promise<{ post: Post; replies: Reply[] } | null> {
   const db = await createClient();
-  const [{ data: p }, { data: rs }] = await Promise.all([
-    db.from("posts").select("*").eq("id", id).maybeSingle(),
-    db.from("replies").select("*").eq("post_id", id).order("created_at"),
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  const [{ data: p }, { data: rs }, { data: pv }, { data: rv }] = await Promise.all([
+    db.from("posts").select("*, post_votes(count)").eq("id", id).maybeSingle(),
+    db.from("replies").select("*, reply_votes(count)").eq("post_id", id).order("created_at"),
+    user ? db.from("post_votes").select("post_id").eq("user_id", user.id).eq("post_id", id) : Promise.resolve({ data: [] }),
+    user ? db.from("reply_votes").select("reply_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
   ]);
   if (!p) return null;
+  const myReplyVotes = new Set((rv ?? []).map((v) => v.reply_id as string));
   const names = await namesFor(db, [
     ...new Set([p.user_id as string, ...(rs ?? []).map((r) => r.user_id as string)]),
   ]);
+  type PRow = Omit<Post, "author" | "reply_count" | "helpful" | "mine"> & { post_votes?: { count: number }[] };
+  type RRow = Omit<Reply, "author" | "helpful" | "mine"> & { reply_votes?: { count: number }[] };
+  const post = p as PRow;
   return {
     post: {
-      ...(p as Omit<Post, "author" | "reply_count">),
-      author: names.get(p.user_id as string) ?? "Someone",
+      ...post,
+      author: names.get(post.user_id) ?? "Someone",
       reply_count: rs?.length ?? 0,
+      helpful: post.post_votes?.[0]?.count ?? 0,
+      mine: (pv ?? []).length > 0,
     },
-    replies: (rs ?? []).map((r) => ({
-      ...(r as Omit<Reply, "author">),
-      author: names.get(r.user_id as string) ?? "Someone",
+    replies: ((rs ?? []) as RRow[]).map((r) => ({
+      ...r,
+      author: names.get(r.user_id) ?? "Someone",
+      helpful: r.reply_votes?.[0]?.count ?? 0,
+      mine: myReplyVotes.has(r.id),
     })),
   };
 }

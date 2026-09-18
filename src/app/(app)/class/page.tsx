@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MessageSquare, Pin } from "lucide-react";
 import { getPosts, getSubjects } from "@/lib/queries";
 import { NewPost } from "@/components/class/new-post";
+import { Helpful } from "@/components/class/helpful";
 import { Badge, Card, Empty } from "@/components/ui";
 import { ACCENT_CLASS, cn, relativeDay } from "@/lib/utils";
 import type { PostKind } from "@/lib/db-types";
@@ -24,10 +25,20 @@ const KIND_TONE: Record<PostKind, "neutral" | "accent" | "good" | "warn"> = {
 export default async function ClassPage({
   searchParams,
 }: {
-  searchParams: Promise<{ subject?: string }>;
+  searchParams: Promise<{ subject?: string; sort?: string }>;
 }) {
-  const { subject } = await searchParams;
-  const [posts, subjects] = await Promise.all([getPosts(subject), getSubjects()]);
+  const { subject, sort: rawSort } = await searchParams;
+  const sort = rawSort === "helpful" ? "helpful" : "new";
+  const [posts, subjects] = await Promise.all([getPosts(subject, sort), getSubjects()]);
+  const link = (o: { subject?: string; sort?: string }) => {
+    const q = new URLSearchParams();
+    const sub = o.subject ?? subject;
+    const so = o.sort ?? sort;
+    if (sub) q.set("subject", sub);
+    if (so !== "new") q.set("sort", so);
+    const qs = q.toString();
+    return `/class${qs ? `?${qs}` : ""}`;
+  };
   const bySlug = new Map(subjects.map((s) => [s.slug, s]));
 
   return (
@@ -43,21 +54,37 @@ export default async function ClassPage({
         <NewPost subjects={subjects} defaultSubject={subject ?? ""} />
       </div>
 
-      {/* subject filter */}
-      <div className="flex flex-wrap gap-1.5">
-        <FilterChip href="/class" active={!subject}>
-          Everything
-        </FilterChip>
-        {subjects.map((s) => (
-          <FilterChip
-            key={s.id}
-            href={`/class?subject=${s.slug}`}
-            active={subject === s.slug}
-            className={ACCENT_CLASS[s.color]}
-          >
-            {s.short_name}
+      {/* subject filter + sort */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-1.5">
+          <FilterChip href={link({ subject: "" })} active={!subject}>
+            Everything
           </FilterChip>
-        ))}
+          {subjects.map((s) => (
+            <FilterChip
+              key={s.id}
+              href={link({ subject: s.slug })}
+              active={subject === s.slug}
+              className={ACCENT_CLASS[s.color]}
+            >
+              {s.short_name}
+            </FilterChip>
+          ))}
+        </div>
+        <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
+          {(["new", "helpful"] as const).map((k) => (
+            <Link
+              key={k}
+              href={link({ sort: k })}
+              className={cn(
+                "rounded-[7px] px-2.5 py-1 text-[length:var(--text-micro)] font-medium transition-colors focus-ring",
+                sort === k ? "bg-surface text-fg shadow-card" : "text-subtle hover:text-fg",
+              )}
+            >
+              {k === "new" ? "Newest" : "Most helpful"}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {posts.length ? (
@@ -91,8 +118,11 @@ export default async function ClassPage({
                         {relativeDay(p.created_at.slice(0, 10))}
                       </p>
                     </div>
-                    <span className="flex shrink-0 items-center gap-1 pt-1 text-[length:var(--text-micro)] tabular-nums text-subtle">
-                      <MessageSquare size={13} /> {p.reply_count}
+                    <span className="flex shrink-0 items-center gap-2 pt-0.5">
+                      <Helpful target="post" id={p.id} count={p.helpful} mine={p.mine} />
+                      <span className="flex items-center gap-1 text-[length:var(--text-micro)] tabular-nums text-subtle">
+                        <MessageSquare size={13} /> {p.reply_count}
+                      </span>
                     </span>
                   </Link>
                 </li>

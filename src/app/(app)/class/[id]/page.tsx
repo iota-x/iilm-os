@@ -5,6 +5,7 @@ import { getPost, getProfile, getSubjects } from "@/lib/queries";
 import { Markdown } from "@/components/markdown";
 import { Replies } from "@/components/class/replies";
 import { DeletePost } from "@/components/class/delete-post";
+import { Helpful } from "@/components/class/helpful";
 import { Badge, Card } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtDate } from "@/lib/utils";
 
@@ -55,11 +56,10 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <Markdown>{post.body}</Markdown>
           </div>
         ) : null}
-        {mine ? (
-          <div className="mt-4 border-t border-line pt-3">
-            <DeletePost id={post.id} />
-          </div>
-        ) : null}
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
+          <Helpful target="post" id={post.id} count={post.helpful} mine={post.mine} size="md" />
+          {mine ? <DeletePost id={post.id} /> : null}
+        </div>
       </Card>
 
       <Replies postId={post.id} replies={replies} meId={profile?.id ?? null} />

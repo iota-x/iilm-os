@@ -8,6 +8,7 @@ import { createReply, deleteReply } from "@/lib/actions";
 import type { Reply } from "@/lib/db-types";
 import { Markdown } from "@/components/markdown";
 import { Button, Card, CardHead, inputCls } from "@/components/ui";
+import { Helpful } from "@/components/class/helpful";
 import { cn, fmtDate } from "@/lib/utils";
 
 export function Replies({ postId, replies, meId }: { postId: string; replies: Reply[]; meId: string | null }) {
@@ -51,6 +52,9 @@ export function Replies({ postId, replies, meId }: { postId: string; replies: Re
               </div>
               <div className="prose-note mt-1 text-[length:var(--text-small)]">
                 <Markdown>{r.body}</Markdown>
+              </div>
+              <div className="mt-2">
+                <Helpful target="reply" id={r.id} count={r.helpful} mine={r.mine} />
               </div>
             </li>
           ))}

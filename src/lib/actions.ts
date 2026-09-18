@@ -625,3 +625,19 @@ export async function deleteReply(id: string, postId: string) {
   if (error) throw new Error(error.message);
   revalidatePath(`/class/${postId}`);
 }
+
+/** Toggle "helpful" on a post or a reply. Returns the new state. */
+export async function toggleHelpful(target: "post" | "reply", id: string): Promise<boolean> {
+  const { db, userId } = await uid();
+  const table = target === "post" ? "post_votes" : "reply_votes";
+  const col = target === "post" ? "post_id" : "reply_id";
+  const { data: existing } = await db.from(table).select(col).eq(col, id).eq("user_id", userId).maybeSingle();
+  if (existing) {
+    const { error } = await db.from(table).delete().eq(col, id).eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return false;
+  }
+  const { error } = await db.from(table).insert({ [col]: id, user_id: userId });
+  if (error) throw new Error(error.message);
+  return true;
+}

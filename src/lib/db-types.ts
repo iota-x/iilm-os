@@ -300,6 +300,9 @@ export interface Post {
   /** joined from member_names */
   author: string;
   reply_count: number;
+  helpful: number;
+  /** the current viewer marked it helpful */
+  mine: boolean;
 }
 export interface Reply {
   id: string;
@@ -308,4 +311,6 @@ export interface Reply {
   body: string;
   created_at: string;
   author: string;
+  helpful: number;
+  mine: boolean;
 }

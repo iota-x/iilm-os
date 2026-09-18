@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, Clock, MapPin, Repeat2 } from "lucide-react";
+import { AlertTriangle, ArrowRight, Clock, MapPin } from "lucide-react";
 import {
   getProfile,
   getSubjects,
@@ -15,7 +15,7 @@ import { getAttendance, getClassMarks } from "@/lib/queries";
 import { dueForReview, reviewStateOf } from "@/lib/review";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
-import { Badge, Bar, Card, CardHead, Ring } from "@/components/ui";
+import { Badge, Card, CardHead, Ring } from "@/components/ui";
 import {
   ACCENT_CLASS,
   cn,
@@ -48,7 +48,6 @@ export default async function Dashboard() {
   const group = profile?.lab_group ?? 2;
 
   const due = dueForReview(topics);
-  const dueMidsem = due.filter((d) => d.topic.in_midsem).length;
   const soon = topics.filter((t) => reviewStateOf(t).bucket === "soon").length;
 
   const [classMarks, attendanceBaseline] = await Promise.all([getClassMarks(), getAttendance()]);
@@ -96,149 +95,107 @@ export default async function Dashboard() {
   return (
     <div className="space-y-6">
       {/* ── header ─────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight">
+          <h1 className="text-[length:var(--text-page)]">
             {greeting()}
             {profile?.display_name ? `, ${profile.display_name}` : ""}
           </h1>
-          <p className="text-[13px] text-muted mt-0.5">
+          <p className="mt-1 text-[length:var(--text-small)] text-muted">
             {new Date(today + "T00:00:00+05:30").toLocaleDateString("en-GB", {
               weekday: "long",
               day: "numeric",
               month: "long",
               timeZone: "Asia/Kolkata",
             })}
-            {plan?.headline ? <> · {plan.headline}</> : null}
+            {plan?.headline ? <span className="text-subtle"> — {plan.headline}</span> : null}
+          </p>
+          {plan?.phase ? (
+            <p className="mt-2">
+              <Badge tone="accent">{phaseLabel(plan.phase)}</Badge>
+            </p>
+          ) : null}
+          <p className="hidden">
           </p>
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
       </div>
 
-      {/* ── review queue ───────────────────────────────────── */}
-      {due.length ? (
-        <Link href="/review" className="block focus-ring rounded-[14px]">
-          <Card className="overflow-hidden transition-colors hover:bg-surface-2/40">
-            <div className="flex items-center gap-3.5 px-4 py-3.5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
-                <Repeat2 size={17} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13.5px] font-semibold leading-tight">
-                  {due.length} topic{due.length === 1 ? "" : "s"} due for review
-                </p>
-                <p className="mt-0.5 text-[12px] leading-tight text-muted">
-                  {dueMidsem ? `${dueMidsem} in the mid-sem scope · ` : ""}
-                  {due[0].review.daysUntilDue !== null && due[0].review.daysUntilDue < 0
-                    ? `oldest is ${-due[0].review.daysUntilDue} day${due[0].review.daysUntilDue === -1 ? "" : "s"} overdue`
-                    : "all due today"}
-                  {soon ? ` · ${soon} more within 2 days` : ""}
-                </p>
-              </div>
-              <ArrowRight size={15} className="shrink-0 text-subtle" />
-            </div>
-          </Card>
-        </Link>
-      ) : null}
+      {/* ── the four numbers worth glancing at ─────────────── */}
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] bg-[var(--border)] shadow-card sm:grid-cols-4 dark:shadow-none">
+        <Figure
+          value={String(left)}
+          unit="days"
+          label="to mid-sems"
+          note="5–11 Oct, unconfirmed"
+          href="/exams"
+        />
+        <Figure
+          value={`${Math.round(overallMidsem * 100)}%`}
+          label="of the mid-sem syllabus"
+          note={`${topics.filter((t) => t.in_midsem && t.status !== "not_started").length} of ${topics.filter((t) => t.in_midsem).length} topics started`}
+          href="/subjects"
+        />
+        <Figure
+          value={`${doneToday}/${todayTasks.length}`}
+          label="blocks done today"
+          note={
+            plannedMin
+              ? `${Math.round((doneMin / 60) * 10) / 10}h of ${Math.round((plannedMin / 60) * 10) / 10}h planned`
+              : "nothing planned"
+          }
+          href="/planner"
+        />
+        <Figure
+          value={due.length ? String(due.length) : "—"}
+          label={due.length === 1 ? "topic due to review" : "topics due to review"}
+          note={
+            due.length
+              ? due[0].review.daysUntilDue !== null && due[0].review.daysUntilDue < 0
+                ? `oldest ${-due[0].review.daysUntilDue} days overdue`
+                : "all due today"
+              : soon
+                ? `${soon} coming up within 2 days`
+                : "nothing scheduled"
+          }
+          href="/review"
+          emphasis={due.length > 0}
+        />
+      </div>
 
       {atRisk.length ? (
-        <Link href="/attendance" className="block rounded-[14px] focus-ring">
-          <Card className="overflow-hidden border-[var(--warn)]/35 transition-colors hover:bg-surface-2/40">
-            <div className="flex items-center gap-3 px-4 py-2.5">
-              <AlertTriangle size={15} className="shrink-0 text-[var(--warn)]" />
-              <p className="min-w-0 flex-1 text-[12.5px]">
-                <span className="font-medium">
-                  {atRisk.map((r) => r.subject.short_name).join(", ")}
-                </span>{" "}
-                <span className="text-muted">
-                  below 75% — {atRisk[0].needToAttend} in a row to fix the worst of it
-                </span>
-              </p>
-              <ArrowRight size={14} className="shrink-0 text-subtle" />
-            </div>
-          </Card>
+        <Link
+          href="/attendance"
+          className="flex items-center gap-2.5 rounded-[var(--radius-control)] px-1 py-1 text-[length:var(--text-small)] focus-ring"
+        >
+          <AlertTriangle size={15} className="shrink-0 text-[var(--warn)]" />
+          <span className="min-w-0 flex-1">
+            <span className="font-medium">{atRisk.map((r) => r.subject.short_name).join(", ")}</span>{" "}
+            <span className="text-muted">
+              below 75%. {atRisk[0].needToAttend} classes in a row fixes the worst of it.
+            </span>
+          </span>
+          <ArrowRight size={14} className="shrink-0 text-subtle" />
         </Link>
       ) : null}
 
-      {/* ── countdown strip ────────────────────────────────── */}
-      <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-4 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Ring value={Math.max(0, Math.min(1, 1 - left / 18))} size={48} label={String(left)} />
-            <div>
-              <p className="text-[13px] font-semibold leading-tight">days to mid-sems</p>
-              <p className="text-[12px] text-muted leading-tight mt-0.5">
-                5–11 Oct · unconfirmed
-              </p>
-            </div>
-          </div>
-
-          <div className="h-9 w-px bg-[var(--border)] hidden sm:block" />
-
-          <div>
-            <p className="text-[12px] text-muted">Mid-sem syllabus covered</p>
-            <div className="flex items-center gap-2.5 mt-1.5">
-              <Bar value={overallMidsem} tone="accent" className="w-28" />
-              <span className="text-[13px] font-semibold tabular-nums">
-                {Math.round(overallMidsem * 100)}%
-              </span>
-            </div>
-          </div>
-
-          <div className="h-9 w-px bg-[var(--border)] hidden sm:block" />
-
-          <div>
-            <p className="text-[12px] text-muted">Today</p>
-            <p className="text-[13px] font-semibold mt-1 tabular-nums">
-              {doneToday}/{todayTasks.length} blocks
-              {plannedMin ? (
-                <span className="text-muted font-normal">
-                  {" · "}
-                  {Math.round(doneMin / 60 * 10) / 10}h of {Math.round(plannedMin / 60 * 10) / 10}h
-                </span>
-              ) : null}
-            </p>
-          </div>
-
-          {plan?.phase ? (
-            <div className="ml-auto">
-              <Badge tone="accent">{phaseLabel(plan.phase)}</Badge>
-            </div>
-          ) : null}
-        </div>
-        {plan?.note ? (
-          <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[12.5px] text-muted leading-relaxed">
-            {plan.note}
-          </p>
-        ) : null}
-      </Card>
-
-      {/* ── gaps warning ───────────────────────────────────── */}
+      {/* ── what's missing ─────────────────────────────────── */}
       {gapSubjects.length ? (
-        <Card className="border-[var(--warn)]/35">
-          <div className="flex gap-3 px-4 py-3">
-            <AlertTriangle size={16} className="text-[var(--warn)] shrink-0 mt-0.5" />
-            <div className="min-w-0">
-              <p className="text-[13px] font-semibold">
-                {gapSubjects.length} subject{gapSubjects.length > 1 ? "s" : ""} missing material
-              </p>
-              <p className="text-[12.5px] text-muted mt-0.5 leading-relaxed">
-                {gapSubjects.map((s, i) => (
-                  <span key={s.id}>
-                    {i > 0 ? " · " : ""}
-                    <Link
-                      href={`/subjects/${s.slug}`}
-                      className="underline underline-offset-2 hover:text-fg"
-                    >
-                      {s.short_name}
-                    </Link>{" "}
-                    <span className="text-subtle">({s.gaps.length})</span>
-                  </span>
-                ))}
-              </p>
-            </div>
-          </div>
-        </Card>
+        <p className="text-[length:var(--text-small)] leading-relaxed text-muted">
+          Still waiting on course material for{" "}
+          {gapSubjects.map((s, i) => (
+            <span key={s.id}>
+              {i > 0 ? (i === gapSubjects.length - 1 ? " and " : ", ") : ""}
+              <Link
+                href={`/subjects/${s.slug}`}
+                className="text-fg underline decoration-[var(--border-strong)] underline-offset-2 hover:decoration-current"
+              >
+                {s.short_name}
+              </Link>
+            </span>
+          ))}
+          .
+        </p>
       ) : null}
 
       <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] items-start">
@@ -472,4 +429,44 @@ function phaseLabel(p: string) {
       exams: "Exam week",
     } as Record<string, string>
   )[p] ?? p;
+}
+
+/** One number, its unit, and the line of context that makes it mean something. */
+function Figure({
+  value,
+  unit,
+  label,
+  note,
+  href,
+  emphasis,
+}: {
+  value: string;
+  unit?: string;
+  label: string;
+  note?: string;
+  href: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group bg-surface px-4 py-4 transition-colors hover:bg-surface-2 focus-ring"
+    >
+      <p
+        className={cn(
+          "font-serif text-[length:var(--text-figure)] leading-none tabular-nums",
+          emphasis ? "text-[var(--accent)]" : "text-fg",
+        )}
+      >
+        {value}
+        {unit ? (
+          <span className="ml-1.5 align-baseline text-[length:var(--text-small)] font-sans text-subtle">
+            {unit}
+          </span>
+        ) : null}
+      </p>
+      <p className="mt-2.5 text-[length:var(--text-small)] text-fg">{label}</p>
+      {note ? <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">{note}</p> : null}
+    </Link>
+  );
 }

@@ -184,7 +184,7 @@ export function Sidebar({
         </ul>
 
         <div className="mt-4 mb-1 flex items-center justify-between px-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle">
+          <span className="text-[length:var(--text-micro)] font-medium text-subtle">
             Subjects
           </span>
           <Link
@@ -266,7 +266,7 @@ export function Sidebar({
                             className="mt-1.5 flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-ring"
                             title={`Unit ${unit.number} — ${unit.title}`}
                           >
-                            <span className="text-[10px] font-semibold uppercase tracking-wide text-subtle">
+                            <span className="text-[length:var(--text-micro)] font-medium text-subtle">
                               Unit {unit.number}
                             </span>
                             <span className="min-w-0 flex-1 truncate text-[10.5px] text-subtle">

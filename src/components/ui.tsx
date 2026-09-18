@@ -10,7 +10,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-surface border border-line rounded-[14px] shadow-card",
+        "bg-surface rounded-[var(--radius-card)] shadow-card dark:border dark:border-line dark:shadow-none",
         className,
       )}
       {...rest}
@@ -34,13 +34,13 @@ export function CardHead({
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-3 px-4 pt-3.5 pb-3 border-b border-line",
+        "flex items-start justify-between gap-4 px-5 pt-4 pb-3.5 border-b border-line",
         className,
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-[13px] font-semibold tracking-tight">{title}</h2>
-        {sub ? <p className="text-[12px] text-muted mt-0.5">{sub}</p> : null}
+        <h2 className="font-serif text-[length:var(--text-lead)] font-semibold">{title}</h2>
+        {sub ? <p className="mt-1 text-[length:var(--text-small)] text-muted">{sub}</p> : null}
       </div>
       {right ? <div className="shrink-0">{right}</div> : null}
     </div>
@@ -218,8 +218,8 @@ export function SectionTitle({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-baseline justify-between gap-3 mb-2.5", className)}>
-      <h2 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-subtle">
+    <div className={cn("flex items-baseline justify-between gap-4 mb-3", className)}>
+      <h2 className="font-serif text-[length:var(--text-lead)] font-semibold text-fg">
         {children}
       </h2>
       {right}
@@ -229,4 +229,4 @@ export function SectionTitle({
 
 /* ─── Field ─────────────────────────────────────────────────── */
 export const inputCls =
-  "w-full h-9 rounded-lg border border-line bg-surface px-3 text-[13px] placeholder:text-subtle focus-ring";
+  "w-full h-10 rounded-[var(--radius-control)] border border-line bg-surface px-3.5 text-[length:var(--text-small)] placeholder:text-subtle focus-ring";

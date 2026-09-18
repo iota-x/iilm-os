@@ -41,7 +41,7 @@ function Track({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-2">
-        <h3 className="text-[11px] font-semibold uppercase tracking-[0.07em] text-subtle">
+        <h3 className="text-[length:var(--text-small)] font-medium text-subtle">
           {title}
         </h3>
         {scored.length ? (

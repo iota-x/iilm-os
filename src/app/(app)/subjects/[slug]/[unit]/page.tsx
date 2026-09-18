@@ -298,7 +298,7 @@ export default async function UnitPage({
           >
             <ChevronLeft size={15} className="shrink-0 text-subtle" />
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-wide text-subtle">
+              <span className="block text-[length:var(--text-micro)] text-subtle">
                 Unit {prev.number}
               </span>
               <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
@@ -320,7 +320,7 @@ export default async function UnitPage({
             className={cn("group flex min-w-0 items-center gap-2 rounded p-1 text-right focus-ring")}
           >
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-wide text-subtle">
+              <span className="block text-[length:var(--text-micro)] text-subtle">
                 Unit {next.number}
               </span>
               <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">

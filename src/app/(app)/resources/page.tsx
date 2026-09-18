@@ -169,7 +169,7 @@ export default async function ResourcesPage({
                   i > 0 && "border-t",
                 )}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle">
+                <span className="text-[length:var(--text-micro)] font-medium text-subtle">
                   {g.label}
                 </span>
                 <span className="text-[10px] tabular-nums text-subtle">{g.items.length}</span>

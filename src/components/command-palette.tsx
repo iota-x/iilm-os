@@ -228,7 +228,7 @@ export function CommandPalette() {
           ) : (
             grouped.map((group) => (
               <div key={group.label} className="mb-1">
-                <div className="px-3.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-subtle">
+                <div className="px-3.5 py-1 text-[length:var(--text-micro)] font-medium text-subtle">
                   {group.label}
                 </div>
                 {group.items.map(({ doc, index }) => {

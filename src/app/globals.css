@@ -4,102 +4,116 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
-    ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Cascadia Code",
-    "Roboto Mono", monospace;
+  /* Serif carries the course content, sans carries the interface. */
+  --font-serif: var(--font-serif-src), Iowan Old Style, Georgia, serif;
+  --font-sans: var(--font-sans-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
 
-  --radius-card: 14px;
+  /* A real scale instead of eleven sizes between 11 and 13.5px.
+     Base is 15px; ratio is a little under a major third. */
+  --text-micro: 0.75rem;     /* 12 — meta, counts */
+  --text-small: 0.8125rem;   /* 13 — controls, secondary */
+  --text-body: 0.9375rem;    /* 15 — reading size */
+  --text-lead: 1.0625rem;    /* 17 — card titles */
+  --text-title: 1.375rem;    /* 22 — section headings */
+  --text-page: 1.75rem;      /* 28 — page titles */
+  --text-figure: 2.75rem;    /* 44 — the one number worth looking at */
+
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 18px;
 }
 
 :root {
   color-scheme: light;
 
-  --bg: #fbfbfa;
+  /* Warm paper, not the blue-grey every admin template uses. */
+  --bg: #f7f5f1;
   --surface: #ffffff;
-  --surface-2: #f5f5f3;
-  --surface-3: #ecebe8;
-  --border: #e4e3df;
-  --border-strong: #d2d1cc;
+  --surface-2: #f2efe9;
+  --surface-3: #e8e4db;
+  --border: #e6e1d7;
+  --border-strong: #d3cdc0;
 
-  --fg: #1a1a18;
-  --fg-muted: #6b6a65;
-  --fg-subtle: #94938d;
+  --fg: #1b1915;
+  --fg-muted: #6b665c;
+  --fg-subtle: #9a948a;
 
-  --accent: #4f46e5;
+  --accent: #4b3bd6;
   --accent-fg: #ffffff;
-  --accent-soft: #eef2ff;
+  --accent-soft: #ecebfc;
 
-  --good: #067a55;
-  --good-soft: #e6f5ef;
-  --warn: #a8620a;
-  --warn-soft: #fdf3e3;
-  --bad: #c0332f;
-  --bad-soft: #fdeceb;
+  --good: #14714f;
+  --good-soft: #e2f2ea;
+  --warn: #9a5c0c;
+  --warn-soft: #fbf0df;
+  --bad: #b3322d;
+  --bad-soft: #fbeae8;
 
-  --shadow-sm: 0 1px 2px rgb(20 20 18 / 0.05);
-  --shadow: 0 1px 3px rgb(20 20 18 / 0.06), 0 4px 12px -4px rgb(20 20 18 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(27 25 21 / 0.04);
+  --shadow: 0 2px 4px rgb(27 25 21 / 0.04), 0 12px 28px -12px rgb(27 25 21 / 0.12);
 
   /* subject accents — light */
-  --c-violet: #6d4aff;
-  --c-violet-soft: #f0ecff;
-  --c-blue: #1d6fd6;
-  --c-blue-soft: #e7f1fd;
-  --c-emerald: #0a8158;
-  --c-emerald-soft: #e3f5ee;
-  --c-orange: #c2600c;
-  --c-orange-soft: #fdefe0;
-  --c-rose: #c32d63;
-  --c-rose-soft: #fdeaf1;
-  --c-amber: #97700a;
-  --c-amber-soft: #fbf2dc;
-  --c-slate: #5a6472;
-  --c-slate-soft: #eef0f3;
+  --c-violet: #5b40d6;
+  --c-violet-soft: #edeafb;
+  --c-blue: #1b6bc9;
+  --c-blue-soft: #e5effb;
+  --c-emerald: #0c7a54;
+  --c-emerald-soft: #e0f1e9;
+  --c-orange: #b25a10;
+  --c-orange-soft: #fbeddd;
+  --c-rose: #b52d5e;
+  --c-rose-soft: #fbe8ee;
+  --c-amber: #8c680c;
+  --c-amber-soft: #f7efd9;
+  --c-slate: #576273;
+  --c-slate-soft: #ecedf1;
 }
 
 .dark {
   color-scheme: dark;
 
-  --bg: #0e0e10;
-  --surface: #17171a;
-  --surface-2: #1e1e22;
-  --surface-3: #27272c;
-  --border: #2a2a30;
-  --border-strong: #3a3a42;
+  /* Warm-neutral rather than cold near-black, so it matches the paper. */
+  --bg: #141316;
+  --surface: #1b1a1f;
+  --surface-2: #232228;
+  --surface-3: #2d2b33;
+  --border: #2e2c34;
+  --border-strong: #423f4a;
 
-  --fg: #ededf0;
-  --fg-muted: #9b9ba4;
-  --fg-subtle: #6e6e78;
+  --fg: #ecead0;
+  --fg-muted: #a09aa8;
+  --fg-subtle: #736e7c;
 
-  --accent: #8b7cff;
-  --accent-fg: #14141a;
-  --accent-soft: #211f38;
+  --accent: #a394ff;
+  --accent-fg: #171526;
+  --accent-soft: #241f3d;
 
-  --good: #4ade9f;
+  --good: #57d6a0;
   --good-soft: #10261f;
-  --warn: #f0b354;
+  --warn: #efb45f;
   --warn-soft: #2a2015;
-  --bad: #f4756f;
+  --bad: #f4817b;
   --bad-soft: #2d1817;
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow: 0 1px 3px rgb(0 0 0 / 0.5), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 28px -12px rgb(0 0 0 / 0.6);
 
   /* subject accents — dark */
-  --c-violet: #a996ff;
-  --c-violet-soft: #221d3d;
-  --c-blue: #6cb0f5;
-  --c-blue-soft: #14243a;
-  --c-emerald: #55d3a2;
+  --c-violet: #b3a3ff;
+  --c-violet-soft: #241f3d;
+  --c-blue: #79b6f7;
+  --c-blue-soft: #16273c;
+  --c-emerald: #5fd9aa;
   --c-emerald-soft: #0f2a22;
-  --c-orange: #f2a45f;
+  --c-orange: #f3ac6c;
   --c-orange-soft: #2e2015;
-  --c-rose: #f286ac;
+  --c-rose: #f490b4;
   --c-rose-soft: #2f1a23;
-  --c-amber: #e0b65c;
+  --c-amber: #e3bd68;
   --c-amber-soft: #2b2416;
-  --c-slate: #9aa4b2;
-  --c-slate-soft: #1e2128;
+  --c-slate: #a2abb8;
+  --c-slate-soft: #212329;
 }
 
 * {
@@ -114,9 +128,17 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* Figures line up in columns of marks, percentages and counts. */
+.tabular-nums, [class*="tabular"] { font-variant-numeric: tabular-nums; }
+
+h1, h2, h3, .font-serif { font-family: var(--font-serif); font-weight: 600; }
+h1, h2, h3 { letter-spacing: -0.012em; line-height: 1.2; }
 
 ::selection {
   background: var(--accent-soft);

@@ -292,7 +292,7 @@ export default async function TopicPage({
           >
             <ChevronLeft size={15} className="shrink-0 text-subtle" />
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-wide text-subtle">
+              <span className="block text-[length:var(--text-micro)] text-subtle">
                 Previous
               </span>
               <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
@@ -314,7 +314,7 @@ export default async function TopicPage({
             className="group flex min-w-0 items-center gap-2 rounded p-1 text-right focus-ring"
           >
             <span className="min-w-0">
-              <span className="block text-[10px] uppercase tracking-wide text-subtle">Next</span>
+              <span className="block text-[length:var(--text-micro)] text-subtle">Next</span>
               <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
                 {next.title}
               </span>

@@ -105,7 +105,10 @@ export default async function Dashboard() {
     .filter((t) => t.status === "done")
     .reduce((a, t) => a + (t.minutes ?? 0), 0);
 
-  const gapSubjects = subjects.filter((s) => s.gaps.length > 0);
+  // Only subjects still missing their syllabus. A complete subject can carry
+  // a gap note (Linux: the marking scheme is unconfirmed) without needing
+  // "material" — that note lives on its own page.
+  const gapSubjects = subjects.filter((s) => s.status !== "complete");
 
   return (
     <div className="space-y-6">

@@ -8,28 +8,27 @@ import {
 } from "@/lib/queries";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
-import { Badge, Bar, Card, CardHead } from "@/components/ui";
-import { ACCENT_CLASS, cn, fmtTime, istToday, toMinutes } from "@/lib/utils";
+import { WeekGrid } from "@/components/planner/week-grid";
+import { Badge, Card, CardHead } from "@/components/ui";
+import { cn, fmtDuration, istToday } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
-
 const PHASE_META: Record<string, { name: string; goal: string }> = {
   triage: {
-    name: "Phase 0 — Triage",
+    name: "Triage",
     goal: "Stop the bleeding. Find out how far behind you are in each subject and close the DE+CO material gap. Almost no studying — messages, downloads and setup.",
   },
   "first-pass": {
-    name: "Phase 1 — First pass",
+    name: "First pass",
     goal: "Cover every mid-sem topic once. Not deeply — the goal is that nothing on the paper is a total stranger.",
   },
   drill: {
-    name: "Phase 2 — Drill",
+    name: "Drill",
     goal: "Problems, not reading. The course-plan assignment, C output prediction, recursion traces, state space trees. This is where marks are made.",
   },
   revise: {
-    name: "Phase 3 — Revision & mock",
+    name: "Revision & mock",
     goal: "One timed mock per major subject, then fix only what the mock exposed. No new material.",
   },
   exams: { name: "Exam week", goal: "Targeted revision for tomorrow's paper only." },
@@ -45,20 +44,20 @@ export default async function PlannerPage() {
 
   const today = istToday();
   const group = profile?.lab_group ?? 2;
-  const tasks = await getTasks({ from: today });
-  const past = await getTasks({ to: today });
+  const [tasks, past] = await Promise.all([getTasks({ from: today }), getTasks({ to: today })]);
 
   const overdue = past.filter((t) => t.status === "todo" && t.due_date !== today);
-
   const mySlots = slots.filter((s) => s.lab_group === null || s.lab_group === group);
-  const subjectById = Object.fromEntries(subjects.map((s) => [s.id, s]));
-
   const upcoming = planDays.filter((d) => d.date >= today);
 
-  // last class each day → free study window
-  const lastEnd: Record<string, string> = {};
-  for (const s of mySlots) {
-    if (!lastEnd[s.day] || s.end_time > lastEnd[s.day]) lastEnd[s.day] = s.end_time;
+  // Group the run-up by phase so the shape of the plan is visible without
+  // scrolling through eighteen identical day cards.
+  const phases: { key: string; days: typeof upcoming }[] = [];
+  for (const d of upcoming) {
+    const key = d.phase ?? "other";
+    const last = phases[phases.length - 1];
+    if (last && last.key === key) last.days.push(d);
+    else phases.push({ key, days: [d] });
   }
 
   return (
@@ -67,71 +66,23 @@ export default async function PlannerPage() {
         <div>
           <h1 className="text-[length:var(--text-page)]">Planner</h1>
           <p className="mt-1 text-[length:var(--text-small)] text-muted">
-            Timetable for lab group {group}, and the 18-day run-up to mid-sems.
+            Lab group {group}&rsquo;s timetable, and the {upcoming.length}-day run-up to mid-sems.
           </p>
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
       </div>
 
-      {/* ── weekly timetable ───────────────────────────────── */}
+      {/* ── the week, drawn to scale ───────────────────────── */}
       <Card className="overflow-hidden">
         <CardHead
           title="Your week"
           sub={`Group ${group} · B.Tech Sem 1 E · effective 06-08-2026`}
         />
-        <div className="overflow-x-auto">
-          <div className="min-w-[760px] grid grid-cols-5 divide-x divide-[var(--border)]">
-            {DAYS.map((day) => {
-              const dayslots = mySlots
-                .filter((s) => s.day === day)
-                .sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
-              return (
-                <div key={day} className="min-w-0">
-                  <div className="px-3 py-2 bg-surface-2 border-b border-line">
-                    <p className="text-[length:var(--text-micro)] font-semibold">{day}</p>
-                    {lastEnd[day] ? (
-                      <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">
-                        free from {fmtTime(lastEnd[day])}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="p-2 space-y-1.5 min-h-[260px]">
-                    {dayslots.map((s) => {
-                      const subject = s.subject_id ? subjectById[s.subject_id] : null;
-                      return (
-                        <Link
-                          key={s.id}
-                          href={subject ? `/subjects/${subject.slug}` : "#"}
-                          className={cn(
-                            "block rounded-lg px-2 py-1.5 border transition-colors focus-ring",
-                            subject ? ACCENT_CLASS[subject.color] : "",
-                            "bg-sc-soft border-transparent hover:border-sc",
-                          )}
-                        >
-                          <p className="text-[length:var(--text-micro)] font-semibold text-sc leading-tight">
-                            {subject?.short_name ?? "—"}
-                            {s.kind === "lab" ? (
-                              <span className="font-normal"> lab</span>
-                            ) : null}
-                          </p>
-                          <p className="text-[length:var(--text-micro)] text-muted mt-0.5 tabular-nums leading-tight">
-                            {fmtTime(s.start_time)}–{fmtTime(s.end_time)}
-                          </p>
-                          <p className="text-[length:var(--text-micro)] text-subtle leading-tight truncate">
-                            {s.room}
-                          </p>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="px-3 pb-3 pt-2">
+          <WeekGrid slots={mySlots} subjects={subjects} />
         </div>
-        <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[length:var(--text-micro)] text-muted">
-          Saturday and Sunday are free. Your longest weekday windows are{" "}
-          <strong className="text-fg">Monday and Friday</strong> — classes end at 1:20pm on both.
+        <p className="border-t border-line bg-surface-2 px-5 py-2.5 text-[length:var(--text-small)] text-muted">
+          Teaching days only — Saturday and Sunday are yours entirely.
         </p>
       </Card>
 
@@ -147,98 +98,121 @@ export default async function PlannerPage() {
         </Card>
       ) : null}
 
-      {/* ── day by day ─────────────────────────────────────── */}
-      <div className="space-y-4">
-        {upcoming.length ? (
-          upcoming.map((d) => {
-            const dayTasks = tasks.filter((t) => t.due_date === d.date);
-            const done = dayTasks.filter((t) => t.status === "done").length;
-            const isToday = d.date === today;
-            const phase = d.phase ? PHASE_META[d.phase] : null;
-
-            return (
-              <div key={d.id}>
-                {/* phase heading when the phase changes */}
-                {isFirstOfPhase(upcoming, d) && phase ? (
-                  <div className="mt-6 mb-3 first:mt-0">
-                    <h2 className="text-[length:var(--text-small)] font-semibold tracking-tight">{phase.name}</h2>
-                    <p className="text-[length:var(--text-small)] text-muted mt-1 max-w-2xl leading-relaxed">
-                      {phase.goal}
-                    </p>
-                  </div>
-                ) : null}
-
-                <Card className={cn(isToday && "ring-1 ring-[var(--accent)]")}>
-                  <CardHead
-                    title={
-                      <span className="flex items-center gap-2">
-                        {new Date(d.date + "T00:00:00+05:30").toLocaleDateString("en-GB", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                          timeZone: "Asia/Kolkata",
-                        })}
-                        {isToday ? <Badge tone="accent">today</Badge> : null}
-                      </span>
-                    }
-                    sub={d.headline ?? undefined}
-                    right={
-                      dayTasks.length ? (
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-[length:var(--text-micro)] text-muted tabular-nums">
-                            {done}/{dayTasks.length}
-                          </span>
-                          <Bar
-                            value={dayTasks.length ? done / dayTasks.length : 0}
-                            tone="accent"
-                            className="w-16"
-                          />
-                        </div>
-                      ) : null
-                    }
-                  />
-                  <TaskList tasks={dayTasks} subjects={subjects} emptyText="Nothing scheduled." />
-                  {d.note ? (
-                    <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[length:var(--text-micro)] text-muted leading-relaxed">
-                      {d.note}
-                    </p>
-                  ) : null}
-                </Card>
+      {/* ── the run-up, one section per phase ──────────────── */}
+      {phases.length ? (
+        phases.map(({ key, days }) => {
+          const meta = PHASE_META[key];
+          const minutes = days.reduce(
+            (a, d) =>
+              a + tasks.filter((t) => t.due_date === d.date).reduce((b, t) => b + (t.minutes ?? 0), 0),
+            0,
+          );
+          return (
+            <section key={key + days[0].date} className="space-y-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h2 className="text-[length:var(--text-title)]">{meta?.name ?? "Ahead"}</h2>
+                <p className="text-[length:var(--text-small)] tabular-nums text-subtle">
+                  {days.length} {days.length === 1 ? "day" : "days"}
+                  {minutes ? ` · ${fmtDuration(minutes)} planned` : ""}
+                </p>
               </div>
-            );
-          })
-        ) : (
-          <Card>
-            <CardHead title="No plan days ahead" />
-            <p className="px-4 py-6 text-center text-[length:var(--text-small)] text-muted">
-              The seeded plan runs to 4 Oct. Add your own blocks with the Add button.
-            </p>
-          </Card>
-        )}
-      </div>
+              {meta ? (
+                <p className="max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">
+                  {meta.goal}
+                </p>
+              ) : null}
 
-      {/* ── exam week note ─────────────────────────────────── */}
-      <Card className="p-4">
-        <p className="text-[length:var(--text-small)] font-semibold">5–11 Oct · exam week</p>
-        <p className="text-[length:var(--text-small)] text-muted mt-1.5 leading-relaxed max-w-2xl">
-          No plan blocks are seeded for exam week on purpose — once you have the datesheet,
-          the only sensible plan is &ldquo;revise tomorrow&rsquo;s paper.&rdquo; Add those days
-          yourself once the schedule is out.{" "}
-          <Link href="/exams" className="underline underline-offset-2 hover:text-fg">
-            Exams page
+              <Card className="overflow-hidden">
+                <ul className="divide-y divide-[var(--border)]">
+                  {days.map((d) => {
+                    const dayTasks = tasks.filter((t) => t.due_date === d.date);
+                    const done = dayTasks.filter((t) => t.status === "done").length;
+                    const isToday = d.date === today;
+                    const date = new Date(d.date + "T00:00:00+05:30");
+
+                    return (
+                      <li
+                        key={d.id}
+                        className={cn(
+                          "grid gap-x-4 px-4 py-3 sm:grid-cols-[104px_1fr]",
+                          isToday && "bg-[var(--accent-soft)]/45",
+                        )}
+                      >
+                        {/* date gutter */}
+                        <div className="sm:pt-1">
+                          <p
+                            className={cn(
+                              "text-[length:var(--text-small)] tabular-nums",
+                              isToday ? "font-semibold text-[var(--accent)]" : "font-medium",
+                            )}
+                          >
+                            {date.toLocaleDateString("en-GB", {
+                              weekday: "short",
+                              day: "numeric",
+                              month: "short",
+                              timeZone: "Asia/Kolkata",
+                            })}
+                          </p>
+                          <p className="mt-0.5 text-[length:var(--text-micro)] tabular-nums text-subtle">
+                            {isToday
+                              ? "today"
+                              : dayTasks.length
+                                ? `${done}/${dayTasks.length} done`
+                                : "open"}
+                          </p>
+                        </div>
+
+                        <div className="min-w-0">
+                          {d.headline ? (
+                            <p className="mb-1 text-[length:var(--text-small)] font-medium">
+                              {d.headline}
+                            </p>
+                          ) : null}
+                          {dayTasks.length ? (
+                            <div className="-mx-4 sm:-mx-2">
+                              <TaskList tasks={dayTasks} subjects={subjects} />
+                            </div>
+                          ) : (
+                            <p className="py-1 text-[length:var(--text-small)] text-subtle">
+                              Nothing scheduled.
+                            </p>
+                          )}
+                          {d.note ? (
+                            <p className="mt-2 text-[length:var(--text-micro)] leading-relaxed text-subtle">
+                              {d.note}
+                            </p>
+                          ) : null}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Card>
+            </section>
+          );
+        })
+      ) : (
+        <Card>
+          <CardHead title="No plan days ahead" />
+          <p className="px-5 py-6 text-center text-[length:var(--text-small)] text-muted">
+            The seeded plan runs to 4 Oct. Add your own blocks with the Add button.
+          </p>
+        </Card>
+      )}
+
+      {/* ── exam week ──────────────────────────────────────── */}
+      <section className="space-y-2">
+        <h2 className="text-[length:var(--text-title)]">Exam week</h2>
+        <p className="max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">
+          5&ndash;11 Oct is deliberately empty. Once the datesheet is out, the only sensible plan is
+          &ldquo;revise tomorrow&rsquo;s paper&rdquo; — so add those days yourself when you know the
+          order.{" "}
+          <Link href="/exams" className="text-fg underline underline-offset-2 hover:text-[var(--accent)]">
+            Exams
           </Link>{" "}
-          has the marking scheme and mark tracking.
+          has the marking scheme and your marks so far.
         </p>
-      </Card>
+      </section>
     </div>
   );
-}
-
-function isFirstOfPhase(
-  days: { date: string; phase: string | null }[],
-  d: { date: string; phase: string | null },
-) {
-  const i = days.findIndex((x) => x.date === d.date);
-  if (i === 0) return true;
-  return days[i - 1].phase !== d.phase;
 }

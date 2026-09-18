@@ -15,32 +15,40 @@ export default async function SettingsPage() {
   if (!profile) return null;
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto max-w-[620px] space-y-5">
       <div>
         <h1 className="text-[length:var(--text-page)]">Settings</h1>
-        <p className="mt-1 text-[length:var(--text-small)] text-muted">Preferences and attendance tracking.</p>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
+          Four things, and then you&rsquo;re done.
+        </p>
       </div>
 
-      <Card className="max-w-2xl">
+      <Card>
         <CardHead title="Appearance" />
-        <div className="p-4">
+        <div className="p-5">
           <ThemeToggle full />
         </div>
       </Card>
 
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} />
 
-      <Card className="max-w-2xl p-4">
+      <Card className="p-5">
         <h2 className="text-[length:var(--text-small)] font-semibold">Adding next semester</h2>
-        <p className="text-[length:var(--text-small)] text-muted mt-1.5 leading-relaxed">
-          The database is built around semesters, not this one semester. When Sem 2 starts, add
-          new subject files under <code className="font-mono text-[length:var(--text-micro)]">src/data/subjects/</code>,
-          bump the semester number in{" "}
-          <code className="font-mono text-[length:var(--text-micro)]">src/data/index.ts</code>, and run{" "}
-          <code className="font-mono text-[length:var(--text-micro)]">npm run seed</code> again. Your notes, marks and
-          screenshots from Sem 1 stay exactly where they are.
+        <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-muted">
+          The database is built around semesters, not this one semester. When Sem 2 starts, add new
+          subject files under <Code>src/data/subjects/</Code>, bump the semester number in{" "}
+          <Code>src/data/index.ts</Code>, and run <Code>npm run seed</Code> again. Your notes,
+          marks and screenshots from Sem 1 stay exactly where they are.
         </p>
       </Card>
     </div>
+  );
+}
+
+function Code({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[length:var(--text-micro)] text-fg">
+      {children}
+    </code>
   );
 }

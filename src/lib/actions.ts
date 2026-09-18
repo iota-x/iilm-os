@@ -192,12 +192,13 @@ export async function setExamMark(id: string, obtained: number | null) {
 
 export async function setAttendance(subjectId: string, held: number, attended: number) {
   const { db, userId } = await uid();
-  await db
+  const { error } = await db
     .from("attendance")
     .upsert(
       { user_id: userId, subject_id: subjectId, held, attended, updated_at: new Date().toISOString() },
       { onConflict: "user_id,subject_id" },
     );
+  if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
 }
 

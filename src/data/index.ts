@@ -120,14 +120,14 @@ export const exams: SeedExam[] = [
   },
   {
     key: "mse-ai",
-    name: "Foundation of AI and Automation — Mid-Term",
+    name: "Foundations of AI & Automation — Mid-Term",
     kind: "mse",
     subject: "foundation-of-ai",
     date: null,
     window: "5–11 Oct 2026",
     maxMarks: 20,
     weightage: 20,
-    scope: "Not confirmed — Unit 1 certain, expect Units 1–3.",
+    scope: "Units I and II — introduction to AI, intelligent agents, and the search algorithms through to A*.",
   },
 ];
 

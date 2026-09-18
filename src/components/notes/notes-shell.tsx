@@ -69,9 +69,12 @@ export function NotesShell({
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[300px_1fr] items-start">
+    /* A writing surface, not a page of cards: both columns own the viewport
+       height and scroll inside themselves, so the note never sits in a short
+       box with dead space under it. */
+    <div className="grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[520px] lg:grid-cols-[320px_1fr]">
       {/* list */}
-      <Card className="overflow-hidden lg:sticky lg:top-[72px]">
+      <Card className="flex max-h-[45dvh] min-h-0 flex-col overflow-hidden lg:max-h-none">
         <div className="p-2.5 border-b border-line space-y-2">
           <div className="relative">
             <Search
@@ -104,7 +107,7 @@ export function NotesShell({
           </div>
         </div>
 
-        <ul className="max-h-[calc(100dvh-220px)] overflow-y-auto divide-y divide-[var(--border)]">
+        <ul className="min-h-0 flex-1 divide-y divide-[var(--border)] overflow-y-auto">
           {filtered.length ? (
             filtered.map((n) => {
               const subject = subjects.find((s) => s.id === n.subject_id) ?? null;
@@ -131,6 +134,11 @@ export function NotesShell({
                         {n.title || "Untitled"}
                       </p>
                     </div>
+                    {excerpt(n.content) ? (
+                      <p className="mt-0.5 line-clamp-1 text-[length:var(--text-micro)] text-muted">
+                        {excerpt(n.content)}
+                      </p>
+                    ) : null}
                     <p className="text-[length:var(--text-micro)] text-subtle mt-1 flex items-center gap-1.5">
                       {subject ? <span className="text-sc font-medium">{subject.short_name}</span> : null}
                       <span>{relativeDay(n.updated_at.slice(0, 10))}</span>
@@ -148,7 +156,7 @@ export function NotesShell({
       </Card>
 
       {/* editor */}
-      <Card className="overflow-hidden min-h-[560px] flex flex-col">
+      <Card className="flex min-h-[420px] flex-col overflow-hidden lg:min-h-0">
         {current ? (
           <NoteEditor
             key={current.id}
@@ -163,18 +171,34 @@ export function NotesShell({
             }}
           />
         ) : (
+          <div className="grid flex-1 place-items-center">
           <Empty
             icon={<FileText size={26} strokeWidth={1.5} />}
             title="No note open"
-            body="Pick one from the list, or start a new one. Markdown and LaTeX both render, and you can paste screenshots straight in."
+            body="Pick one from the list, or start a new one. Markdown and LaTeX both render, and a screenshot pasted into the editor uploads itself."
             action={
               <Button variant="primary" size="sm" onClick={newNote}>
                 <Plus size={14} /> New note
               </Button>
             }
           />
+          </div>
         )}
       </Card>
     </div>
   );
+}
+
+/** First real line of the note, with the markdown furniture stripped off. */
+function excerpt(content: string): string {
+  for (const line of content.split("\n")) {
+    const clean = line
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, "")       // images carry no meaning here
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")    // links keep their text
+      .replace(/^[#>\-*\s]+/, "")
+      .replace(/[*_`]/g, "")
+      .trim();
+    if (clean) return clean.slice(0, 90);
+  }
+  return "";
 }

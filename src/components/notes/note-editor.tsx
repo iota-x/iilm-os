@@ -17,7 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import { updateNote, deleteNote, recordAttachment } from "@/lib/actions";
 import type { Note, Subject, Topic } from "@/lib/db-types";
 import { Markdown } from "@/components/markdown";
-import { Button, inputCls } from "@/components/ui";
+import { Button, chipCls } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 type View = "write" | "split" | "read";
@@ -273,7 +273,7 @@ export function NoteEditor({
             setTopicId("");
             save({ subject_id: e.target.value || null, topic_id: null });
           }}
-          className={`${inputCls} h-7 w-auto text-[length:var(--text-micro)] py-0`}
+          className={chipCls}
         >
           <option value="">No subject</option>
           {subjects.map((s) => (
@@ -289,7 +289,7 @@ export function NoteEditor({
               setTopicId(e.target.value);
               save({ topic_id: e.target.value || null });
             }}
-            className={`${inputCls} h-7 w-auto max-w-[220px] text-[length:var(--text-micro)] py-0`}
+            className={cn(chipCls, "max-w-[240px]")}
           >
             <option value="">No topic</option>
             {subjectTopics.map((t) => (
@@ -322,7 +322,7 @@ export function NoteEditor({
             onPaste={onPaste}
             placeholder={PLACEHOLDER}
             spellCheck={false}
-            className="editor w-full h-full min-h-[420px] resize-none bg-transparent px-4 py-3.5 outline-none placeholder:text-subtle border-r border-line"
+            className="editor h-full w-full resize-none border-r border-line bg-transparent px-4 py-3.5 outline-none placeholder:text-subtle"
           />
         ) : null}
         {view !== "write" ? (

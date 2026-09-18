@@ -230,3 +230,8 @@ export function SectionTitle({
 /* ─── Field ─────────────────────────────────────────────────── */
 export const inputCls =
   "w-full h-10 rounded-[var(--radius-control)] border border-line bg-surface px-3.5 text-[length:var(--text-small)] placeholder:text-subtle focus-ring";
+
+/** Compact inline control. Deliberately not built from inputCls — that carries
+ *  w-full, and a `w-auto` appended after it is a coin toss at build time. */
+export const chipCls =
+  "h-7 shrink-0 rounded-[var(--radius-control)] border border-line bg-surface px-2 text-[length:var(--text-micro)] focus-ring";

@@ -1,170 +1,214 @@
 import Link from "next/link";
-import { AlertTriangle, CalendarClock, ShieldAlert } from "lucide-react";
-import { getComponents, getExams, getSubjects, getTopics } from "@/lib/queries";
+import { AlertTriangle, ShieldAlert } from "lucide-react";
+import {
+  getComponents,
+  getExams,
+  getExperiments,
+  getSubjects,
+  getTopics,
+} from "@/lib/queries";
 import { MarksTable } from "@/components/subject/marks-table";
-import { Badge, Bar, Card, CardHead, Ring } from "@/components/ui";
+import { Badge, Bar, Card, Ring } from "@/components/ui";
 import { ACCENT_CLASS, cn, daysUntil, MIDSEM_START, progressOf } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+/** The three ways a theory course is marked, and what each is worth. The
+ *  widths on screen are these numbers — that's the whole point of the bar. */
+const SCHEME = [
+  {
+    key: "cla",
+    name: "Continuous assessment",
+    weight: 30,
+    of: "30 marks",
+    body: "Class Test 10 · Assignment 10 · Quiz 5 · Project 15 · Innovative Practices 15. Faculty pick at least two; the total can't exceed 30.",
+  },
+  {
+    key: "mse",
+    name: "Mid-semester",
+    weight: 20,
+    of: "20 marks",
+    body: "One written paper, 5–11 Oct. Roughly the first three units, though each course plan sets its own scope.",
+  },
+  {
+    key: "ese",
+    name: "End-semester",
+    weight: 50,
+    of: "100 marks, halved",
+    body: "The whole syllabus in one paper, marked out of 100 and scaled to half your grade.",
+  },
+] as const;
+
 export default async function ExamsPage() {
-  const [subjects, exams, components, topics] = await Promise.all([
+  const [subjects, exams, components, topics, experiments] = await Promise.all([
     getSubjects(),
     getExams(),
     getComponents(),
     getTopics(),
+    getExperiments(),
   ]);
 
   const left = daysUntil(MIDSEM_START);
   const subjectExams = exams.filter((e) => e.subject_id);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-[length:var(--text-page)]">Exams & marking</h1>
+        <h1 className="text-[length:var(--text-page)]">Exams &amp; marking</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          How the 100 marks are actually split, and where you stand.
+          Mid-semesters run 5&ndash;11 Oct 2026 — {left} days away, on{" "}
+          <span className="text-[var(--warn)]">dates not yet officially confirmed</span>. Below is
+          how the 100 marks are split and where you stand in each paper.
         </p>
       </div>
 
-      {/* ── countdown ──────────────────────────────────────── */}
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-3">
-            <CalendarClock size={20} className="text-[var(--accent)]" />
-            <div>
-              <p className="text-[length:var(--text-body)] font-semibold tracking-tight">
-                Mid-semester examinations
+      {/* ── the split, drawn to scale ──────────────────────── */}
+      <section className="space-y-3">
+        <h2 className="text-[length:var(--text-title)]">Where the 100 marks go</h2>
+
+        <div className="flex h-14 overflow-hidden rounded-[var(--radius-card)]">
+          {SCHEME.map((part) => (
+            <div
+              key={part.key}
+              style={{ width: `${part.weight}%` }}
+              className={cn(
+                "flex flex-col justify-center border-r border-[var(--bg)] px-3 last:border-r-0",
+                part.key === "mse"
+                  ? "bg-[var(--accent)] text-[var(--accent-fg)]"
+                  : "bg-surface-3 text-fg",
+              )}
+            >
+              <p className="text-[length:var(--text-lead)] font-semibold leading-none tabular-nums">
+                {part.weight}%
               </p>
-              <p className="text-[length:var(--text-small)] text-muted mt-0.5">
-                5–11 Oct 2026 ·{" "}
-                <span className="text-[var(--warn)]">dates not officially confirmed</span>
+              <p
+                className={cn(
+                  "mt-1 truncate text-[length:var(--text-micro)]",
+                  part.key === "mse" ? "opacity-80" : "text-muted",
+                )}
+              >
+                {part.name}
               </p>
             </div>
-          </div>
-          <div className="ml-auto text-right">
-            <p className="text-[26px] font-semibold tabular-nums leading-none">{left}</p>
-            <p className="text-[length:var(--text-micro)] text-muted mt-1">days left</p>
-          </div>
+          ))}
         </div>
-      </Card>
 
-      {/* ── readiness per subject ──────────────────────────── */}
-      <Card>
-        <CardHead title="Readiness" sub="Only topics inside the mid-sem scope" />
-        <ul className="divide-y divide-[var(--border)]">
-          {subjects.map((s) => {
-            const mid = topics.filter((t) => t.subject_id === s.id && t.in_midsem);
-            const p = progressOf(mid.map((t) => t.status));
-            const exam = subjectExams.find((e) => e.subject_id === s.id);
-            return (
-              <li key={s.id} className={cn("px-4 py-3", ACCENT_CLASS[s.color])}>
-                <Link href={`/subjects/${s.slug}`} className="flex items-start gap-3 focus-ring rounded">
-                  <Ring value={p} size={40} stroke={3.5} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[length:var(--text-small)] font-medium flex items-center gap-2">
-                      {s.name}
-                      {!s.midsem_confirmed ? <Badge tone="warn">scope unconfirmed</Badge> : null}
-                    </p>
-                    <p className="text-[length:var(--text-micro)] text-muted mt-0.5 leading-relaxed">
-                      {exam?.scope ?? s.midsem_scope}
-                    </p>
-                    {mid.length ? (
-                      <Bar value={p} className="w-40 mt-2" />
-                    ) : (
-                      <p className="text-[length:var(--text-micro)] text-[var(--warn)] mt-1.5">
-                        no syllabus loaded — nothing to measure
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </Card>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {SCHEME.map((part) => (
+            <div key={part.key}>
+              <p className="text-[length:var(--text-small)] font-medium">
+                {part.name}
+                <span className="ml-2 font-normal text-subtle">{part.of}</span>
+              </p>
+              <p className="mt-1 text-[length:var(--text-small)] leading-relaxed text-muted">
+                {part.body}
+              </p>
+            </div>
+          ))}
+        </div>
 
-      {/* ── the scheme ─────────────────────────────────────── */}
-      <div>
-        <h2 className="text-[length:var(--text-body)] font-semibold tracking-tight">How your marks are made up</h2>
-        <p className="text-[length:var(--text-small)] text-muted mt-1 max-w-2xl leading-relaxed">
-          Identical across every theory course in the programme. Taken verbatim from your Applied
-          Calculus and Programming in C course plans.
+        <p className="text-[length:var(--text-small)] text-subtle">
+          Identical across every theory course in the programme, taken verbatim from your Applied
+          Calculus and Programming in C course plans. Lab courses are marked differently — see rule
+          three.
         </p>
+      </section>
 
-        <div className="grid gap-3 sm:grid-cols-3 mt-4">
-          <SchemeCard
-            label="Continuous Learning Assessment"
-            marks={30}
-            weight={30}
-            body="Class Test 10 · Assignment 10 · Quiz 5 · Project 15 · Innovative Practices 15. Faculty pick at least two of these; the total can't exceed 30."
-          />
-          <SchemeCard
-            label="Mid-Semester Examination"
-            marks={20}
-            weight={20}
-            body="One written paper, 5–11 Oct. Covers roughly the first three units."
-            highlight
-          />
-          <SchemeCard
-            label="End-Semester Examination"
-            marks={100}
-            weight={50}
-            body="Marked out of 100, scaled to 50% of your final grade. Covers the entire syllabus."
-          />
-        </div>
-      </div>
+      {/* ── readiness, per paper ───────────────────────────── */}
+      <section className="space-y-3">
+        <h2 className="text-[length:var(--text-title)]">Where you stand, paper by paper</h2>
+        <Card>
+          <ul className="divide-y divide-[var(--border)]">
+            {subjects.map((s) => {
+              // Lab-only courses measure experiments; there are no topics to count.
+              const mid = topics.filter((t) => t.subject_id === s.id && t.in_midsem);
+              const labs = experiments.filter((e) => e.subject_id === s.id);
+              const measured = mid.length
+                ? mid.map((t) => t.status)
+                : labs.map((e) => e.status);
+              const noun = mid.length ? "topics" : "experiments";
+              const p = progressOf(measured);
+              const exam = subjectExams.find((e) => e.subject_id === s.id);
+
+              return (
+                <li key={s.id} className={cn("px-4 py-3", ACCENT_CLASS[s.color])}>
+                  <Link
+                    href={`/subjects/${s.slug}`}
+                    className="flex items-start gap-3 rounded focus-ring"
+                  >
+                    <Ring value={p} size={40} stroke={3.5} />
+                    <div className="min-w-0 flex-1">
+                      <p className="flex items-center gap-2 text-[length:var(--text-small)] font-medium">
+                        {s.name}
+                        {!s.midsem_confirmed ? <Badge tone="warn">scope unconfirmed</Badge> : null}
+                      </p>
+                      <p className="mt-0.5 text-[length:var(--text-micro)] leading-relaxed text-muted">
+                        {exam?.scope ?? s.midsem_scope}
+                      </p>
+                      {measured.length ? (
+                        <div className="mt-2 flex items-center gap-2.5">
+                          <Bar value={p} className="w-40" />
+                          <span className="text-[length:var(--text-micro)] tabular-nums text-subtle">
+                            {measured.filter((x) => x !== "not_started").length}/{measured.length}{" "}
+                            {noun} started
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="mt-1.5 text-[length:var(--text-micro)] text-[var(--warn)]">
+                          no syllabus loaded — nothing to measure
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      </section>
 
       {/* ── the rules that bite ────────────────────────────── */}
-      <Card className="border-[var(--warn)]/35">
-        <div className="px-4 py-3.5">
-          <p className="text-[length:var(--text-small)] font-semibold flex items-center gap-2">
-            <ShieldAlert size={15} className="text-[var(--warn)]" />
-            Three rules that fail people who were otherwise fine
-          </p>
-          <ol className="mt-2.5 space-y-2.5">
-            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
-              <span className="text-subtle font-mono shrink-0">1.</span>
-              <span>
-                <strong>40% in internals AND 40% in the end-sem, separately.</strong> Internals are
-                CLA 30 + MSE 20 = 50 marks, so you need 20. The end-sem is out of 100 raw, so you
-                need 40. A brilliant end-sem does not rescue weak internals, and the reverse is
-                also true.
-              </span>
-            </li>
-            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
-              <span className="text-subtle font-mono shrink-0">2.</span>
-              <span>
-                <strong>75% attendance in every subject.</strong> Below it and you are barred from
-                sitting the end-sem at all — no marks, regardless of performance. You started a
-                month late, so this is a live risk, not a theoretical one. Find out your current
-                percentage per subject this week.
-              </span>
-            </li>
-            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
-              <span className="text-subtle font-mono shrink-0">3.</span>
-              <span>
-                <strong>Lab courses have no end-sem paper.</strong> They&rsquo;re 100% continuous —
-                50 marks of quizzes plus 50 of execution &amp; viva, all during lab hours, with
-                your lab file checked each session. Miss the sessions and there is no way to make
-                the marks up later.
-              </span>
-            </li>
-          </ol>
-        </div>
-      </Card>
+      <section className="space-y-3">
+        <h2 className="flex items-center gap-2 text-[length:var(--text-title)]">
+          <ShieldAlert size={18} className="text-[var(--warn)]" />
+          Three rules that fail people who were otherwise fine
+        </h2>
+        <ol className="space-y-3">
+          <Rule n={1} title="40% in internals and 40% in the end-sem, separately">
+            Internals are CLA 30 + MSE 20 = 50 marks, so you need 20. The end-sem is out of 100
+            raw, so you need 40. A brilliant end-sem does not rescue weak internals, and the
+            reverse is also true.
+          </Rule>
+          <Rule n={2} title="75% attendance in every subject">
+            Below it and you are barred from sitting the end-sem at all — no marks, regardless of
+            performance. You started a month late, so this is live rather than theoretical.{" "}
+            <Link
+              href="/attendance"
+              className="text-fg underline underline-offset-2 hover:text-[var(--accent)]"
+            >
+              Check where you are
+            </Link>
+            .
+          </Rule>
+          <Rule n={3} title="Lab courses have no end-sem paper">
+            They&rsquo;re 100% continuous — 50 marks of quizzes plus 50 of execution and viva, all
+            during lab hours, with your lab file checked each session. Miss the sessions and there
+            is no way to make the marks up later.
+          </Rule>
+        </ol>
+      </section>
 
       {/* ── per-subject components ─────────────────────────── */}
-      <div className="space-y-6">
-        <h2 className="text-[length:var(--text-body)] font-semibold tracking-tight">Every assessment, by subject</h2>
+      <section className="space-y-5">
+        <h2 className="text-[length:var(--text-title)]">Every assessment, by subject</h2>
         {subjects.map((s) => {
           const own = components.filter((c) => c.subject_id === s.id);
           if (!own.length) return null;
           return (
             <div key={s.id} className={ACCENT_CLASS[s.color]}>
-              <div className="flex items-center gap-2 mb-2.5">
+              <div className="mb-2.5 flex items-center gap-2">
                 <h3 className="text-[length:var(--text-small)] font-semibold">
-                  <Link href={`/subjects/${s.slug}`} className="hover:text-sc focus-ring rounded">
+                  <Link href={`/subjects/${s.slug}`} className="rounded hover:text-sc focus-ring">
                     {s.name}
                   </Link>
                 </h3>
@@ -178,32 +222,31 @@ export default async function ExamsPage() {
             </div>
           );
         })}
-      </div>
+      </section>
     </div>
   );
 }
 
-function SchemeCard({
-  label,
-  marks,
-  weight,
-  body,
-  highlight,
+function Rule({
+  n,
+  title,
+  children,
 }: {
-  label: string;
-  marks: number;
-  weight: number;
-  body: string;
-  highlight?: boolean;
+  n: number;
+  title: string;
+  children: React.ReactNode;
 }) {
   return (
-    <Card className={cn("p-4", highlight && "ring-1 ring-[var(--accent)]")}>
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[length:var(--text-micro)] font-medium text-muted leading-snug">{label}</p>
-        <p className="text-[length:var(--text-lead)] font-semibold tabular-nums shrink-0">{weight}%</p>
+    <li className="flex gap-3">
+      <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--warn-soft)] text-[length:var(--text-micro)] font-semibold tabular-nums text-[var(--warn)]">
+        {n}
+      </span>
+      <div className="min-w-0">
+        <p className="text-[length:var(--text-small)] font-medium">{title}</p>
+        <p className="mt-0.5 max-w-[72ch] text-[length:var(--text-small)] leading-relaxed text-muted">
+          {children}
+        </p>
       </div>
-      <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">out of {marks} marks</p>
-      <p className="text-[length:var(--text-micro)] text-muted mt-2.5 leading-relaxed">{body}</p>
-    </Card>
+    </li>
   );
 }

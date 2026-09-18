@@ -11,17 +11,11 @@ export default async function NotesPage() {
     getTopics(),
   ]);
 
+  // No page heading here on purpose — the nav already says Notes, and the
+  // writing surface is worth the 90px it would have cost.
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-[length:var(--text-page)]">Notes</h1>
-        <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Markdown with LaTeX. Paste a screenshot straight into the editor and it uploads.
-        </p>
-      </div>
-      <Suspense>
-        <NotesShell initialNotes={notes} subjects={subjects} topics={topics} />
-      </Suspense>
-    </div>
+    <Suspense>
+      <NotesShell initialNotes={notes} subjects={subjects} topics={topics} />
+    </Suspense>
   );
 }

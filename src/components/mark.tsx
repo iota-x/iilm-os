@@ -1,13 +1,35 @@
 /**
- * The IILM OS mark: a bracketed serif "I" — the same letterform family as the
- * headings — set in paper-cream on the accent. This is the single source for
- * the sidebar, the mobile bar, the login page, the favicon and the touch icon;
- * the SVG path below is copied verbatim into icon.svg and apple-icon.tsx.
+ * The IILM OS mark: a week, drawn to scale — three days of blocks, with the
+ * class that's on right now lit. It's the planner's timetable reduced to an
+ * icon, which is the one picture this product owns.
+ *
+ * Single source for the sidebar, the mobile bar, the login and landing pages,
+ * the favicon and the touch/PWA icons. Blocks are on a 64×64 grid.
  */
 
-/** Bracketed serif I on a 64×64 grid. Stem 7 wide, serifs 26 wide. */
-export const MARK_PATH =
-  "M19 16h26v5h-7.5q-2 0-2 2v18q0 2 2 2H45v5H19v-5h7.5q2 0 2-2V23q0-2-2-2H19z";
+export const MARK_BLOCKS: { x: number; y: number; w: number; h: number; lit?: boolean }[] = [
+  { x: 14, y: 14, w: 10, h: 13 },
+  { x: 14, y: 31, w: 10, h: 19 },
+  { x: 27, y: 14, w: 10, h: 9 },
+  { x: 27, y: 27, w: 10, h: 23, lit: true },
+  { x: 40, y: 19, w: 10, h: 16 },
+  { x: 40, y: 39, w: 10, h: 11 },
+];
+
+/** Dim blocks as a solid colour — Satori (the PNG icon renderer) ignores opacity. */
+export const CREAM = "#f7f5f1";
+export const CREAM_DIM = "#aaa1e5"; // cream at 55% over the accent
+
+/** The blocks as SVG. `dim` is the colour for the blocks that aren't lit. */
+export function MarkBlocks({ fill, dim }: { fill: string; dim: string }) {
+  return (
+    <g>
+      {MARK_BLOCKS.map((b, i) => (
+        <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx={2.5} fill={b.lit ? fill : dim} />
+      ))}
+    </g>
+  );
+}
 
 export function Mark({ size = 28, className }: { size?: number; className?: string }) {
   return (
@@ -20,7 +42,7 @@ export function Mark({ size = 28, className }: { size?: number; className?: stri
       style={{ flexShrink: 0 }}
     >
       <rect width="64" height="64" rx="14" fill="var(--accent)" />
-      <path d={MARK_PATH} fill="var(--accent-fg)" />
+      <MarkBlocks fill="var(--accent-fg)" dim="color-mix(in srgb, var(--accent-fg) 55%, var(--accent))" />
     </svg>
   );
 }

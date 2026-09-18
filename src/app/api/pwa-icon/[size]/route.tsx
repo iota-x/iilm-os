@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { MARK_PATH } from "@/components/mark";
+import { MARK_BLOCKS, CREAM, CREAM_DIM } from "@/components/mark";
 
 /** The mark as a PNG at whatever size the manifest asks for. */
 export async function GET(_req: Request, ctx: { params: Promise<{ size: string }> }) {
@@ -21,7 +21,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ size: string }
         }}
       >
         <svg width={glyph} height={glyph} viewBox="0 0 64 64">
-          <path d={MARK_PATH} fill="#f7f5f1" />
+          {MARK_BLOCKS.map((b, i) => (
+            <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx={2.5} fill={b.lit ? CREAM : CREAM_DIM} />
+          ))}
         </svg>
       </div>
     ),

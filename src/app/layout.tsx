@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme";
+import { RegisterSW } from "@/components/register-sw";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
     <html lang="en" className={`${serif.variable} ${sans.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider>
+          <RegisterSW />
           {children}
           <Toaster
             position="bottom-right"

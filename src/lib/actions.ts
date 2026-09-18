@@ -225,9 +225,21 @@ export async function recordAttachment(input: {
   subject_id?: string | null;
   topic_id?: string | null;
   caption?: string | null;
+  taken_at?: string | null;
+  slot_id?: string | null;
 }) {
   const { db, userId } = await uid();
   const { error } = await db.from("attachments").insert({ user_id: userId, ...input });
+  if (error) throw new Error(error.message);
+}
+
+/** Re-file an inbox photo: which subject, which class, or which topic. */
+export async function setAttachmentPlace(
+  id: string,
+  patch: { subject_id?: string | null; slot_id?: string | null; topic_id?: string | null },
+) {
+  const { db } = await uid();
+  const { error } = await db.from("attachments").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
 }
 

@@ -82,6 +82,7 @@ export async function getInboxFiles(): Promise<Attachment[]> {
     .from("attachments")
     .select("*")
     .is("note_id", null)
+    .order("taken_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
   if (error) return [];
   return (data as Attachment[]) ?? [];

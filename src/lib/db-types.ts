@@ -203,6 +203,10 @@ export interface Attachment {
   mime: string | null;
   size_bytes: number | null;
   caption: string | null;
+  /** when the photo was taken (EXIF), not when it was uploaded */
+  taken_at: string | null;
+  /** the class it was matched to from the timetable */
+  slot_id: string | null;
   created_at: string;
 }
 

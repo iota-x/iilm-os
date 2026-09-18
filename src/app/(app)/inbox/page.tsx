@@ -1,11 +1,16 @@
 import { InboxUpload } from "@/components/inbox-upload";
 import { Card, CardHead } from "@/components/ui";
-import { getInboxFiles, getSubjects } from "@/lib/queries";
+import { getInboxFiles, getProfile, getSlots, getSubjects } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function InboxPage() {
-  const [files, subjects] = await Promise.all([getInboxFiles(), getSubjects()]);
+  const [files, subjects, slots, profile] = await Promise.all([
+    getInboxFiles(),
+    getSubjects(),
+    getSlots(),
+    getProfile(),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -17,7 +22,12 @@ export default async function InboxPage() {
         </p>
       </div>
 
-      <InboxUpload files={files} subjects={subjects} />
+      <InboxUpload
+        files={files}
+        subjects={subjects}
+        slots={slots}
+        labGroup={profile?.lab_group ?? 2}
+      />
 
       <Card>
         <CardHead title="What this does, and doesn't" />

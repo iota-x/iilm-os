@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/login", "/auth"];
+// manifest, icons and the service worker have to load before sign-in, or
+// Android can't install the app.
+const PUBLIC = ["/login", "/auth", "/manifest.webmanifest", "/sw.js", "/api/pwa-icon"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions";
 import { createClient } from "@/lib/supabase/client";
 import { exifDate, filenameDate, matchSession } from "@/lib/capture";
+import { shrinkInBrowser } from "@/lib/shrink-browser";
 import type { Attachment, Slot, Subject } from "@/lib/db-types";
 import { Button, inputCls } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtTime } from "@/lib/utils";
@@ -91,23 +92,24 @@ export function InboxUpload({
       }
       setBusy(file.name);
       try {
-        const at = await capturedAt(file);
+        const at = await capturedAt(file); // from the original — shrinking strips EXIF
         const match = matchSession(at, slots, labGroup);
         const subjectId = override || match.slot?.subject_id || null;
         if (subjectId) filed++;
 
-        const ext = file.name.split(".").pop() || "bin";
+        const small = await shrinkInBrowser(file);
+        const ext = small.name.split(".").pop() || "bin";
         const key = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
         const { error } = await supabase.storage
           .from("vault")
-          .upload(key, file, { contentType: file.type, upsert: false });
+          .upload(key, small, { contentType: small.type, upsert: false });
         if (error) throw error;
 
         await recordAttachment({
           storage_path: key,
           filename: file.name,
-          mime: file.type,
-          size_bytes: file.size,
+          mime: small.type,
+          size_bytes: small.size,
           note_id: null,
           subject_id: subjectId,
           taken_at: at.toISOString(),

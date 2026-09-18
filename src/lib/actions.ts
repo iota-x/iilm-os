@@ -223,6 +223,19 @@ export async function setOwnPassword(password: string) {
   revalidatePath("/", "layout");
 }
 
+/** The student's own Gemini key for /ask. Empty string clears it. */
+export async function setGeminiKey(key: string) {
+  const { db, userId } = await uid();
+  const k = key.trim();
+  if (k && !/^AI[A-Za-z0-9_-]{20,}$|^AQ\.[A-Za-z0-9_-]{20,}$/.test(k)) {
+    throw new Error("That doesn't look like a Gemini key — they start with AIza… or AQ.…");
+  }
+  const { error } = await db.from("profiles").update({ gemini_key: k || null }).eq("id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/settings");
+  revalidatePath("/ask");
+}
+
 export async function setDisplayName(name: string) {
   const { db, userId } = await uid();
   await db.from("profiles").update({ display_name: name }).eq("id", userId);

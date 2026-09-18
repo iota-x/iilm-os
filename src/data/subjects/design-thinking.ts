@@ -14,7 +14,7 @@ export const designThinking: SeedSubject = {
   overview:
     "Combining computational thinking's logical, systematic reasoning with design thinking's creative, human-centred approach to solve real-world problems. Decomposition, pattern recognition, abstraction and algorithm design, applied through empathy, problem framing and requirements definition.",
   midsemScope:
-    "Not confirmed — the course plan isn't in your folder yet. Mid-sems across your other subjects cover roughly the first 60% of the syllabus, so expect Units 1–3.",
+    "Not confirmed — the course plan hasn't arrived yet. Mid-sems across your other subjects cover roughly the first 60% of the syllabus, so expect Units 1–3.",
   midsemConfirmed: false,
   objectives: [
     "Apply computational thinking — decomposition, pattern recognition, abstraction, algorithm design.",
@@ -181,7 +181,7 @@ That's deliberate: it frees your evening hours for Calculus and C, which need th
   localFiles: ["computational_design_thinking/Unit1-Computational Design Thinking.pptx.pdf"],
   gaps: [
     "Course plan missing — no course outcomes, no session counts, no confirmed mid-sem scope, no marking scheme, no reading list.",
-    "Units 2 onwards missing. Only the Unit 1 deck is in your folder.",
+    "Units 2 onwards missing. Only the Unit 1 deck has been shared so far.",
     "The marking scheme shown is the IILM standard (CLA 30 + MSE 20 + ESE 50) taken from your Calculus and C course plans. Confirm it.",
   ],
 };

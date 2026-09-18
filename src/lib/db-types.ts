@@ -17,6 +17,8 @@ export interface Profile {
   theme: string;
   section: string | null;
   must_change_password: boolean;
+  /** the student's own Gemini key for /ask; null means the shared one */
+  gemini_key: string | null;
 }
 
 export interface Subject {

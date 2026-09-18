@@ -1,6 +1,7 @@
 import { getAttendance, getProfile, getSubjects } from "@/lib/queries";
 import { SettingsForm } from "@/components/settings-form";
 import { ThemeToggle } from "@/components/theme";
+import { GeminiKeyForm } from "@/components/gemini-key-form";
 import { Card, CardHead } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export default async function SettingsPage() {
       <div>
         <h1 className="text-[length:var(--text-page)]">Settings</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Four things, and then you&rsquo;re done.
+          Five things, and then you&rsquo;re done.
         </p>
       </div>
 
@@ -29,6 +30,8 @@ export default async function SettingsPage() {
           <ThemeToggle full />
         </div>
       </Card>
+
+      <GeminiKeyForm current={profile.gemini_key} />
 
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} />
 

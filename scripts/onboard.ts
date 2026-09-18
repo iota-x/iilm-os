@@ -20,7 +20,7 @@ config({ path: [".env.local", ".env"] });
 import { createClient } from "@supabase/supabase-js";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ensureProfile, seedUser } from "./seed";
+import { ensureProfile, seedUser } from "../src/lib/seed";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -98,7 +98,7 @@ async function main() {
         email: s.email,
         password: DEFAULT_PASSWORD,
         email_confirm: true,
-        user_metadata: { display_name: s.name },
+        user_metadata: { name: s.name },
       });
       if (cErr) {
         console.error(`  ! ${s.email}: ${cErr.message}`);
@@ -111,21 +111,18 @@ async function main() {
       continue;
     }
 
-    await ensureProfile(id!, {
+    await ensureProfile(db, id!, {
       display_name: s.name,
       lab_group: s.group,
       section: SECTION,
       must_change_password: isNew,
     });
-
-    // Quiet: seedUser prints its own progress, which is noise sixty times over.
-    const log = console.log;
-    console.log = () => {};
-    try {
-      await seedUser(id!, { plan: false });
-    } finally {
-      console.log = log;
+    if (isNew) {
+      // the trigger made the row before us; the roster's group wins on a new account
+      await db.from("profiles").update({ lab_group: s.group, display_name: s.name }).eq("id", id!);
     }
+
+    await seedUser(db, id!, { plan: false, personal: false });
     seeded++;
     console.log(`  ${isNew ? "created" : "updated"}  ${s.email.padEnd(36)} ${s.name} · group ${s.group}`);
   }

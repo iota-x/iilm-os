@@ -157,6 +157,7 @@ export const digitalElectronics: SeedSubject = {
 Practise until step 1 is automatic. Then do ten timed ones; the solver link under Resources checks your answers.`,
     },
     {
+      personal: true,
       title: "Read this one first — this is your actual emergency",
       body: `You told me to leave this blank because you have no resources for it. Here's why that's the wrong call.
 
@@ -171,6 +172,7 @@ That's three lectures plus a two-hour lab — more weekly contact time than Foun
 Having no material doesn't make it low priority. It makes it the one subject where you currently cannot even measure how far behind you are.`,
     },
     {
+      personal: true,
       title: "The three things to do this week, in order",
       body: `**1. Get the course plan.** Same place you got the Calculus and C ones — LMS, or ask a classmate for the PDF, or email Dr Puja Acharya directly. One message. Every other subject's plan gave the exact unit list, session topics, mid-sem scope and marking scheme, and this one will too.
 
@@ -199,6 +201,6 @@ Don't build notes deep on this guess. Build on number systems, K-maps and Boolea
   gaps: [
     "The course plan. Unit 1 above is reconstructed from the fact that the class is on K-maps — the real unit list, session plan, mid-sem scope, marking scheme and course code are all still unknown.",
     "There is a lab (Thursday 14:00–16:10, Lab 7-B2-104, Dr. Sambhavi) with a lab file you have no record of.",
-    "You started a month late — find out how many lectures and lab sessions have already happened.",
+    "The lab experiment list, and how many lab sessions have already happened.",
   ],
 };

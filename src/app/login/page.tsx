@@ -7,6 +7,16 @@ import { createClient } from "@/lib/supabase/client";
 import { Button, Card, inputCls } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme";
 
+/** "ankit.pandey.26@gg.iilm.edu" → "Ankit Pandey" */
+function nameFromEmail(email: string) {
+  return email
+    .split("@")[0]
+    .split(".")
+    .filter((p) => p && !/^\d+$/.test(p))
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join(" ");
+}
+
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -14,7 +24,8 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const [mode, setMode] = useState<"in" | "up">(params.get("mode") === "up" ? "up" : "in");
+  const [group, setGroup] = useState<1 | 2>(2);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -36,15 +47,28 @@ function LoginForm() {
       router.push(next);
       router.refresh();
     } else {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setError(error.message);
+      // Created server-side, confirmed, and seeded with the whole curriculum
+      // before this returns — so the first page is complete. Then sign in.
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password, group }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(data.error ?? "Couldn't create the account.");
         setBusy(false);
         return;
       }
-      setInfo("Account created. If email confirmation is on, check your inbox — then sign in.");
-      setMode("in");
-      setBusy(false);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setInfo("Account created — sign in to continue.");
+        setMode("in");
+        setBusy(false);
+        return;
+      }
+      router.push("/");
+      router.refresh();
     }
   }
 
@@ -76,8 +100,17 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`${inputCls} mt-1`}
-                placeholder="you@example.com"
+                placeholder={mode === "up" ? "first.last.26@gg.iilm.edu" : "you@gg.iilm.edu"}
               />
+              {mode === "up" && /@gg\.iilm\.edu$/i.test(email) ? (
+                <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                  You&rsquo;ll appear as <span className="text-fg">{nameFromEmail(email)}</span>.
+                </p>
+              ) : mode === "up" ? (
+                <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                  Your college address. Your name comes from it.
+                </p>
+              ) : null}
             </div>
             <div>
               <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="password">
@@ -87,14 +120,40 @@ function LoginForm() {
                 id="password"
                 type="password"
                 required
-                minLength={6}
+                minLength={mode === "up" ? 8 : 6}
                 autoComplete={mode === "in" ? "current-password" : "new-password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`${inputCls} mt-1`}
-                placeholder="••••••••"
+                placeholder={mode === "up" ? "At least 8 characters" : "••••••••"}
               />
             </div>
+
+            {mode === "up" ? (
+              <div>
+                <p className="text-[length:var(--text-micro)] font-medium text-muted">Lab group</p>
+                <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
+                  Decides which lab slots your timetable shows. Changeable in Settings.
+                </p>
+                <div className="mt-1.5 grid grid-cols-2 gap-2">
+                  {([1, 2] as const).map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setGroup(g)}
+                      aria-pressed={group === g}
+                      className={`rounded-[var(--radius-control)] border px-3 py-2 text-[length:var(--text-small)] font-medium transition-colors focus-ring ${
+                        group === g
+                          ? "border-[var(--accent)] bg-[var(--accent-soft)] text-fg"
+                          : "border-line bg-surface text-muted hover:bg-surface-2"
+                      }`}
+                    >
+                      Group {g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             {error ? (
               <p className="text-[length:var(--text-micro)] text-[var(--bad)] bg-[var(--bad-soft)] rounded-lg px-3 py-2">
@@ -119,7 +178,7 @@ function LoginForm() {
             }}
             className="mt-3 w-full text-[length:var(--text-micro)] text-muted hover:text-fg transition-colors focus-ring rounded"
           >
-            {mode === "in" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+            {mode === "in" ? "New here? Create your account" : "Already have an account? Sign in"}
           </button>
         </Card>
       </div>

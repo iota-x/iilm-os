@@ -57,6 +57,8 @@ export interface SeedComponent {
 export interface SeedStrategy {
   title: string;
   body: string;
+  /** written to one specific student; other accounts don't get it */
+  personal?: boolean;
 }
 
 export interface SeedBook {

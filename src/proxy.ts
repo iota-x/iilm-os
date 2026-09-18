@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // manifest, icons and the service worker have to load before sign-in, or
 // Android can't install the app.
-const PUBLIC = ["/login", "/auth", "/manifest.webmanifest", "/sw.js", "/api/pwa-icon"];
+const PUBLIC = ["/login", "/auth", "/landing", "/manifest.webmanifest", "/sw.js", "/api/pwa-icon", "/api/signup"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -34,6 +34,13 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC.some((p) => pathname.startsWith(p));
 
+  // Signed out at the root: show the front door without changing the URL.
+  if (!user && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/landing";
+    return NextResponse.rewrite(url);
+  }
+
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -58,7 +65,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (user && pathname === "/login") {
+  if (user && (pathname === "/login" || pathname === "/landing")) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";

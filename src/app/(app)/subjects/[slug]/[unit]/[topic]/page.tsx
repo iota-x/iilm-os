@@ -14,6 +14,7 @@ import {
   getAttempts,
   getCheckpoints,
   getNotes,
+  getInboxFiles,
   getQuestions,
   getResources,
   getSubjectBySlug,
@@ -40,11 +41,12 @@ export default async function TopicPage({
   const subject = await getSubjectBySlug(slug);
   if (!subject) notFound();
 
-  const [units, allTopics, allResources, allNotes] = await Promise.all([
+  const [units, allTopics, allResources, allNotes, allPhotos] = await Promise.all([
     getUnits(subject.id),
     getTopics(subject.id),
     getResources(subject.id),
     getNotes({ subjectId: subject.id }),
+    getInboxFiles(subject.id),
   ]);
 
   const unit = units.find((u) => u.number === number);
@@ -56,6 +58,7 @@ export default async function TopicPage({
 
   const resources = allResources.filter((r) => r.topic_id === topic.id);
   const notes = allNotes.filter((n) => n.topic_id === topic.id);
+  const photos = allPhotos.filter((p) => p.topic_id === topic.id);
   const checkpoints = await getCheckpoints([topic.id]);
   const review = reviewStateOf(topic);
   const questions = await getQuestions({ topicId: topic.id });
@@ -176,6 +179,44 @@ export default async function TopicPage({
           />
         </Card>
       </section>
+
+      {/* ── from class ─────────────────────────────────────── */}
+      {photos.length ? (
+        <section>
+          <SectionTitle>
+            From class
+            <span className="ml-1.5 tabular-nums text-subtle">{photos.length}</span>
+          </SectionTitle>
+          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {photos.map((f) => (
+              <li
+                key={f.id}
+                className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
+              >
+                <a href={`/api/vault/${f.storage_path}`} target="_blank" rel="noopener noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/api/vault/${f.storage_path}`}
+                    alt={f.caption ?? "board"}
+                    loading="lazy"
+                    className="aspect-[4/3] w-full bg-surface-2 object-cover"
+                  />
+                </a>
+                <p className="px-2.5 py-2 text-[length:var(--text-micro)] leading-snug text-muted">
+                  {f.taken_at
+                    ? new Date(f.taken_at).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        timeZone: "Asia/Kolkata",
+                      })
+                    : null}
+                  {f.caption ? <span className="text-fg"> — {f.caption}</span> : null}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {/* ── resources ──────────────────────────────────────── */}
       <section>

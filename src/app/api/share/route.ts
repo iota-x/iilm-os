@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { exifDate, filenameDate, matchSession } from "@/lib/capture";
+import { shrinkOnServer } from "@/lib/shrink-server";
 
 export const dynamic = "force-dynamic";
 
@@ -43,19 +44,20 @@ export async function POST(req: Request) {
       new Date(file.lastModified || Date.now());
     const match = matchSession(at, slots ?? [], labGroup);
 
-    const ext = file.name.split(".").pop() || "bin";
+    const small = await shrinkOnServer(bytes, file.type);
+    const ext = small.mime === "image/jpeg" ? "jpg" : file.name.split(".").pop() || "bin";
     const key = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const { error: upErr } = await db.storage
       .from("vault")
-      .upload(key, bytes, { contentType: file.type, upsert: false });
+      .upload(key, small.bytes, { contentType: small.mime, upsert: false });
     if (upErr) continue;
 
     const { error } = await db.from("attachments").insert({
       user_id: user.id,
       storage_path: key,
       filename: file.name,
-      mime: file.type,
-      size_bytes: file.size,
+      mime: small.mime,
+      size_bytes: small.bytes.length,
       note_id: null,
       subject_id: match.slot?.subject_id ?? null,
       slot_id: match.slot?.id ?? null,

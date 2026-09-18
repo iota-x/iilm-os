@@ -17,19 +17,21 @@ type TopicRow = {
 };
 
 export async function POST(req: Request) {
-  const resolved = resolveModel();
-  if (!resolved) {
-    return Response.json(
-      { error: "No model key set on the server. Add GOOGLE_GENERATIVE_AI_API_KEY and redeploy." },
-      { status: 501 },
-    );
-  }
-
   const db = await createClient();
   const {
     data: { user },
   } = await db.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
+
+  // The student's own key, if they've added one in Settings.
+  const { data: prof } = await db.from("profiles").select("gemini_key").eq("id", user.id).maybeSingle();
+  const resolved = resolveModel(prof?.gemini_key ?? null);
+  if (!resolved) {
+    return Response.json(
+      { error: "No AI key yet. Add your Gemini key in Settings — it takes two minutes and is free." },
+      { status: 501 },
+    );
+  }
 
   const body = (await req.json()) as {
     messages: { role: "user" | "assistant"; content: string }[];

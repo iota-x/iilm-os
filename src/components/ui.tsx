@@ -63,9 +63,9 @@ export function Button({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors focus-ring disabled:opacity-45 disabled:pointer-events-none whitespace-nowrap",
-        size === "sm" && "h-7 px-2.5 text-[12px]",
-        size === "md" && "h-9 px-3.5 text-[13px]",
-        size === "icon" && "h-8 w-8 text-[13px]",
+        size === "sm" && "h-7 px-2.5 text-[length:var(--text-micro)]",
+        size === "md" && "h-9 px-3.5 text-[length:var(--text-small)]",
+        size === "icon" && "h-8 w-8 text-[length:var(--text-small)]",
         variant === "primary" &&
           "bg-[var(--accent)] text-[var(--accent-fg)] hover:opacity-90",
         variant === "outline" &&
@@ -94,7 +94,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium leading-4 whitespace-nowrap",
+        "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[length:var(--text-micro)] font-medium leading-4 whitespace-nowrap",
         tone === "neutral" && "bg-surface-3 text-muted",
         tone === "accent" && "bg-[var(--accent-soft)] text-[var(--accent)]",
         tone === "good" && "bg-[var(--good-soft)] text-[var(--good)]",
@@ -176,7 +176,7 @@ export function Ring({
           className="transition-[stroke-dashoffset] duration-700"
         />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-[11px] font-semibold tabular-nums">
+      <span className="absolute inset-0 grid place-items-center text-[length:var(--text-micro)] font-semibold tabular-nums">
         {label ?? `${Math.round(value * 100)}`}
       </span>
     </div>
@@ -198,9 +198,9 @@ export function Empty({
   return (
     <div className="flex flex-col items-center text-center px-6 py-8">
       {icon ? <div className="text-subtle mb-3">{icon}</div> : null}
-      <p className="text-[13px] font-medium">{title}</p>
+      <p className="text-[length:var(--text-small)] font-medium">{title}</p>
       {body ? (
-        <p className="text-[12.5px] text-muted mt-1 max-w-sm leading-relaxed">{body}</p>
+        <p className="text-[length:var(--text-small)] text-muted mt-1 max-w-sm leading-relaxed">{body}</p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

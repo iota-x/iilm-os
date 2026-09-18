@@ -45,7 +45,7 @@ function Track({
           {title}
         </h3>
         {scored.length ? (
-          <span className="text-[12px] text-muted tabular-nums">
+          <span className="text-[length:var(--text-micro)] text-muted tabular-nums">
             {got}/{outOf} recorded ·{" "}
             <span className="font-semibold text-fg">
               {outOf ? Math.round((got / outOf) * 100) : 0}%
@@ -55,7 +55,7 @@ function Track({
       </div>
 
       <div className="border border-line rounded-[12px] overflow-hidden bg-surface">
-        <table className="w-full text-[12.5px]">
+        <table className="w-full text-[length:var(--text-small)]">
           <thead>
             <tr className="bg-surface-2 text-subtle">
               <th className="text-left font-medium px-3 py-2">Component</th>
@@ -72,7 +72,7 @@ function Track({
         </table>
       </div>
 
-      {note ? <p className="text-[11.5px] text-muted mt-2">{note}</p> : null}
+      {note ? <p className="text-[length:var(--text-micro)] text-muted mt-2">{note}</p> : null}
     </div>
   );
 }
@@ -94,19 +94,19 @@ function Row({ c }: { c: Component }) {
     <tr className={cn(pending && "opacity-50")}>
       <td className="px-3 py-2.5 align-top">
         <p className="font-medium">{c.name}</p>
-        <p className="text-[11.5px] text-muted mt-0.5 flex flex-wrap items-center gap-1.5">
+        <p className="text-[length:var(--text-micro)] text-muted mt-0.5 flex flex-wrap items-center gap-1.5">
           {c.timing ? <span>{c.timing}</span> : null}
           {c.co && c.co !== "Not confirmed" && c.co !== "Unknown" ? (
             <Badge tone="neutral">{c.co}</Badge>
           ) : null}
         </p>
-        <p className="text-[11.5px] text-muted mt-1 sm:hidden">{c.scope}</p>
+        <p className="text-[length:var(--text-micro)] text-muted mt-1 sm:hidden">{c.scope}</p>
       </td>
       <td className="px-3 py-2.5 align-top text-muted hidden sm:table-cell">{c.scope}</td>
       <td className="px-3 py-2.5 align-top text-right tabular-nums">
         {c.marks}
         {c.weightage !== c.marks ? (
-          <span className="text-subtle block text-[11px]">{c.weightage}%</span>
+          <span className="text-subtle block text-[length:var(--text-micro)]">{c.weightage}%</span>
         ) : null}
       </td>
       <td className="px-3 py-2.5 align-top text-right">
@@ -123,7 +123,7 @@ function Row({ c }: { c: Component }) {
               type="number"
               min={0}
               max={c.marks}
-              className={`${inputCls} h-7 w-[60px] text-right text-[12px] px-2`}
+              className={`${inputCls} h-7 w-[60px] text-right text-[length:var(--text-micro)] px-2`}
             />
             <Button variant="ghost" size="icon" onClick={save} aria-label="Save">
               <Check size={13} />

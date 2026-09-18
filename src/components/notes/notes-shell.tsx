@@ -82,14 +82,14 @@ export function NotesShell({
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search notes"
-              className={`${inputCls} pl-8 h-8 text-[12.5px]`}
+              className={`${inputCls} pl-8 h-8 text-[length:var(--text-small)]`}
             />
           </div>
           <div className="flex gap-1.5">
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className={`${inputCls} h-8 flex-1 text-[12.5px]`}
+              className={`${inputCls} h-8 flex-1 text-[length:var(--text-small)]`}
             >
               <option value="">All subjects</option>
               {subjects.map((s) => (
@@ -124,14 +124,14 @@ export function NotesShell({
                       ) : null}
                       <p
                         className={cn(
-                          "text-[13px] leading-snug line-clamp-2",
+                          "text-[length:var(--text-small)] leading-snug line-clamp-2",
                           active ? "font-semibold text-sc" : "font-medium",
                         )}
                       >
                         {n.title || "Untitled"}
                       </p>
                     </div>
-                    <p className="text-[11px] text-subtle mt-1 flex items-center gap-1.5">
+                    <p className="text-[length:var(--text-micro)] text-subtle mt-1 flex items-center gap-1.5">
                       {subject ? <span className="text-sc font-medium">{subject.short_name}</span> : null}
                       <span>{relativeDay(n.updated_at.slice(0, 10))}</span>
                     </p>
@@ -140,7 +140,7 @@ export function NotesShell({
               );
             })
           ) : (
-            <li className="px-4 py-8 text-center text-[12.5px] text-muted">
+            <li className="px-4 py-8 text-center text-[length:var(--text-small)] text-muted">
               {q || filter ? "No matches." : "No notes yet."}
             </li>
           )}

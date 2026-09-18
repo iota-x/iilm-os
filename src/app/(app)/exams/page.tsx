@@ -21,8 +21,8 @@ export default async function ExamsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Exams & marking</h1>
-        <p className="text-[13px] text-muted mt-0.5">
+        <h1 className="text-[length:var(--text-page)]">Exams & marking</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           How the 100 marks are actually split, and where you stand.
         </p>
       </div>
@@ -33,10 +33,10 @@ export default async function ExamsPage() {
           <div className="flex items-center gap-3">
             <CalendarClock size={20} className="text-[var(--accent)]" />
             <div>
-              <p className="text-[15px] font-semibold tracking-tight">
+              <p className="text-[length:var(--text-body)] font-semibold tracking-tight">
                 Mid-semester examinations
               </p>
-              <p className="text-[12.5px] text-muted mt-0.5">
+              <p className="text-[length:var(--text-small)] text-muted mt-0.5">
                 5–11 Oct 2026 ·{" "}
                 <span className="text-[var(--warn)]">dates not officially confirmed</span>
               </p>
@@ -44,7 +44,7 @@ export default async function ExamsPage() {
           </div>
           <div className="ml-auto text-right">
             <p className="text-[26px] font-semibold tabular-nums leading-none">{left}</p>
-            <p className="text-[11.5px] text-muted mt-1">days left</p>
+            <p className="text-[length:var(--text-micro)] text-muted mt-1">days left</p>
           </div>
         </div>
       </Card>
@@ -62,17 +62,17 @@ export default async function ExamsPage() {
                 <Link href={`/subjects/${s.slug}`} className="flex items-start gap-3 focus-ring rounded">
                   <Ring value={p} size={40} stroke={3.5} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium flex items-center gap-2">
+                    <p className="text-[length:var(--text-small)] font-medium flex items-center gap-2">
                       {s.name}
                       {!s.midsem_confirmed ? <Badge tone="warn">scope unconfirmed</Badge> : null}
                     </p>
-                    <p className="text-[12px] text-muted mt-0.5 leading-relaxed">
+                    <p className="text-[length:var(--text-micro)] text-muted mt-0.5 leading-relaxed">
                       {exam?.scope ?? s.midsem_scope}
                     </p>
                     {mid.length ? (
                       <Bar value={p} className="w-40 mt-2" />
                     ) : (
-                      <p className="text-[11.5px] text-[var(--warn)] mt-1.5">
+                      <p className="text-[length:var(--text-micro)] text-[var(--warn)] mt-1.5">
                         no syllabus loaded — nothing to measure
                       </p>
                     )}
@@ -86,8 +86,8 @@ export default async function ExamsPage() {
 
       {/* ── the scheme ─────────────────────────────────────── */}
       <div>
-        <h2 className="text-[15px] font-semibold tracking-tight">How your marks are made up</h2>
-        <p className="text-[12.5px] text-muted mt-1 max-w-2xl leading-relaxed">
+        <h2 className="text-[length:var(--text-body)] font-semibold tracking-tight">How your marks are made up</h2>
+        <p className="text-[length:var(--text-small)] text-muted mt-1 max-w-2xl leading-relaxed">
           Identical across every theory course in the programme. Taken verbatim from your Applied
           Calculus and Programming in C course plans.
         </p>
@@ -118,12 +118,12 @@ export default async function ExamsPage() {
       {/* ── the rules that bite ────────────────────────────── */}
       <Card className="border-[var(--warn)]/35">
         <div className="px-4 py-3.5">
-          <p className="text-[13px] font-semibold flex items-center gap-2">
+          <p className="text-[length:var(--text-small)] font-semibold flex items-center gap-2">
             <ShieldAlert size={15} className="text-[var(--warn)]" />
             Three rules that fail people who were otherwise fine
           </p>
           <ol className="mt-2.5 space-y-2.5">
-            <li className="text-[12.5px] leading-relaxed flex gap-2.5">
+            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
               <span className="text-subtle font-mono shrink-0">1.</span>
               <span>
                 <strong>40% in internals AND 40% in the end-sem, separately.</strong> Internals are
@@ -132,7 +132,7 @@ export default async function ExamsPage() {
                 also true.
               </span>
             </li>
-            <li className="text-[12.5px] leading-relaxed flex gap-2.5">
+            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
               <span className="text-subtle font-mono shrink-0">2.</span>
               <span>
                 <strong>75% attendance in every subject.</strong> Below it and you are barred from
@@ -141,7 +141,7 @@ export default async function ExamsPage() {
                 percentage per subject this week.
               </span>
             </li>
-            <li className="text-[12.5px] leading-relaxed flex gap-2.5">
+            <li className="text-[length:var(--text-small)] leading-relaxed flex gap-2.5">
               <span className="text-subtle font-mono shrink-0">3.</span>
               <span>
                 <strong>Lab courses have no end-sem paper.</strong> They&rsquo;re 100% continuous —
@@ -156,14 +156,14 @@ export default async function ExamsPage() {
 
       {/* ── per-subject components ─────────────────────────── */}
       <div className="space-y-6">
-        <h2 className="text-[15px] font-semibold tracking-tight">Every assessment, by subject</h2>
+        <h2 className="text-[length:var(--text-body)] font-semibold tracking-tight">Every assessment, by subject</h2>
         {subjects.map((s) => {
           const own = components.filter((c) => c.subject_id === s.id);
           if (!own.length) return null;
           return (
             <div key={s.id} className={ACCENT_CLASS[s.color]}>
               <div className="flex items-center gap-2 mb-2.5">
-                <h3 className="text-[13.5px] font-semibold">
+                <h3 className="text-[length:var(--text-small)] font-semibold">
                   <Link href={`/subjects/${s.slug}`} className="hover:text-sc focus-ring rounded">
                     {s.name}
                   </Link>
@@ -199,11 +199,11 @@ function SchemeCard({
   return (
     <Card className={cn("p-4", highlight && "ring-1 ring-[var(--accent)]")}>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[12px] font-medium text-muted leading-snug">{label}</p>
-        <p className="text-[18px] font-semibold tabular-nums shrink-0">{weight}%</p>
+        <p className="text-[length:var(--text-micro)] font-medium text-muted leading-snug">{label}</p>
+        <p className="text-[length:var(--text-lead)] font-semibold tabular-nums shrink-0">{weight}%</p>
       </div>
-      <p className="text-[11.5px] text-subtle mt-0.5">out of {marks} marks</p>
-      <p className="text-[12px] text-muted mt-2.5 leading-relaxed">{body}</p>
+      <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">out of {marks} marks</p>
+      <p className="text-[length:var(--text-micro)] text-muted mt-2.5 leading-relaxed">{body}</p>
     </Card>
   );
 }

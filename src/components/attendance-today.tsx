@@ -45,7 +45,7 @@ export function AttendanceToday({
 
   if (!slots.length) {
     return (
-      <p className="px-4 py-4 text-[12.5px] text-muted">
+      <p className="px-4 py-4 text-[length:var(--text-small)] text-muted">
         No classes scheduled for {dayLabel}. Nothing to mark.
       </p>
     );
@@ -64,7 +64,7 @@ export function AttendanceToday({
               catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
             })
           }
-          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[12px] font-medium transition-colors hover:border-[var(--good)] hover:text-[var(--good)] focus-ring"
+          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[length:var(--text-micro)] font-medium transition-colors hover:border-[var(--good)] hover:text-[var(--good)] focus-ring"
         >
           <Check size={13} /> I was in today
         </button>
@@ -76,11 +76,11 @@ export function AttendanceToday({
               catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save that"); }
             })
           }
-          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[12px] transition-colors hover:border-[var(--bad)] hover:text-[var(--bad)] focus-ring"
+          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 text-[length:var(--text-micro)] transition-colors hover:border-[var(--bad)] hover:text-[var(--bad)] focus-ring"
         >
           <X size={13} /> Missed the day
         </button>
-        <span className="ml-auto text-[11px] text-subtle">
+        <span className="ml-auto text-[length:var(--text-micro)] text-subtle">
           {marked ? `${present}/${marked} marked present` : "not marked yet"}
         </span>
       </div>
@@ -93,13 +93,13 @@ export function AttendanceToday({
 
           return (
             <li key={s.id} className="flex items-center gap-3 px-4 py-2">
-              <span className="w-[86px] shrink-0 text-[11px] tabular-nums text-subtle">
+              <span className="w-[86px] shrink-0 text-[length:var(--text-micro)] tabular-nums text-subtle">
                 {fmtTime(s.start_time)}
               </span>
-              <span className="min-w-0 flex-1 truncate text-[12.5px]">
+              <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]">
                 {subject?.short_name ?? "—"}
                 {s.kind === "lab" ? (
-                  <span className="ml-1.5 text-[10.5px] text-subtle">lab</span>
+                  <span className="ml-1.5 text-[length:var(--text-micro)] text-subtle">lab</span>
                 ) : null}
               </span>
 
@@ -142,7 +142,7 @@ export function AttendanceToday({
         })}
       </ul>
 
-      <p className="border-t border-line px-4 py-2 text-[11px] leading-relaxed text-subtle">
+      <p className="border-t border-line px-4 py-2 text-[length:var(--text-micro)] leading-relaxed text-subtle">
         <Minus size={10} className="mr-1 inline" />
         Tap again to clear. Anything left unmarked isn&rsquo;t counted either way — so a cancelled
         class or a day you forget won&rsquo;t drag the percentage down.

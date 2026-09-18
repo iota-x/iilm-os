@@ -38,8 +38,8 @@ export default async function AttendancePage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Attendance</h1>
-        <p className="mt-0.5 text-[13px] text-muted">
+        <h1 className="text-[length:var(--text-page)]">Attendance</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           {overall === null
             ? "Tick today's classes below and the percentages build up from there."
             : `${overall}% overall · ${totalAttended} of ${totalHeld} classes`}
@@ -67,12 +67,12 @@ export default async function AttendancePage() {
             {rows.map((r) => (
               <li key={r.subject.id} className={cn("px-4 py-3", ACCENT_CLASS[r.subject.color])}>
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="min-w-0 truncate text-[13px] font-medium">
+                  <span className="min-w-0 truncate text-[length:var(--text-small)] font-medium">
                     {r.subject.name}
                   </span>
                   <span
                     className={cn(
-                      "shrink-0 text-[13px] font-semibold tabular-nums",
+                      "shrink-0 text-[length:var(--text-small)] font-semibold tabular-nums",
                       r.pct === null
                         ? "text-subtle"
                         : r.pct >= 75
@@ -86,13 +86,13 @@ export default async function AttendancePage() {
 
                 <div className="mt-2 flex items-center gap-3">
                   <Bar value={r.pct === null ? 0 : r.pct / 100} className="flex-1" />
-                  <span className="shrink-0 text-[11px] tabular-nums text-subtle">
+                  <span className="shrink-0 text-[length:var(--text-micro)] tabular-nums text-subtle">
                     {r.attended}/{r.held}
                   </span>
                 </div>
 
                 {r.pct !== null ? (
-                  <p className="mt-1.5 text-[11.5px] text-muted">
+                  <p className="mt-1.5 text-[length:var(--text-micro)] text-muted">
                     {r.pct >= 75
                       ? r.canMiss > 0
                         ? `You can miss ${r.canMiss} more and stay above ${Math.round(THRESHOLD * 100)}%.`
@@ -104,14 +104,14 @@ export default async function AttendancePage() {
             ))}
           </ul>
         ) : (
-          <p className="px-4 py-6 text-center text-[12.5px] text-muted">
+          <p className="px-4 py-6 text-center text-[length:var(--text-small)] text-muted">
             Nothing counted yet. Mark today above, or set a starting count in Settings if you&rsquo;ve
             already been attending.
           </p>
         )}
       </Card>
 
-      <p className="max-w-2xl text-[12px] leading-relaxed text-muted">
+      <p className="max-w-2xl text-[length:var(--text-micro)] leading-relaxed text-muted">
         Percentages are your Settings starting count plus every class you tick here. Unmarked
         classes count for nothing at all, so forgetting a day leaves the number alone rather than
         making it look worse than it is.

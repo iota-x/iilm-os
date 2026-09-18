@@ -17,14 +17,14 @@ export function TopicStatusControl({ topic }: { topic: Topic }) {
   return (
     <div className={cn("flex flex-wrap items-center gap-4", pending && "opacity-60")}>
       <div>
-        <span className="mb-1.5 block text-[11px] font-medium text-subtle">Where you are</span>
+        <span className="mb-1.5 block text-[length:var(--text-micro)] font-medium text-subtle">Where you are</span>
         <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
           {STATUS_ORDER.map((s) => (
             <button
               key={s}
               onClick={() => start(() => setTopicStatus(topic.id, s).then(() => {}))}
               className={cn(
-                "rounded-[7px] px-2.5 py-1 text-[12px] transition-colors focus-ring",
+                "rounded-[7px] px-2.5 py-1 text-[length:var(--text-micro)] transition-colors focus-ring",
                 topic.status === s
                   ? "bg-surface text-fg shadow-card"
                   : "text-subtle hover:text-fg",
@@ -37,7 +37,7 @@ export function TopicStatusControl({ topic }: { topic: Topic }) {
       </div>
 
       <div>
-        <span className="mb-1.5 block text-[11px] font-medium text-subtle">Confidence</span>
+        <span className="mb-1.5 block text-[length:var(--text-micro)] font-medium text-subtle">Confidence</span>
         <div className="inline-flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -45,7 +45,7 @@ export function TopicStatusControl({ topic }: { topic: Topic }) {
               onClick={() => start(() => setTopicConfidence(topic.id, n).then(() => {}))}
               aria-label={`Confidence ${n} of 5`}
               className={cn(
-                "h-6 w-6 rounded-md text-[11px] tabular-nums transition-colors focus-ring",
+                "h-6 w-6 rounded-md text-[length:var(--text-micro)] tabular-nums transition-colors focus-ring",
                 topic.confidence >= n
                   ? "bg-[var(--accent)] text-[var(--accent-fg)]"
                   : "bg-surface-2 text-subtle hover:bg-surface-3",
@@ -156,7 +156,7 @@ export function AddResourceForm({
       className="w-full max-w-[480px] rounded-[14px] border border-line bg-surface p-3 shadow-pop"
     >
       <div className="flex items-center justify-between">
-        <span className="text-[12px] font-medium">Save a link to this topic</span>
+        <span className="text-[length:var(--text-micro)] font-medium">Save a link to this topic</span>
         <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close">
           <X size={14} />
         </Button>
@@ -181,7 +181,7 @@ export function AddResourceForm({
             type="button"
             onClick={() => setKind(k)}
             className={cn(
-              "rounded-md px-2 py-1 text-[11px] transition-colors focus-ring",
+              "rounded-md px-2 py-1 text-[length:var(--text-micro)] transition-colors focus-ring",
               kind === k ? "bg-surface-3 text-fg" : "text-subtle hover:text-fg",
             )}
           >

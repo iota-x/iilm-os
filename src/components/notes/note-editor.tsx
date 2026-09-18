@@ -223,7 +223,7 @@ export function NoteEditor({
         </Button>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-[11.5px] text-subtle tabular-nums">
+          <span className="text-[length:var(--text-micro)] text-subtle tabular-nums">
             {saving ? "Saving…" : dirty ? "Unsaved" : "Saved"}
           </span>
           <Button
@@ -264,7 +264,7 @@ export function NoteEditor({
             setDirty(true);
           }}
           placeholder="Note title"
-          className="flex-1 min-w-[180px] bg-transparent text-[15px] font-semibold tracking-tight outline-none placeholder:text-subtle placeholder:font-normal"
+          className="flex-1 min-w-[180px] bg-transparent text-[length:var(--text-body)] font-semibold tracking-tight outline-none placeholder:text-subtle placeholder:font-normal"
         />
         <select
           value={subjectId}
@@ -273,7 +273,7 @@ export function NoteEditor({
             setTopicId("");
             save({ subject_id: e.target.value || null, topic_id: null });
           }}
-          className={`${inputCls} h-7 w-auto text-[12px] py-0`}
+          className={`${inputCls} h-7 w-auto text-[length:var(--text-micro)] py-0`}
         >
           <option value="">No subject</option>
           {subjects.map((s) => (
@@ -289,7 +289,7 @@ export function NoteEditor({
               setTopicId(e.target.value);
               save({ topic_id: e.target.value || null });
             }}
-            className={`${inputCls} h-7 w-auto max-w-[220px] text-[12px] py-0`}
+            className={`${inputCls} h-7 w-auto max-w-[220px] text-[length:var(--text-micro)] py-0`}
           >
             <option value="">No topic</option>
             {subjectTopics.map((t) => (
@@ -330,7 +330,7 @@ export function NoteEditor({
             {content.trim() ? (
               <Markdown>{content}</Markdown>
             ) : (
-              <p className="text-[12.5px] text-subtle">Nothing to preview yet.</p>
+              <p className="text-[length:var(--text-small)] text-subtle">Nothing to preview yet.</p>
             )}
           </div>
         ) : null}

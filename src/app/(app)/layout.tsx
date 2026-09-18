@@ -20,7 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="hidden h-11 shrink-0 items-center justify-end gap-3 border-b border-line px-6 md:flex">
             <Link
               href="/exams"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-[12px] font-medium focus-ring hover:bg-surface-3"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-[length:var(--text-micro)] font-medium focus-ring hover:bg-surface-3"
               title="Days until mid-semester exams begin"
             >
               <span className="font-semibold tabular-nums">{left}</span>
@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
         <main className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-6 md:px-6">{children}</main>
 
-        <footer className="mx-auto w-full max-w-[1100px] px-4 py-6 text-[11px] text-subtle md:px-6">
+        <footer className="mx-auto w-full max-w-[1100px] px-4 py-6 text-[length:var(--text-micro)] text-subtle md:px-6">
           B.Tech CSE Semester I · IILM University, Gurugram · Section E · Lab Group{" "}
           {profile?.lab_group ?? 2}
         </footer>

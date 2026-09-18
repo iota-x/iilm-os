@@ -39,7 +39,7 @@ export function ResourceList({
 }) {
   if (!resources.length) {
     return (
-      <p className="px-4 py-8 text-center text-[12.5px] text-muted">
+      <p className="px-4 py-8 text-center text-[length:var(--text-small)] text-muted">
         Nothing here yet. Use Add to save a link.
       </p>
     );
@@ -94,23 +94,23 @@ function ResourceRow({
             href={r.url}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-[13px] font-medium leading-snug hover:text-sc transition-colors inline-flex items-start gap-1.5 focus-ring rounded"
+            className="text-[length:var(--text-small)] font-medium leading-snug hover:text-sc transition-colors inline-flex items-start gap-1.5 focus-ring rounded"
           >
             {r.title}
             <ExternalLink size={11} className="mt-1 shrink-0 text-subtle" />
           </a>
 
           {r.why ? (
-            <p className="text-[12.5px] text-muted mt-1 leading-relaxed">{r.why}</p>
+            <p className="text-[length:var(--text-small)] text-muted mt-1 leading-relaxed">{r.why}</p>
           ) : null}
 
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {r.rank <= 2 && r.is_curated ? <Badge tone="good">start here</Badge> : null}
             {showSubject && subject ? <Badge tone="subject">{subject.short_name}</Badge> : null}
-            {r.source ? <span className="text-[11px] text-subtle">{r.source}</span> : null}
+            {r.source ? <span className="text-[length:var(--text-micro)] text-subtle">{r.source}</span> : null}
             <Badge tone="neutral">{r.kind}</Badge>
             {r.minutes ? (
-              <span className="text-[11px] text-subtle">{fmtDuration(r.minutes)}</span>
+              <span className="text-[length:var(--text-micro)] text-subtle">{fmtDuration(r.minutes)}</span>
             ) : null}
             {!r.is_curated ? (
               <button

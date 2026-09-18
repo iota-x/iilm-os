@@ -58,7 +58,7 @@ export function FindMore({ seed, subject }: { seed?: string; subject: string }) 
           <X size={14} />
         </Button>
       </div>
-      <p className="text-[11.5px] text-subtle mt-2">
+      <p className="text-[length:var(--text-micro)] text-subtle mt-2">
         Searching for <span className="text-muted">&ldquo;{query}&rdquo;</span>
       </p>
       <div className="flex flex-wrap gap-2 mt-2.5">
@@ -70,7 +70,7 @@ export function FindMore({ seed, subject }: { seed?: string; subject: string }) 
           </a>
         ))}
       </div>
-      <p className="text-[11.5px] text-muted mt-2.5 leading-relaxed">
+      <p className="text-[length:var(--text-micro)] text-muted mt-2.5 leading-relaxed">
         Found something good? Save it with <strong>Add → link</strong> so it sticks around.
       </p>
     </div>

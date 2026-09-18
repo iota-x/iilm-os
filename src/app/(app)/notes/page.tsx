@@ -14,8 +14,8 @@ export default async function NotesPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Notes</h1>
-        <p className="text-[13px] text-muted mt-0.5">
+        <h1 className="text-[length:var(--text-page)]">Notes</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           Markdown with LaTeX. Paste a screenshot straight into the editor and it uploads.
         </p>
       </div>

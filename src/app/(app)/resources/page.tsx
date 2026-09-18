@@ -85,8 +85,8 @@ export default async function ResourcesPage({
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold tracking-tight">Resources</h1>
-          <p className="mt-0.5 text-[13px] text-muted">
+          <h1 className="text-[length:var(--text-page)]">Resources</h1>
+          <p className="mt-1 text-[length:var(--text-small)] text-muted">
             {allResources.filter((r) => r.is_curated).length} curated, ranked best first ·{" "}
             {allResources.filter((r) => !r.is_curated).length} saved by you
           </p>
@@ -154,7 +154,7 @@ export default async function ResourcesPage({
             right={
               <Link
                 href={`/subjects/${subject.slug}?tab=resources`}
-                className="inline-flex items-center gap-0.5 rounded text-[12px] text-muted hover:text-fg focus-ring"
+                className="inline-flex items-center gap-0.5 rounded text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring"
               >
                 Open <ChevronRight size={13} />
               </Link>
@@ -172,7 +172,7 @@ export default async function ResourcesPage({
                 <span className="text-[length:var(--text-micro)] font-medium text-subtle">
                   {g.label}
                 </span>
-                <span className="text-[10px] tabular-nums text-subtle">{g.items.length}</span>
+                <span className="text-[length:var(--text-micro)] tabular-nums text-subtle">{g.items.length}</span>
               </div>
               <ResourceList resources={g.items} subjects={subjects} />
             </div>
@@ -191,7 +191,7 @@ export default async function ResourcesPage({
         </Card>
       ) : null}
 
-      <p className="max-w-2xl text-[12px] leading-relaxed text-muted">
+      <p className="max-w-2xl text-[length:var(--text-micro)] leading-relaxed text-muted">
         Every curated link here was opened and checked before it was added. Ranks 1 and 2 are
         marked &ldquo;start here&rdquo; — those are the ones worth your time first. Anything you
         save yourself sorts to the bottom until you re-rank it.
@@ -217,7 +217,7 @@ function Chip({
     <Link
       href={href}
       className={cn(
-        "inline-flex h-7 items-center rounded-lg border px-2.5 text-[12px] font-medium capitalize transition-colors focus-ring",
+        "inline-flex h-7 items-center rounded-lg border px-2.5 text-[length:var(--text-micro)] font-medium capitalize transition-colors focus-ring",
         className,
         active
           ? subject

@@ -49,7 +49,7 @@ export function ThemeToggle({ full = false }: { full?: boolean }) {
             onClick={() => setTheme(key)}
             className={cn(
               "inline-flex items-center justify-center gap-1.5 rounded-[7px] h-7 transition-colors focus-ring",
-              full ? "flex-1 text-[12px]" : "w-7",
+              full ? "flex-1 text-[length:var(--text-micro)]" : "w-7",
               active ? "bg-surface shadow-card text-fg" : "text-subtle hover:text-fg",
             )}
           >

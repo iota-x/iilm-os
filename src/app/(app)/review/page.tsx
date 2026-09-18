@@ -27,8 +27,8 @@ export default async function ReviewPage() {
   return (
     <div className="mx-auto max-w-[720px] space-y-4">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Review</h1>
-        <p className="mt-0.5 text-[13px] text-muted">
+        <h1 className="text-[length:var(--text-page)]">Review</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           {items.length
             ? `${items.length} topic${items.length === 1 ? "" : "s"} due. Rate each one honestly — that sets when it comes back.`
             : "Topics come back here on a widening schedule once you've studied them."}

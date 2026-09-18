@@ -223,7 +223,7 @@ export default async function Dashboard() {
               right={
                 <Link
                   href="/planner"
-                  className="text-[12px] text-muted hover:text-fg inline-flex items-center gap-1 focus-ring rounded"
+                  className="text-[length:var(--text-micro)] text-muted hover:text-fg inline-flex items-center gap-1 focus-ring rounded"
                 >
                   Planner <ArrowRight size={12} />
                 </Link>
@@ -249,8 +249,8 @@ export default async function Dashboard() {
                     >
                       <Ring value={progress} size={38} stroke={3.5} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[13px] font-medium truncate">{subject.name}</p>
-                        <p className="text-[11.5px] text-muted mt-0.5">
+                        <p className="text-[length:var(--text-small)] font-medium truncate">{subject.name}</p>
+                        <p className="text-[length:var(--text-micro)] text-muted mt-0.5">
                           {total === 0 ? (
                             <span className="text-[var(--warn)]">no syllabus loaded</span>
                           ) : untouched === 0 ? (
@@ -277,7 +277,7 @@ export default async function Dashboard() {
               right={
                 <Link
                   href="/planner"
-                  className="text-[12px] text-muted hover:text-fg focus-ring rounded"
+                  className="text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring rounded"
                 >
                   Week
                 </Link>
@@ -308,7 +308,7 @@ export default async function Dashboard() {
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline justify-between gap-2">
-                          <p className="text-[13px] font-medium truncate">
+                          <p className="text-[length:var(--text-small)] font-medium truncate">
                             {subject ? (
                               <Link
                                 href={`/subjects/${subject.slug}`}
@@ -322,7 +322,7 @@ export default async function Dashboard() {
                           </p>
                           {isNow ? <Badge tone="subject">now</Badge> : null}
                         </div>
-                        <p className="text-[11.5px] text-muted mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                        <p className="text-[length:var(--text-micro)] text-muted mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
                           <span className="inline-flex items-center gap-1 tabular-nums">
                             <Clock size={11} />
                             {fmtTime(s.start_time)}–{fmtTime(s.end_time)}
@@ -334,7 +334,7 @@ export default async function Dashboard() {
                           {s.kind === "lab" ? <Badge tone="neutral">Lab</Badge> : null}
                         </p>
                         {s.teacher ? (
-                          <p className="text-[11px] text-subtle mt-0.5">{s.teacher}</p>
+                          <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">{s.teacher}</p>
                         ) : null}
                       </div>
                     </li>
@@ -342,7 +342,7 @@ export default async function Dashboard() {
                 })}
               </ul>
             ) : (
-              <p className="px-4 py-6 text-[12.5px] text-muted text-center">
+              <p className="px-4 py-6 text-[length:var(--text-small)] text-muted text-center">
                 No classes today. Full day for study.
               </p>
             )}
@@ -366,7 +366,7 @@ export default async function Dashboard() {
               right={
                 <Link
                   href="/notes"
-                  className="text-[12px] text-muted hover:text-fg focus-ring rounded"
+                  className="text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring rounded"
                 >
                   All
                 </Link>
@@ -382,8 +382,8 @@ export default async function Dashboard() {
                         href={`/notes?open=${n.id}`}
                         className="block px-4 py-2.5 hover:bg-surface-2 transition-colors focus-ring"
                       >
-                        <p className="text-[13px] font-medium truncate">{n.title}</p>
-                        <p className="text-[11.5px] text-muted mt-0.5 flex items-center gap-2">
+                        <p className="text-[length:var(--text-small)] font-medium truncate">{n.title}</p>
+                        <p className="text-[length:var(--text-micro)] text-muted mt-0.5 flex items-center gap-2">
                           {subject ? <Badge tone="subject">{subject.short_name}</Badge> : null}
                           <span>{relativeDay(n.updated_at.slice(0, 10))}</span>
                         </p>
@@ -393,7 +393,7 @@ export default async function Dashboard() {
                 })}
               </ul>
             ) : (
-              <p className="px-4 py-6 text-[12.5px] text-muted text-center">
+              <p className="px-4 py-6 text-[length:var(--text-small)] text-muted text-center">
                 No notes yet. Hit Add above.
               </p>
             )}

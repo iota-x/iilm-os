@@ -96,7 +96,7 @@ export function QuickAdd({
             type="button"
             onClick={() => setMode(m)}
             className={cn(
-              "px-2.5 h-6.5 py-1 rounded-[7px] text-[12px] font-medium capitalize transition-colors focus-ring",
+              "px-2.5 h-6.5 py-1 rounded-[7px] text-[length:var(--text-micro)] font-medium capitalize transition-colors focus-ring",
               mode === m ? "bg-surface shadow-card" : "text-muted hover:text-fg",
             )}
           >

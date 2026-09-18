@@ -65,8 +65,8 @@ export default async function PlannerPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold tracking-tight">Planner</h1>
-          <p className="text-[13px] text-muted mt-0.5">
+          <h1 className="text-[length:var(--text-page)]">Planner</h1>
+          <p className="mt-1 text-[length:var(--text-small)] text-muted">
             Timetable for lab group {group}, and the 18-day run-up to mid-sems.
           </p>
         </div>
@@ -88,9 +88,9 @@ export default async function PlannerPage() {
               return (
                 <div key={day} className="min-w-0">
                   <div className="px-3 py-2 bg-surface-2 border-b border-line">
-                    <p className="text-[12px] font-semibold">{day}</p>
+                    <p className="text-[length:var(--text-micro)] font-semibold">{day}</p>
                     {lastEnd[day] ? (
-                      <p className="text-[11px] text-subtle mt-0.5">
+                      <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">
                         free from {fmtTime(lastEnd[day])}
                       </p>
                     ) : null}
@@ -108,16 +108,16 @@ export default async function PlannerPage() {
                             "bg-sc-soft border-transparent hover:border-sc",
                           )}
                         >
-                          <p className="text-[11.5px] font-semibold text-sc leading-tight">
+                          <p className="text-[length:var(--text-micro)] font-semibold text-sc leading-tight">
                             {subject?.short_name ?? "—"}
                             {s.kind === "lab" ? (
                               <span className="font-normal"> lab</span>
                             ) : null}
                           </p>
-                          <p className="text-[10.5px] text-muted mt-0.5 tabular-nums leading-tight">
+                          <p className="text-[length:var(--text-micro)] text-muted mt-0.5 tabular-nums leading-tight">
                             {fmtTime(s.start_time)}–{fmtTime(s.end_time)}
                           </p>
-                          <p className="text-[10.5px] text-subtle leading-tight truncate">
+                          <p className="text-[length:var(--text-micro)] text-subtle leading-tight truncate">
                             {s.room}
                           </p>
                         </Link>
@@ -129,7 +129,7 @@ export default async function PlannerPage() {
             })}
           </div>
         </div>
-        <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[12px] text-muted">
+        <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[length:var(--text-micro)] text-muted">
           Saturday and Sunday are free. Your longest weekday windows are{" "}
           <strong className="text-fg">Monday and Friday</strong> — classes end at 1:20pm on both.
         </p>
@@ -161,8 +161,8 @@ export default async function PlannerPage() {
                 {/* phase heading when the phase changes */}
                 {isFirstOfPhase(upcoming, d) && phase ? (
                   <div className="mt-6 mb-3 first:mt-0">
-                    <h2 className="text-[13px] font-semibold tracking-tight">{phase.name}</h2>
-                    <p className="text-[12.5px] text-muted mt-1 max-w-2xl leading-relaxed">
+                    <h2 className="text-[length:var(--text-small)] font-semibold tracking-tight">{phase.name}</h2>
+                    <p className="text-[length:var(--text-small)] text-muted mt-1 max-w-2xl leading-relaxed">
                       {phase.goal}
                     </p>
                   </div>
@@ -185,7 +185,7 @@ export default async function PlannerPage() {
                     right={
                       dayTasks.length ? (
                         <div className="flex items-center gap-2.5">
-                          <span className="text-[11.5px] text-muted tabular-nums">
+                          <span className="text-[length:var(--text-micro)] text-muted tabular-nums">
                             {done}/{dayTasks.length}
                           </span>
                           <Bar
@@ -199,7 +199,7 @@ export default async function PlannerPage() {
                   />
                   <TaskList tasks={dayTasks} subjects={subjects} emptyText="Nothing scheduled." />
                   {d.note ? (
-                    <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[12px] text-muted leading-relaxed">
+                    <p className="border-t border-line bg-surface-2 px-4 py-2.5 text-[length:var(--text-micro)] text-muted leading-relaxed">
                       {d.note}
                     </p>
                   ) : null}
@@ -210,7 +210,7 @@ export default async function PlannerPage() {
         ) : (
           <Card>
             <CardHead title="No plan days ahead" />
-            <p className="px-4 py-6 text-center text-[12.5px] text-muted">
+            <p className="px-4 py-6 text-center text-[length:var(--text-small)] text-muted">
               The seeded plan runs to 4 Oct. Add your own blocks with the Add button.
             </p>
           </Card>
@@ -219,8 +219,8 @@ export default async function PlannerPage() {
 
       {/* ── exam week note ─────────────────────────────────── */}
       <Card className="p-4">
-        <p className="text-[13px] font-semibold">5–11 Oct · exam week</p>
-        <p className="text-[12.5px] text-muted mt-1.5 leading-relaxed max-w-2xl">
+        <p className="text-[length:var(--text-small)] font-semibold">5–11 Oct · exam week</p>
+        <p className="text-[length:var(--text-small)] text-muted mt-1.5 leading-relaxed max-w-2xl">
           No plan blocks are seeded for exam week on purpose — once you have the datesheet,
           the only sensible plan is &ldquo;revise tomorrow&rsquo;s paper.&rdquo; Add those days
           yourself once the schedule is out.{" "}

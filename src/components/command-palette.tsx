@@ -211,18 +211,18 @@ export function CommandPalette() {
               }
             }}
             placeholder="Search topics, notes, resources…"
-            className="h-12 flex-1 bg-transparent text-[14px] outline-none placeholder:text-subtle"
+            className="h-12 flex-1 bg-transparent text-[length:var(--text-body)] outline-none placeholder:text-subtle"
           />
-          <kbd className="hidden sm:block rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[10px] text-subtle">
+          <kbd className="hidden sm:block rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[length:var(--text-micro)] text-subtle">
             esc
           </kbd>
         </div>
 
         <div ref={listRef} className="max-h-[52vh] overflow-y-auto py-1.5">
           {loading && !docs.length ? (
-            <p className="px-4 py-8 text-center text-[13px] text-subtle">Loading…</p>
+            <p className="px-4 py-8 text-center text-[length:var(--text-small)] text-subtle">Loading…</p>
           ) : results.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[13px] text-subtle">
+            <p className="px-4 py-8 text-center text-[length:var(--text-small)] text-subtle">
               Nothing matches “{query}”.
             </p>
           ) : (
@@ -248,15 +248,15 @@ export function CommandPalette() {
                     >
                       <Icon size={14} className="shrink-0 text-subtle" />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] text-fg">{doc.title}</span>
+                        <span className="block truncate text-[length:var(--text-small)] text-fg">{doc.title}</span>
                         {doc.subtitle ? (
-                          <span className="block truncate text-[11px] text-subtle">
+                          <span className="block truncate text-[length:var(--text-micro)] text-subtle">
                             {doc.subtitle}
                           </span>
                         ) : null}
                       </span>
                       {doc.meta === "mid-sem" ? (
-                        <span className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 text-[10px] text-muted">
+                        <span className="shrink-0 rounded bg-surface-3 px-1.5 py-0.5 text-[length:var(--text-micro)] text-muted">
                           mid-sem
                         </span>
                       ) : null}
@@ -273,7 +273,7 @@ export function CommandPalette() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 border-t border-line px-3.5 py-2 text-[10px] text-subtle">
+        <div className="flex items-center gap-3 border-t border-line px-3.5 py-2 text-[length:var(--text-micro)] text-subtle">
           <span className="flex items-center gap-1">
             <kbd className="rounded border border-line bg-surface-2 px-1">↑</kbd>
             <kbd className="rounded border border-line bg-surface-2 px-1">↓</kbd> navigate
@@ -297,7 +297,7 @@ export function SearchTrigger({ className }: { className?: string }) {
     <button
       onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
       className={cn(
-        "inline-flex h-8 items-center gap-2 rounded-lg border border-line bg-surface-2 px-2.5 text-[12px] text-subtle transition-colors hover:bg-surface-3 hover:text-muted focus-ring",
+        "inline-flex h-8 items-center gap-2 rounded-lg border border-line bg-surface-2 px-2.5 text-[length:var(--text-micro)] text-subtle transition-colors hover:bg-surface-3 hover:text-muted focus-ring",
         className,
       )}
       aria-label="Search"
@@ -305,7 +305,7 @@ export function SearchTrigger({ className }: { className?: string }) {
     >
       <Search size={14} />
       <span className="hidden lg:inline">Search…</span>
-      <kbd className="hidden lg:inline rounded border border-line bg-surface px-1 text-[10px]">
+      <kbd className="hidden lg:inline rounded border border-line bg-surface px-1 text-[length:var(--text-micro)]">
         {mac ? "⌘" : "Ctrl "}K
       </kbd>
     </button>

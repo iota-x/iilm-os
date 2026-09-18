@@ -42,7 +42,7 @@ export function TaskList({
   emptyText?: string;
 }) {
   if (!tasks.length) {
-    return <p className="px-4 py-6 text-[12.5px] text-muted text-center">{emptyText}</p>;
+    return <p className="px-4 py-6 text-[length:var(--text-small)] text-muted text-center">{emptyText}</p>;
   }
   return (
     <ul className="divide-y divide-[var(--border)]">
@@ -116,7 +116,7 @@ function TaskRow({
             <button
               onClick={() => details.length && setOpen(!open)}
               className={cn(
-                "text-left text-[13px] leading-snug focus-ring rounded",
+                "text-left text-[length:var(--text-small)] leading-snug focus-ring rounded",
                 done && "line-through text-subtle",
                 details.length && "hover:text-sc",
               )}
@@ -133,7 +133,7 @@ function TaskRow({
               ) : null}
             </button>
             {task.minutes ? (
-              <span className="text-[11.5px] text-subtle tabular-nums shrink-0 mt-0.5">
+              <span className="text-[length:var(--text-micro)] text-subtle tabular-nums shrink-0 mt-0.5">
                 {fmtDuration(task.minutes)}
               </span>
             ) : null}
@@ -147,7 +147,7 @@ function TaskRow({
             ) : null}
             <Badge tone={KIND_TONE[task.kind] ?? "neutral"}>{KIND_LABEL[task.kind]}</Badge>
             {showDate && task.due_date ? (
-              <span className="text-[11px] text-subtle">{task.due_date}</span>
+              <span className="text-[length:var(--text-micro)] text-subtle">{task.due_date}</span>
             ) : null}
             {task.source === "manual" ? (
               <button
@@ -163,7 +163,7 @@ function TaskRow({
           {open && details.length ? (
             <ul className="mt-2 space-y-1 animate-in">
               {details.map((d, i) => (
-                <li key={i} className="text-[12.5px] text-muted leading-relaxed flex gap-2">
+                <li key={i} className="text-[length:var(--text-small)] text-muted leading-relaxed flex gap-2">
                   <span className="text-subtle select-none">·</span>
                   <span>{d}</span>
                 </li>

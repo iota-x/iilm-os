@@ -41,7 +41,7 @@ export function ExperimentRow({ exp: experiment }: { exp: Experiment }) {
             onClick={() => setOpen(!open)}
             className="text-left w-full focus-ring rounded group"
           >
-            <p className={cn("text-[13px] font-medium leading-snug", done && "text-muted")}>
+            <p className={cn("text-[length:var(--text-small)] font-medium leading-snug", done && "text-muted")}>
               <span className="text-subtle font-mono mr-1.5">{exp.number}.</span>
               {exp.title}
               <ChevronDown
@@ -65,7 +65,7 @@ export function ExperimentRow({ exp: experiment }: { exp: Experiment }) {
                 })
               }
               className={cn(
-                "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium transition-colors focus-ring",
+                "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[length:var(--text-micro)] font-medium transition-colors focus-ring",
                 exp.file_done
                   ? "bg-[var(--good-soft)] text-[var(--good)]"
                   : "bg-surface-3 text-muted hover:text-fg",
@@ -79,12 +79,12 @@ export function ExperimentRow({ exp: experiment }: { exp: Experiment }) {
           {open ? (
             <div className="mt-2.5 space-y-2 animate-in">
               {exp.objective ? (
-                <p className="text-[12.5px] text-muted leading-relaxed">{exp.objective}</p>
+                <p className="text-[length:var(--text-small)] text-muted leading-relaxed">{exp.objective}</p>
               ) : null}
               {exp.tasks.length ? (
                 <ul className="space-y-1">
                   {exp.tasks.map((t, i) => (
-                    <li key={i} className="text-[12.5px] leading-relaxed flex gap-2">
+                    <li key={i} className="text-[length:var(--text-small)] leading-relaxed flex gap-2">
                       <span className="text-subtle select-none shrink-0">·</span>
                       <span>{t}</span>
                     </li>

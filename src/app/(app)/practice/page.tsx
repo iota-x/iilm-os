@@ -69,8 +69,8 @@ export default async function PracticePage({
   return (
     <div className="mx-auto max-w-[720px] space-y-4">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Practice</h1>
-        <p className="mt-0.5 text-[13px] text-muted">
+        <h1 className="text-[length:var(--text-page)]">Practice</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           {items.length
             ? `${items.length} question${items.length === 1 ? "" : "s"} queued, the ones you get wrong first.`
             : "Questions you add on a topic page show up here."}
@@ -124,7 +124,7 @@ function Chip({
     <Link
       href={href}
       className={cn(
-        "inline-flex h-7 items-center rounded-lg border px-2.5 text-[12px] font-medium transition-colors focus-ring",
+        "inline-flex h-7 items-center rounded-lg border px-2.5 text-[length:var(--text-micro)] font-medium transition-colors focus-ring",
         active
           ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]"
           : "border-line bg-surface text-muted hover:text-fg",

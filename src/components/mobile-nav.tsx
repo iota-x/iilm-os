@@ -41,7 +41,7 @@ export function MobileNav() {
     <header className="sticky top-0 z-40 border-b border-line bg-app/85 backdrop-blur-xl md:hidden">
       <div className="flex h-14 items-center gap-2 px-3">
         <Link href="/" className="flex shrink-0 items-center gap-2 focus-ring rounded">
-          <span className="grid h-7 w-7 place-items-center rounded-[7px] bg-[var(--accent)] text-[12px] font-bold text-[var(--accent-fg)]">
+          <span className="grid h-7 w-7 place-items-center rounded-[7px] bg-[var(--accent)] text-[length:var(--text-micro)] font-bold text-[var(--accent-fg)]">
             I
           </span>
         </Link>
@@ -49,7 +49,7 @@ export function MobileNav() {
         {left > 0 ? (
           <Link
             href="/exams"
-            className="shrink-0 rounded-lg border border-line bg-surface-2 px-2 py-1 text-[11px] tabular-nums"
+            className="shrink-0 rounded-lg border border-line bg-surface-2 px-2 py-1 text-[length:var(--text-micro)] tabular-nums"
             title="Days until mid-semester exams begin"
           >
             {left}d
@@ -69,7 +69,7 @@ export function MobileNav() {
                 <Link
                   href={href}
                   className={cn(
-                    "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 text-[13px] font-medium transition-colors focus-ring",
+                    "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 text-[length:var(--text-small)] font-medium transition-colors focus-ring",
                     active ? "bg-surface-2 text-fg" : "text-muted hover:bg-surface-2 hover:text-fg",
                   )}
                 >

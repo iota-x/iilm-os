@@ -75,7 +75,7 @@ export default async function UnitPage({
   return (
     <div className="space-y-5">
       {/* ── breadcrumb ─────────────────────────────────────── */}
-      <div className="flex items-center gap-1.5 text-[12px] text-subtle">
+      <div className="flex items-center gap-1.5 text-[length:var(--text-micro)] text-subtle">
         <Link href="/subjects" className="hover:text-fg focus-ring rounded">
           Subjects
         </Link>
@@ -90,15 +90,17 @@ export default async function UnitPage({
       {/* ── header ─────────────────────────────────────────── */}
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-[22px] font-semibold tracking-tight">
+          <h1 className="text-[length:var(--text-page)]">
             Unit {unit.number} — {unit.title}
           </h1>
           {unit.in_midsem ? <Badge tone="accent">in mid-sem</Badge> : null}
         </div>
-        <p className="mt-1 text-[13px] text-muted">
-          {unit.sessions ? `${unit.sessions} sessions` : "Sessions not stated"}
-          {unit.co ? ` · ${unit.co}` : ""}
-          {topics.length ? ` · ${topics.length} topics` : ""}
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
+          <span className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+            <span>{unit.sessions ? `${unit.sessions} sessions` : "Sessions not stated"}</span>
+            {unit.co ? <span>{unit.co}</span> : null}
+            {topics.length ? <span>{topics.length} topics</span> : null}
+          </span>
         </p>
       </div>
 
@@ -106,8 +108,8 @@ export default async function UnitPage({
       {topics.length ? (
         <Card className="p-4">
           <div className="flex items-baseline justify-between">
-            <span className="text-[12px] font-medium text-muted">Progress in this unit</span>
-            <span className="text-[12px] tabular-nums text-muted">
+            <span className="text-[length:var(--text-micro)] font-medium text-muted">Progress in this unit</span>
+            <span className="text-[length:var(--text-micro)] tabular-nums text-muted">
               {mastered}/{topics.length} solid · {started} started
             </span>
           </div>
@@ -115,7 +117,7 @@ export default async function UnitPage({
             <Bar value={pct} />
           </div>
           {unit.assessment ? (
-            <p className="mt-3 border-t border-line pt-3 text-[12px] text-muted">
+            <p className="mt-3 border-t border-line pt-3 text-[length:var(--text-micro)] text-muted">
               <span className="font-medium text-fg">Assessment:</span> {unit.assessment}
             </p>
           ) : null}
@@ -172,24 +174,24 @@ export default async function UnitPage({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-[13px] font-medium text-fg group-hover:underline">
+                          <span className="text-[length:var(--text-small)] font-medium text-fg group-hover:underline">
                             {r.title}
                           </span>
                           <Badge>{r.kind}</Badge>
                           {r.minutes ? (
-                            <span className="text-[11px] text-subtle">{r.minutes} min</span>
+                            <span className="text-[length:var(--text-micro)] text-subtle">{r.minutes} min</span>
                           ) : null}
                         </span>
                         {r.source ? (
-                          <span className="mt-0.5 block text-[11px] text-subtle">{r.source}</span>
+                          <span className="mt-0.5 block text-[length:var(--text-micro)] text-subtle">{r.source}</span>
                         ) : null}
                         {r.why ? (
-                          <span className="mt-1 block max-w-[86ch] text-[12px] leading-snug text-muted">
+                          <span className="mt-1 block max-w-[86ch] text-[length:var(--text-micro)] leading-snug text-muted">
                             {r.why}
                           </span>
                         ) : null}
                         {topic ? (
-                          <span className="mt-1 inline-block text-[11px] text-subtle">
+                          <span className="mt-1 inline-block text-[length:var(--text-micro)] text-subtle">
                             for “{topic.title}”
                           </span>
                         ) : null}
@@ -221,7 +223,7 @@ export default async function UnitPage({
             Whole-subject resources
             <span className="ml-1.5 tabular-nums text-subtle">{subjectResources.length}</span>
           </SectionTitle>
-          <p className="mt-1 text-[12px] text-subtle">
+          <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
             Not specific to Unit {unit.number}, but they cover it.
           </p>
           <Card className="mt-2 overflow-hidden">
@@ -234,7 +236,7 @@ export default async function UnitPage({
                     rel="noopener noreferrer"
                     className="group flex items-center gap-2 focus-ring rounded"
                   >
-                    <span className="min-w-0 flex-1 truncate text-[13px] text-fg group-hover:underline">
+                    <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)] text-fg group-hover:underline">
                       {r.title}
                     </span>
                     <Badge>{r.kind}</Badge>
@@ -246,7 +248,7 @@ export default async function UnitPage({
             {subjectResources.length > 6 ? (
               <Link
                 href={`/subjects/${slug}?tab=resources`}
-                className="block border-t border-line px-3.5 py-2 text-[12px] text-muted hover:bg-surface-2 focus-ring"
+                className="block border-t border-line px-3.5 py-2 text-[length:var(--text-micro)] text-muted hover:bg-surface-2 focus-ring"
               >
                 See all {subjectResources.length} →
               </Link>
@@ -273,7 +275,7 @@ export default async function UnitPage({
                     className="flex items-center gap-2 px-3.5 py-2.5 transition-colors hover:bg-surface-2/60 focus-ring"
                   >
                     <NotebookPen size={13} className="shrink-0 text-subtle" />
-                    <span className="min-w-0 flex-1 truncate text-[13px]">{n.title}</span>
+                    <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]">{n.title}</span>
                     <ChevronRight size={13} className="shrink-0 text-subtle" />
                   </Link>
                 </li>
@@ -301,7 +303,7 @@ export default async function UnitPage({
               <span className="block text-[length:var(--text-micro)] text-subtle">
                 Unit {prev.number}
               </span>
-              <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
+              <span className="block truncate text-[length:var(--text-small)] text-muted group-hover:text-fg">
                 {prev.title}
               </span>
             </span>
@@ -309,7 +311,7 @@ export default async function UnitPage({
         ) : (
           <Link
             href={`/subjects/${slug}`}
-            className="flex items-center gap-2 rounded p-1 text-[12.5px] text-muted hover:text-fg focus-ring"
+            className="flex items-center gap-2 rounded p-1 text-[length:var(--text-small)] text-muted hover:text-fg focus-ring"
           >
             <ArrowLeft size={14} /> Back to {subject.short_name}
           </Link>
@@ -323,7 +325,7 @@ export default async function UnitPage({
               <span className="block text-[length:var(--text-micro)] text-subtle">
                 Unit {next.number}
               </span>
-              <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
+              <span className="block truncate text-[length:var(--text-small)] text-muted group-hover:text-fg">
                 {next.title}
               </span>
             </span>

@@ -125,10 +125,10 @@ export function InboxUpload({
         />
 
         <Upload size={20} className="mx-auto text-subtle" />
-        <p className="mt-2 text-[13px] font-medium">
+        <p className="mt-2 text-[length:var(--text-small)] font-medium">
           {busy ? `Uploading ${busy}…` : "Drop photos of the board, notes or PDFs here"}
         </p>
-        <p className="mx-auto mt-1 max-w-sm text-[12px] leading-relaxed text-muted">
+        <p className="mx-auto mt-1 max-w-sm text-[length:var(--text-micro)] leading-relaxed text-muted">
           Photograph the whiteboard on your phone and add it straight from here. Images and PDFs,
           up to 25 MB each.
         </p>
@@ -141,7 +141,7 @@ export function InboxUpload({
           <select
             value={subjectId}
             onChange={(e) => setSubjectId(e.target.value)}
-            className={cn(inputCls, "h-8 w-auto text-[12px]")}
+            className={cn(inputCls, "h-8 w-auto text-[length:var(--text-micro)]")}
             aria-label="Tag these with a subject"
           >
             <option value="">No subject</option>
@@ -184,7 +184,7 @@ export function InboxUpload({
 
                 <div className="p-2.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="min-w-0 flex-1 truncate text-[12px]" title={f.filename ?? ""}>
+                    <span className="min-w-0 flex-1 truncate text-[length:var(--text-micro)]" title={f.filename ?? ""}>
                       {f.filename ?? "file"}
                     </span>
                     <a
@@ -206,10 +206,10 @@ export function InboxUpload({
                     </button>
                   </div>
 
-                  <p className="mt-0.5 text-[11px] text-subtle">
+                  <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
                     {[subject?.short_name, prettySize(f.size_bytes), fmtDate(f.created_at)]
                       .filter(Boolean)
-                      .join(" · ")}
+                      .join("   ")}
                   </p>
 
                   <input
@@ -220,7 +220,7 @@ export function InboxUpload({
                       }
                     }}
                     placeholder="What is this? e.g. LMVT board work"
-                    className={cn(inputCls, "mt-1.5 h-7 text-[11.5px]")}
+                    className={cn(inputCls, "mt-1.5 h-7 text-[length:var(--text-micro)]")}
                   />
                 </div>
               </li>
@@ -228,7 +228,7 @@ export function InboxUpload({
           })}
         </ul>
       ) : (
-        <p className="py-6 text-center text-[12.5px] text-muted">
+        <p className="py-6 text-center text-[length:var(--text-small)] text-muted">
           Nothing here yet. Whatever you add shows up for Claude to work from.
         </p>
       )}

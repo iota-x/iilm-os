@@ -141,10 +141,10 @@ export function Sidebar({
       {/* brand + collapse */}
       <div className="flex h-14 shrink-0 items-center gap-2 px-3">
         <Link href="/" className="flex min-w-0 items-center gap-2 focus-ring rounded">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] bg-[var(--accent)] text-[12px] font-bold text-[var(--accent-fg)]">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] bg-[var(--accent)] text-[length:var(--text-micro)] font-bold text-[var(--accent-fg)]">
             I
           </span>
-          <span className="truncate text-[14px] font-semibold tracking-tight">IILM OS</span>
+          <span className="truncate text-[length:var(--text-body)] font-semibold tracking-tight">IILM OS</span>
         </Link>
         <button
           onClick={() => setCollapsed(true)}
@@ -169,7 +169,7 @@ export function Sidebar({
                 <Link
                   href={href}
                   className={cn(
-                    "flex h-8 items-center gap-2 rounded-lg px-2 text-[13px] font-medium transition-colors focus-ring",
+                    "flex h-8 items-center gap-2 rounded-lg px-2 text-[length:var(--text-small)] font-medium transition-colors focus-ring",
                     active
                       ? "bg-surface-2 text-fg"
                       : "text-muted hover:bg-surface-2 hover:text-fg",
@@ -189,7 +189,7 @@ export function Sidebar({
           </span>
           <Link
             href="/subjects"
-            className="text-[10px] text-subtle hover:text-fg focus-ring rounded px-1"
+            className="text-[length:var(--text-micro)] text-subtle hover:text-fg focus-ring rounded px-1"
           >
             All
           </Link>
@@ -235,7 +235,7 @@ export function Sidebar({
                     />
                     <span
                       className={cn(
-                        "min-w-0 flex-1 truncate text-[12.5px]",
+                        "min-w-0 flex-1 truncate text-[length:var(--text-small)]",
                         isActive ? "font-medium text-fg" : "text-muted",
                       )}
                       title={subject.name}
@@ -243,11 +243,11 @@ export function Sidebar({
                       {subject.short_name}
                     </span>
                     {total > 0 ? (
-                      <span className="shrink-0 text-[10px] tabular-nums text-subtle">
+                      <span className="shrink-0 text-[length:var(--text-micro)] tabular-nums text-subtle">
                         {done}/{total}
                       </span>
                     ) : (
-                      <span className="shrink-0 text-[10px] text-subtle">—</span>
+                      <span className="shrink-0 text-[length:var(--text-micro)] text-subtle">—</span>
                     )}
                   </Link>
                 </div>
@@ -255,7 +255,7 @@ export function Sidebar({
                 {open ? (
                   <ul className="ml-[11px] mt-0.5 space-y-0.5 border-l border-line pl-2">
                     {subject.units.length === 0 ? (
-                      <li className="px-2 py-1.5 text-[11px] text-subtle">
+                      <li className="px-2 py-1.5 text-[length:var(--text-micro)] text-subtle">
                         No units yet — course plan missing.
                       </li>
                     ) : (
@@ -269,7 +269,7 @@ export function Sidebar({
                             <span className="text-[length:var(--text-micro)] font-medium text-subtle">
                               Unit {unit.number}
                             </span>
-                            <span className="min-w-0 flex-1 truncate text-[10.5px] text-subtle">
+                            <span className="min-w-0 flex-1 truncate text-[length:var(--text-micro)] text-subtle">
                               {unit.title}
                             </span>
                             {unit.in_midsem ? (
@@ -285,7 +285,7 @@ export function Sidebar({
                                 <li key={topic.id}>
                                   <Link
                                     href={`/subjects/${subject.slug}/unit-${unit.number}/${topic.code}`}
-                                    className="flex items-start gap-1.5 rounded-md px-2 py-1 text-[11.5px] leading-snug text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-ring"
+                                    className="flex items-start gap-1.5 rounded-md px-2 py-1 text-[length:var(--text-micro)] leading-snug text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-ring"
                                     title={topic.title}
                                   >
                                     <Icon
@@ -321,10 +321,10 @@ export function Sidebar({
             href="/settings"
             className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface-2 focus-ring"
           >
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-surface-3 text-[10px] font-semibold text-muted">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-surface-3 text-[length:var(--text-micro)] font-semibold text-muted">
               {(displayName ?? "?").slice(0, 1).toUpperCase()}
             </span>
-            <span className="min-w-0 flex-1 truncate text-[12px] text-muted">
+            <span className="min-w-0 flex-1 truncate text-[length:var(--text-micro)] text-muted">
               {displayName ?? "Set your name"}
             </span>
             <Settings size={13} className="shrink-0 text-subtle" />

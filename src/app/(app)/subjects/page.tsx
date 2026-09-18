@@ -17,8 +17,8 @@ export default async function SubjectsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Subjects</h1>
-        <p className="text-[13px] text-muted mt-0.5">
+        <h1 className="text-[length:var(--text-page)]">Subjects</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">
           Six courses, {units.length} units, {topics.length} topics, {experiments.length} lab
           experiments.
         </p>
@@ -43,10 +43,10 @@ export default async function SubjectsPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h2 className="text-[15px] font-semibold tracking-tight leading-snug">
+                    <h2 className="text-[length:var(--text-body)] font-semibold tracking-tight leading-snug">
                       {s.name}
                     </h2>
-                    <p className="text-[12px] text-muted mt-0.5">
+                    <p className="text-[length:var(--text-micro)] text-muted mt-0.5">
                       {s.code ? `${s.code} · ` : ""}
                       {s.ltpc}
                       {s.teacher ? ` · ${s.teacher}` : ""}
@@ -81,7 +81,7 @@ export default async function SubjectsPage() {
                 {own.length ? (
                   <div className="mt-4 space-y-2.5">
                     <div>
-                      <div className="flex items-baseline justify-between text-[11.5px] mb-1">
+                      <div className="flex items-baseline justify-between text-[length:var(--text-micro)] mb-1">
                         <span className="text-muted">Mid-sem scope</span>
                         <span className="font-semibold tabular-nums">
                           {Math.round(midProgress * 100)}%
@@ -90,7 +90,7 @@ export default async function SubjectsPage() {
                       <Bar value={midProgress} />
                     </div>
                     <div>
-                      <div className="flex items-baseline justify-between text-[11.5px] mb-1">
+                      <div className="flex items-baseline justify-between text-[length:var(--text-micro)] mb-1">
                         <span className="text-muted">Whole course</span>
                         <span className="font-semibold tabular-nums">
                           {Math.round(progress * 100)}%
@@ -100,7 +100,7 @@ export default async function SubjectsPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="mt-4 text-[12.5px] text-muted leading-relaxed">
+                  <p className="mt-4 text-[length:var(--text-small)] text-muted leading-relaxed">
                     {s.status === "empty"
                       ? "Nothing loaded. Open it — there's a note on exactly what to chase."
                       : "No topics loaded yet."}
@@ -108,7 +108,7 @@ export default async function SubjectsPage() {
                 )}
 
                 {s.gaps.length ? (
-                  <p className="mt-3 text-[11.5px] text-[var(--warn)] flex items-start gap-1.5">
+                  <p className="mt-3 text-[length:var(--text-micro)] text-[var(--warn)] flex items-start gap-1.5">
                     <AlertTriangle size={11} className="mt-0.5 shrink-0" />
                     {s.gaps.length} gap{s.gaps.length > 1 ? "s" : ""} to close
                   </p>

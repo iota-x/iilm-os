@@ -97,25 +97,25 @@ export function TopicQuestions({
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <div className="prose-note text-[13px] leading-snug">
+                  <div className="prose-note text-[length:var(--text-small)] leading-snug">
                     <Markdown>{q.prompt}</Markdown>
                   </div>
 
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                     <Badge>{q.kind}</Badge>
                     {q.marks ? (
-                      <span className="text-[11px] text-subtle">{q.marks} marks</span>
+                      <span className="text-[length:var(--text-micro)] text-subtle">{q.marks} marks</span>
                     ) : null}
                     {q.source ? (
-                      <span className="text-[11px] text-subtle">{q.source}</span>
+                      <span className="text-[length:var(--text-micro)] text-subtle">{q.source}</span>
                     ) : null}
 
                     {s.fresh ? (
-                      <span className="text-[11px] text-subtle">not tried</span>
+                      <span className="text-[length:var(--text-micro)] text-subtle">not tried</span>
                     ) : (
                       <span
                         className={cn(
-                          "text-[11px]",
+                          "text-[length:var(--text-micro)]",
                           s.settled
                             ? "text-[var(--good)]"
                             : s.shaky
@@ -152,11 +152,11 @@ export function TopicQuestions({
                   {open ? (
                     <div className="mt-2.5 rounded-lg border border-line bg-surface-2 px-3 py-2.5">
                       {q.answer ? (
-                        <div className="prose-note text-[12.5px]">
+                        <div className="prose-note text-[length:var(--text-small)]">
                           <Markdown>{q.answer}</Markdown>
                         </div>
                       ) : (
-                        <p className="text-[12px] text-subtle">
+                        <p className="text-[length:var(--text-micro)] text-subtle">
                           No answer saved. Add one so future-you doesn&rsquo;t redo the work.
                         </p>
                       )}
@@ -165,7 +165,7 @@ export function TopicQuestions({
 
                   {/* log an attempt */}
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-subtle">How did it go?</span>
+                    <span className="text-[length:var(--text-micro)] text-subtle">How did it go?</span>
                     <AttemptButton
                       tone="good"
                       icon={<Check size={11} />}
@@ -184,7 +184,7 @@ export function TopicQuestions({
                       label="Wrong"
                       onClick={() => run(() => logAttempt({ question_id: q.id, outcome: "wrong" }))}
                     />
-                    <span className="ml-auto text-[10.5px] text-subtle">
+                    <span className="ml-auto text-[length:var(--text-micro)] text-subtle">
                       {s.tries ? `last ${fmtDate(q.created_at)}` : ""}
                     </span>
                   </div>
@@ -212,28 +212,28 @@ export function TopicQuestions({
               onChange={(e) => setPrompt(e.target.value)}
               rows={2}
               placeholder="The question, as it would be asked"
-              className={cn(inputCls, "resize-y text-[13px]")}
+              className={cn(inputCls, "resize-y text-[length:var(--text-small)]")}
             />
             <textarea
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               rows={3}
               placeholder="The answer, or the key steps — markdown and $LaTeX$ work"
-              className={cn(inputCls, "resize-y text-[12.5px]")}
+              className={cn(inputCls, "resize-y text-[length:var(--text-small)]")}
             />
             <div className="flex flex-wrap gap-2">
               <input
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder="Where from? e.g. Mid-sem 2024"
-                className={cn(inputCls, "h-7 flex-1 text-[12px]")}
+                className={cn(inputCls, "h-7 flex-1 text-[length:var(--text-micro)]")}
               />
               <input
                 value={marks}
                 onChange={(e) => setMarks(e.target.value.replace(/\D/g, ""))}
                 placeholder="Marks"
                 inputMode="numeric"
-                className={cn(inputCls, "h-7 w-[84px] text-[12px]")}
+                className={cn(inputCls, "h-7 w-[84px] text-[length:var(--text-micro)]")}
               />
             </div>
             <div className="flex flex-wrap items-center gap-1">
@@ -243,7 +243,7 @@ export function TopicQuestions({
                   type="button"
                   onClick={() => setKind(k)}
                   className={cn(
-                    "rounded-md px-2 py-1 text-[11px] transition-colors focus-ring",
+                    "rounded-md px-2 py-1 text-[length:var(--text-micro)] transition-colors focus-ring",
                     kind === k ? "bg-surface-3 text-fg" : "text-subtle hover:text-fg",
                   )}
                 >
@@ -269,7 +269,7 @@ export function TopicQuestions({
         ) : (
           <button
             onClick={() => setAdding(true)}
-            className="inline-flex items-center gap-1.5 rounded text-[12px] text-subtle transition-colors hover:text-fg focus-ring"
+            className="inline-flex items-center gap-1.5 rounded text-[length:var(--text-micro)] text-subtle transition-colors hover:text-fg focus-ring"
           >
             <Plus size={13} /> Add a question
           </button>
@@ -294,7 +294,7 @@ function AttemptButton({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] transition-colors focus-ring",
+        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[length:var(--text-micro)] transition-colors focus-ring",
         tone === "good" &&
           "border-line text-subtle hover:border-[var(--good)] hover:text-[var(--good)]",
         tone === "warn" &&

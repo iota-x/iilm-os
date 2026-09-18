@@ -59,7 +59,7 @@ export function TopicChecklist({
               style={{ width: `${pct}%` }}
             />
           </div>
-          <span className="shrink-0 text-[11px] tabular-nums text-muted">
+          <span className="shrink-0 text-[length:var(--text-micro)] tabular-nums text-muted">
             {done}/{items.length} done
           </span>
         </div>
@@ -109,7 +109,7 @@ export function TopicChecklist({
                   onKeyDown={(e) => {
                     if (e.key === "Escape") setEditingId(null);
                   }}
-                  className={cn(inputCls, "h-7 text-[13px]")}
+                  className={cn(inputCls, "h-7 text-[length:var(--text-small)]")}
                 />
                 <Button type="submit" size="icon" variant="ghost" aria-label="Save">
                   <Check size={14} />
@@ -132,7 +132,7 @@ export function TopicChecklist({
                     setEditDraft(c.title);
                   }}
                   className={cn(
-                    "min-w-0 flex-1 rounded text-left text-[13px] leading-snug transition-colors focus-ring",
+                    "min-w-0 flex-1 rounded text-left text-[length:var(--text-small)] leading-snug transition-colors focus-ring",
                     c.done ? "text-subtle line-through" : "text-fg hover:text-muted",
                   )}
                   title="Click to rename"
@@ -176,7 +176,7 @@ export function TopicChecklist({
                 }
               }}
               placeholder="e.g. One-sided limits"
-              className={cn(inputCls, "h-7 text-[13px]")}
+              className={cn(inputCls, "h-7 text-[length:var(--text-small)]")}
             />
             <Button type="submit" size="sm" disabled={pending || !draft.trim()}>
               {pending ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
@@ -198,7 +198,7 @@ export function TopicChecklist({
         ) : (
           <button
             onClick={() => setAdding(true)}
-            className="inline-flex items-center gap-1.5 rounded text-[12px] text-subtle transition-colors hover:text-fg focus-ring"
+            className="inline-flex items-center gap-1.5 rounded text-[length:var(--text-micro)] text-subtle transition-colors hover:text-fg focus-ring"
           >
             <Plus size={13} /> Add a step
           </button>

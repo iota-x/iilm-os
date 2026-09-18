@@ -184,9 +184,12 @@ h1, h2, h3 { letter-spacing: -0.012em; line-height: 1.2; }
 /* ─── prose for notes and strategies ────────────────────────── */
 .prose-note {
   color: var(--fg);
-  line-height: 1.7;
-  font-size: 0.9375rem;
+  font-family: var(--font-serif);
+  line-height: 1.72;
+  font-size: var(--text-body);
+  max-width: 72ch;
 }
+.prose-note code, .prose-note pre { font-family: var(--font-mono); }
 .prose-note > * + * { margin-top: 0.9em; }
 .prose-note h1 { font-size: 1.4rem; font-weight: 650; letter-spacing: -0.015em; margin-top: 1.6em; }
 .prose-note h2 { font-size: 1.15rem; font-weight: 650; letter-spacing: -0.01em; margin-top: 1.5em; }

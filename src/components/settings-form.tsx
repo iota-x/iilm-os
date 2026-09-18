@@ -26,7 +26,7 @@ export function SettingsForm({
         <CardHead title="You" />
         <div className="p-4 space-y-4">
           <div>
-            <label className="text-[12px] font-medium text-muted" htmlFor="name">
+            <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="name">
               Display name
             </label>
             <div className="flex gap-2 mt-1">
@@ -52,8 +52,8 @@ export function SettingsForm({
           </div>
 
           <div>
-            <p className="text-[12px] font-medium text-muted">Lab group</p>
-            <p className="text-[11.5px] text-subtle mt-0.5 mb-2">
+            <p className="text-[length:var(--text-micro)] font-medium text-muted">Lab group</p>
+            <p className="text-[length:var(--text-micro)] text-subtle mt-0.5 mb-2">
               Changes which lab slots show in your timetable.
             </p>
             <div className="flex gap-2">
@@ -74,8 +74,8 @@ export function SettingsForm({
                       : "border-line bg-surface hover:bg-surface-2",
                   )}
                 >
-                  <p className="text-[13px] font-semibold">Group {g}</p>
-                  <p className="text-[11.5px] text-muted mt-0.5 leading-snug">
+                  <p className="text-[length:var(--text-small)] font-semibold">Group {g}</p>
+                  <p className="text-[length:var(--text-micro)] text-muted mt-0.5 leading-snug">
                     {g === 1
                       ? "Mon Linux · Tue Calculus lab · Wed DE+CO lab · Thu & Fri C lab"
                       : "Mon Calculus lab · Tue & Wed C lab · Thu DE+CO lab · Fri Linux"}
@@ -117,7 +117,7 @@ function AttendanceRow({ subject, row }: { subject: Subject; row: Attendance | n
 
   return (
     <li className={cn("px-4 py-3 flex flex-wrap items-center gap-3", ACCENT_CLASS[subject.color])}>
-      <p className="text-[13px] font-medium flex-1 min-w-[140px]">{subject.short_name}</p>
+      <p className="text-[length:var(--text-small)] font-medium flex-1 min-w-[140px]">{subject.short_name}</p>
 
       <div className="flex items-center gap-1.5">
         <input
@@ -126,22 +126,22 @@ function AttendanceRow({ subject, row }: { subject: Subject; row: Attendance | n
           value={attended}
           onChange={(e) => setAttended(e.target.value)}
           placeholder="went"
-          className={`${inputCls} h-8 w-[70px] text-center text-[12px]`}
+          className={`${inputCls} h-8 w-[70px] text-center text-[length:var(--text-micro)]`}
         />
-        <span className="text-subtle text-[12px]">/</span>
+        <span className="text-subtle text-[length:var(--text-micro)]">/</span>
         <input
           type="number"
           min={0}
           value={held}
           onChange={(e) => setHeld(e.target.value)}
           placeholder="held"
-          className={`${inputCls} h-8 w-[70px] text-center text-[12px]`}
+          className={`${inputCls} h-8 w-[70px] text-center text-[length:var(--text-micro)]`}
         />
       </div>
 
       <span
         className={cn(
-          "text-[13px] font-semibold tabular-nums w-[52px] text-right",
+          "text-[length:var(--text-small)] font-semibold tabular-nums w-[52px] text-right",
           p === null
             ? "text-subtle"
             : p >= 0.75

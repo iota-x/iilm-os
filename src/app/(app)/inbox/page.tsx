@@ -10,8 +10,8 @@ export default async function InboxPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Inbox</h1>
-        <p className="mt-0.5 max-w-2xl text-[13px] leading-relaxed text-muted">
+        <h1 className="text-[length:var(--text-page)]">Inbox</h1>
+        <p className="mt-0.5 max-w-2xl text-[length:var(--text-small)] leading-relaxed text-muted">
           Somewhere to put what actually happened in class — board photos, your handwritten notes,
           lecture PDFs, tutorial sheets.
         </p>
@@ -21,7 +21,7 @@ export default async function InboxPage() {
 
       <Card>
         <CardHead title="What this does, and doesn't" />
-        <div className="space-y-2 px-4 py-3 text-[12.5px] leading-relaxed text-muted">
+        <div className="space-y-2 px-4 py-3 text-[length:var(--text-small)] leading-relaxed text-muted">
           <p>
             Uploading stores the file privately against your account. It does <strong>not</strong>{" "}
             change anything in the app on its own — nothing here reads your handwriting or turns a

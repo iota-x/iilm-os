@@ -68,7 +68,7 @@ export default async function TopicPage({
   return (
     <div className="space-y-5">
       {/* ── breadcrumb ─────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-subtle">
+      <div className="flex flex-wrap items-center gap-1.5 text-[length:var(--text-micro)] text-subtle">
         <Link href="/subjects" className="rounded hover:text-fg focus-ring">
           Subjects
         </Link>
@@ -87,13 +87,13 @@ export default async function TopicPage({
       {/* ── header ─────────────────────────────────────────── */}
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-[21px] font-semibold leading-tight tracking-tight">{topic.title}</h1>
+          <h1 className="text-[length:var(--text-page)] leading-tight">{topic.title}</h1>
           {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[12px] text-subtle">
+        <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[length:var(--text-micro)] text-subtle">
           {topic.session ? <span>{topic.session}</span> : null}
           <span className="flex items-center gap-1.5">
-            <span className="font-mono text-[11px]">{topic.code}</span>
+            <span className="font-mono text-[length:var(--text-micro)]">{topic.code}</span>
           </span>
           <span className="flex items-center gap-1">
             exam weight <span className="tabular-nums text-muted">{topic.weight}/5</span>
@@ -119,7 +119,7 @@ export default async function TopicPage({
           ) : null}
         </div>
         {topic.outcome ? (
-          <p className="mt-3 max-w-[78ch] rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[13px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-[78ch] rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[length:var(--text-small)] leading-relaxed text-muted">
             <span className="font-medium text-fg">What you need to be able to do: </span>
             {topic.outcome}
           </p>
@@ -143,7 +143,7 @@ export default async function TopicPage({
         </SectionTitle>
         <Card className="mt-2 overflow-hidden">
           {checkpoints.length === 0 ? (
-            <p className="px-3.5 pt-3 text-[12.5px] leading-relaxed text-muted">
+            <p className="px-3.5 pt-3 text-[length:var(--text-small)] leading-relaxed text-muted">
               Break this topic into the things you actually have to be able to do, then tick them
               off. {topic.outcome ? "The line above is a good place to start." : null}
             </p>
@@ -162,7 +162,7 @@ export default async function TopicPage({
         </SectionTitle>
         <Card className="mt-2 overflow-hidden">
           {questions.length === 0 ? (
-            <p className="px-3.5 pt-3 text-[12.5px] leading-relaxed text-muted">
+            <p className="px-3.5 pt-3 text-[length:var(--text-small)] leading-relaxed text-muted">
               Put the questions you might actually be asked here — past papers, tutorial sheets,
               anything your teacher drilled. Log how each attempt went and the app can tell you
               what you keep getting wrong.
@@ -203,20 +203,20 @@ export default async function TopicPage({
                   >
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[13px] font-medium group-hover:underline">
+                        <span className="text-[length:var(--text-small)] font-medium group-hover:underline">
                           {r.title}
                         </span>
                         <Badge>{r.kind}</Badge>
                         {r.minutes ? (
-                          <span className="text-[11px] text-subtle">{r.minutes} min</span>
+                          <span className="text-[length:var(--text-micro)] text-subtle">{r.minutes} min</span>
                         ) : null}
                         {!r.is_curated ? <Badge tone="good">yours</Badge> : null}
                       </span>
                       {r.source ? (
-                        <span className="mt-0.5 block text-[11px] text-subtle">{r.source}</span>
+                        <span className="mt-0.5 block text-[length:var(--text-micro)] text-subtle">{r.source}</span>
                       ) : null}
                       {r.why ? (
-                        <span className="mt-1 block max-w-[86ch] text-[12px] leading-snug text-muted">
+                        <span className="mt-1 block max-w-[86ch] text-[length:var(--text-micro)] leading-snug text-muted">
                           {r.why}
                         </span>
                       ) : null}
@@ -264,8 +264,8 @@ export default async function TopicPage({
                     className="flex items-center gap-2 px-3.5 py-2.5 transition-colors hover:bg-surface-2/60 focus-ring"
                   >
                     <NotebookPen size={13} className="shrink-0 text-subtle" />
-                    <span className="min-w-0 flex-1 truncate text-[13px]">{n.title}</span>
-                    <span className="shrink-0 text-[11px] text-subtle">
+                    <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]">{n.title}</span>
+                    <span className="shrink-0 text-[length:var(--text-micro)] text-subtle">
                       {fmtDate(n.updated_at)}
                     </span>
                     <ChevronRight size={13} className="shrink-0 text-subtle" />
@@ -295,7 +295,7 @@ export default async function TopicPage({
               <span className="block text-[length:var(--text-micro)] text-subtle">
                 Previous
               </span>
-              <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
+              <span className="block truncate text-[length:var(--text-small)] text-muted group-hover:text-fg">
                 {prev.title}
               </span>
             </span>
@@ -303,7 +303,7 @@ export default async function TopicPage({
         ) : (
           <Link
             href={`/subjects/${slug}/unit-${unit.number}`}
-            className="flex items-center gap-2 rounded p-1 text-[12.5px] text-muted hover:text-fg focus-ring"
+            className="flex items-center gap-2 rounded p-1 text-[length:var(--text-small)] text-muted hover:text-fg focus-ring"
           >
             <ChevronLeft size={14} /> Unit {unit.number}
           </Link>
@@ -315,7 +315,7 @@ export default async function TopicPage({
           >
             <span className="min-w-0">
               <span className="block text-[length:var(--text-micro)] text-subtle">Next</span>
-              <span className="block truncate text-[12.5px] text-muted group-hover:text-fg">
+              <span className="block truncate text-[length:var(--text-small)] text-muted group-hover:text-fg">
                 {next.title}
               </span>
             </span>

@@ -108,20 +108,20 @@ export default async function SubjectPage({
       <div>
         <Link
           href="/subjects"
-          className="text-[12px] text-muted hover:text-fg focus-ring rounded"
+          className="text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring rounded"
         >
           ← Subjects
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4 mt-2">
           <div className="min-w-0">
-            <h1 className="text-[22px] font-semibold tracking-tight leading-tight">
+            <h1 className="text-[length:var(--text-page)] leading-tight">
               {subject.name}
             </h1>
-            <p className="text-[13px] text-muted mt-1">
-              {[subject.code, subject.ltpc, subject.teacher].filter(Boolean).join(" · ")}
+            <p className="text-[length:var(--text-small)] text-muted mt-1">
+              {[subject.code, subject.ltpc, subject.teacher].filter(Boolean).join("   ")}
             </p>
             {mySlots.length ? (
-              <p className="text-[12px] text-subtle mt-1.5">
+              <p className="text-[length:var(--text-micro)] text-subtle mt-1.5">
                 {mySlots
                   .map(
                     (s) =>
@@ -136,11 +136,11 @@ export default async function SubjectPage({
             <div className="flex items-center gap-5">
               <div className="text-center">
                 <Ring value={midProgress} size={48} />
-                <p className="text-[11px] text-muted mt-1">mid-sem</p>
+                <p className="text-[length:var(--text-micro)] text-muted mt-1">mid-sem</p>
               </div>
               <div className="text-center">
                 <Ring value={allProgress} size={48} />
-                <p className="text-[11px] text-muted mt-1">full course</p>
+                <p className="text-[length:var(--text-micro)] text-muted mt-1">full course</p>
               </div>
             </div>
           ) : null}
@@ -152,7 +152,7 @@ export default async function SubjectPage({
         <div className="flex gap-3 px-4 py-3">
           <Target size={16} className="shrink-0 mt-0.5 text-sc" />
           <div className="min-w-0">
-            <p className="text-[13px] font-semibold">
+            <p className="text-[length:var(--text-small)] font-semibold">
               Mid-sem scope{" "}
               {subject.midsem_confirmed ? (
                 <Badge tone="good">confirmed</Badge>
@@ -160,13 +160,13 @@ export default async function SubjectPage({
                 <Badge tone="warn">not confirmed</Badge>
               )}
             </p>
-            <p className="text-[12.5px] text-muted mt-1 leading-relaxed">
+            <p className="text-[length:var(--text-small)] text-muted mt-1 leading-relaxed">
               {subject.midsem_scope}
             </p>
             {midTopics.length ? (
               <div className="flex items-center gap-2.5 mt-2.5">
                 <Bar value={midProgress} className="w-36" />
-                <span className="text-[12px] text-muted tabular-nums">
+                <span className="text-[length:var(--text-micro)] text-muted tabular-nums">
                   {midTopics.filter((t) => t.status !== "not_started").length}/{midTopics.length}{" "}
                   topics started
                 </span>
@@ -182,10 +182,10 @@ export default async function SubjectPage({
           <div className="flex gap-3 px-4 py-3">
             <AlertTriangle size={16} className="text-[var(--warn)] shrink-0 mt-0.5" />
             <div>
-              <p className="text-[13px] font-semibold">What&rsquo;s missing</p>
+              <p className="text-[length:var(--text-small)] font-semibold">What&rsquo;s missing</p>
               <ul className="mt-1.5 space-y-1">
                 {subject.gaps.map((g, i) => (
-                  <li key={i} className="text-[12.5px] text-muted leading-relaxed flex gap-2">
+                  <li key={i} className="text-[length:var(--text-small)] text-muted leading-relaxed flex gap-2">
                     <span className="text-subtle select-none shrink-0">·</span>
                     <span>{g}</span>
                   </li>
@@ -205,7 +205,7 @@ export default async function SubjectPage({
               href={`/subjects/${slug}?tab=${t.key}`}
               scroll={false}
               className={cn(
-                "px-3 py-2 text-[13px] font-medium border-b-2 transition-colors focus-ring whitespace-nowrap",
+                "px-3 py-2 text-[length:var(--text-small)] font-medium border-b-2 transition-colors focus-ring whitespace-nowrap",
                 tab === t.key
                   ? "border-sc text-sc"
                   : "border-transparent text-muted hover:text-fg",
@@ -222,7 +222,7 @@ export default async function SubjectPage({
       {tab === "syllabus" ? (
         <div className="space-y-4">
           {subject.overview ? (
-            <p className="text-[13.5px] text-muted leading-relaxed max-w-3xl">
+            <p className="text-[length:var(--text-small)] text-muted leading-relaxed max-w-3xl">
               {subject.overview}
             </p>
           ) : null}
@@ -250,7 +250,7 @@ export default async function SubjectPage({
                       u.assessment,
                     ]
                       .filter(Boolean)
-                      .join(" · ")}
+                      .join("   ")}
                     right={
                       own.length ? (
                         <Ring value={progressOf(own.map((t) => t.status))} size={34} stroke={3} />
@@ -294,9 +294,9 @@ export default async function SubjectPage({
                   <li key={o.id} className="px-4 py-2.5 flex gap-3">
                     <Badge tone="subject">{o.code}</Badge>
                     <div className="min-w-0">
-                      <p className="text-[12.5px] leading-relaxed">{o.text}</p>
+                      <p className="text-[length:var(--text-small)] leading-relaxed">{o.text}</p>
                       {o.bloom ? (
-                        <p className="text-[11px] text-subtle mt-0.5">{o.bloom}</p>
+                        <p className="text-[length:var(--text-micro)] text-subtle mt-0.5">{o.bloom}</p>
                       ) : null}
                     </div>
                   </li>
@@ -315,7 +315,7 @@ export default async function SubjectPage({
                 {subject.local_files.map((f) => (
                   <li
                     key={f}
-                    className="text-[12px] text-muted font-mono flex items-center gap-2"
+                    className="text-[length:var(--text-micro)] text-muted font-mono flex items-center gap-2"
                   >
                     <FileText size={12} className="shrink-0 text-subtle" />
                     {f}
@@ -332,7 +332,7 @@ export default async function SubjectPage({
           {strategies.length ? (
             strategies.map((s) => (
               <Card key={s.id} className="p-4">
-                <h3 className="text-[15px] font-semibold tracking-tight leading-snug">
+                <h3 className="text-[length:var(--text-body)] font-semibold tracking-tight leading-snug">
                   {s.title}
                 </h3>
                 <Markdown className="mt-2.5">{s.body}</Markdown>
@@ -352,10 +352,10 @@ export default async function SubjectPage({
                   <li key={b.id} className="px-4 py-2.5 flex gap-3">
                     <BookMarked size={15} className="mt-0.5 shrink-0 text-sc" />
                     <div className="min-w-0">
-                      <p className="text-[13px] font-medium">{b.title}</p>
-                      <p className="text-[12px] text-muted mt-0.5">{b.author}</p>
+                      <p className="text-[length:var(--text-small)] font-medium">{b.title}</p>
+                      <p className="text-[length:var(--text-micro)] text-muted mt-0.5">{b.author}</p>
                       {b.note ? (
-                        <p className="text-[12px] text-subtle mt-1 leading-relaxed">{b.note}</p>
+                        <p className="text-[length:var(--text-micro)] text-subtle mt-1 leading-relaxed">{b.note}</p>
                       ) : null}
                     </div>
                     <Badge tone="neutral" className="ml-auto self-start">
@@ -398,11 +398,11 @@ export default async function SubjectPage({
                       href={`/notes?open=${n.id}`}
                       className="block px-4 py-3 hover:bg-surface-2 transition-colors focus-ring"
                     >
-                      <p className="text-[13px] font-medium">{n.title}</p>
-                      <p className="text-[12px] text-muted mt-0.5 line-clamp-2 leading-relaxed">
+                      <p className="text-[length:var(--text-small)] font-medium">{n.title}</p>
+                      <p className="text-[length:var(--text-micro)] text-muted mt-0.5 line-clamp-2 leading-relaxed">
                         {n.content.replace(/[#*`>\-]/g, "").slice(0, 160) || "Empty note"}
                       </p>
-                      <p className="text-[11px] text-subtle mt-1">
+                      <p className="text-[length:var(--text-micro)] text-subtle mt-1">
                         {relativeDay(n.updated_at.slice(0, 10))}
                       </p>
                     </Link>
@@ -424,8 +424,8 @@ export default async function SubjectPage({
         <div className="max-w-3xl">
           <MarksTable components={components} />
           <Card className="mt-5 p-4">
-            <h3 className="text-[13px] font-semibold">The two thresholds that actually matter</h3>
-            <p className="text-[12.5px] text-muted mt-1.5 leading-relaxed">
+            <h3 className="text-[length:var(--text-small)] font-semibold">The two thresholds that actually matter</h3>
+            <p className="text-[length:var(--text-small)] text-muted mt-1.5 leading-relaxed">
               You need <strong className="text-fg">40% of the internals</strong> (CLA 30 +
               Mid-Sem 20 = 50 marks, so 20 of them) <strong className="text-fg">and</strong>{" "}
               <strong className="text-fg">40% of the end-sem</strong> (40 of 100 raw marks), as
@@ -443,7 +443,7 @@ export default async function SubjectPage({
               title={subject.lab_title ?? "Lab"}
               sub={[subject.lab_code, subject.lab_ltpc, subject.lab_teacher]
                 .filter(Boolean)
-                .join(" · ")}
+                .join("   ")}
               right={
                 <Ring
                   value={
@@ -461,7 +461,7 @@ export default async function SubjectPage({
             </ul>
           </Card>
           <Card className="p-4">
-            <p className="text-[12.5px] text-muted leading-relaxed flex gap-2.5">
+            <p className="text-[length:var(--text-small)] text-muted leading-relaxed flex gap-2.5">
               <FlaskConical size={15} className="shrink-0 mt-0.5 text-sc" />
               <span>
                 Lab files are checked at the start of every session. The second checkbox on each

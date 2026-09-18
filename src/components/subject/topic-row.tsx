@@ -76,7 +76,7 @@ export function TopicRow({
               <Link
                 href={topicHref}
                 className={cn(
-                  "text-[13px] leading-snug hover:underline focus-ring rounded",
+                  "font-serif text-[length:var(--text-body)] leading-snug hover:underline focus-ring rounded",
                   status === "mastered" && "text-muted",
                 )}
               >
@@ -85,7 +85,7 @@ export function TopicRow({
             ) : (
               <p
                 className={cn(
-                  "text-[13px] leading-snug",
+                  "font-serif text-[length:var(--text-body)] leading-snug",
                   status === "mastered" && "text-muted",
                 )}
               >
@@ -107,19 +107,19 @@ export function TopicRow({
           </div>
 
           {topic.outcome ? (
-            <p className="text-[12px] text-muted mt-1 leading-relaxed">{topic.outcome}</p>
+            <p className="mt-1 max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">{topic.outcome}</p>
           ) : null}
 
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {topic.session ? (
-              <span className="text-[11px] text-subtle font-mono">{topic.session}</span>
+              <span className="text-[length:var(--text-micro)] text-subtle font-mono">{topic.session}</span>
             ) : null}
             {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
-            <span className="text-[11px] text-subtle">{STATUS_LABEL[status]}</span>
+            <span className="text-[length:var(--text-micro)] text-subtle">{STATUS_LABEL[status]}</span>
             {noteCount ? (
               <Link
                 href={topicHref ?? `/notes`}
-                className="text-[11px] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
+                className="text-[length:var(--text-micro)] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
               >
                 <StickyNote size={10} /> {noteCount}
               </Link>
@@ -127,7 +127,7 @@ export function TopicRow({
             {resourceCount ? (
               <Link
                 href={topicHref ?? `/resources?subject=${subjectSlug}`}
-                className="text-[11px] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
+                className="text-[length:var(--text-micro)] text-subtle hover:text-sc inline-flex items-center gap-0.5 focus-ring rounded"
               >
                 <Link2 size={10} /> {resourceCount}
               </Link>

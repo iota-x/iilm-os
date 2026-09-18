@@ -129,8 +129,8 @@ export function AskChat({ files }: { files: Attachment[] }) {
     <div className="space-y-3">
       {turns.length === 0 ? (
         <Card className="p-5">
-          <p className="text-[13.5px] font-medium">Ask about your course</p>
-          <p className="mt-1 max-w-[62ch] text-[12.5px] leading-relaxed text-muted">
+          <p className="text-[length:var(--text-small)] font-medium">Ask about your course</p>
+          <p className="mt-1 max-w-[62ch] text-[length:var(--text-small)] leading-relaxed text-muted">
             This one can change your data — add checkpoints to a topic, put questions in the bank,
             write a note. Attach a board photo from your inbox and it will read it.
           </p>
@@ -139,7 +139,7 @@ export function AskChat({ files }: { files: Attachment[] }) {
               <button
                 key={s}
                 onClick={() => void send(s)}
-                className="rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 text-[12px] text-muted transition-colors hover:text-fg focus-ring"
+                className="rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 text-[length:var(--text-micro)] text-muted transition-colors hover:text-fg focus-ring"
               >
                 {s}
               </button>
@@ -151,10 +151,10 @@ export function AskChat({ files }: { files: Attachment[] }) {
       {turns.map((t, i) => (
         <div key={i} className={cn(t.role === "user" && "flex justify-end")}>
           {t.role === "user" ? (
-            <div className="max-w-[85%] rounded-2xl rounded-br-md bg-[var(--accent)] px-3.5 py-2 text-[13px] text-[var(--accent-fg)]">
+            <div className="max-w-[85%] rounded-2xl rounded-br-md bg-[var(--accent)] px-3.5 py-2 text-[length:var(--text-small)] text-[var(--accent-fg)]">
               {t.content}
               {t.images ? (
-                <span className="mt-1 block text-[11px] opacity-80">
+                <span className="mt-1 block text-[length:var(--text-micro)] opacity-80">
                   {t.images} image{t.images === 1 ? "" : "s"} attached
                 </span>
               ) : null}
@@ -166,7 +166,7 @@ export function AskChat({ files }: { files: Attachment[] }) {
                   {t.tools.map((s, k) => (
                     <li
                       key={k}
-                      className="flex items-center gap-1.5 text-[11.5px] text-[var(--good)]"
+                      className="flex items-center gap-1.5 text-[length:var(--text-micro)] text-[var(--good)]"
                     >
                       <Check size={12} /> {s}
                     </li>
@@ -174,11 +174,11 @@ export function AskChat({ files }: { files: Attachment[] }) {
                 </ul>
               ) : null}
               {t.content ? (
-                <div className="prose-note text-[13px]">
+                <div className="prose-note text-[length:var(--text-small)]">
                   <Markdown>{t.content}</Markdown>
                 </div>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-[12.5px] text-subtle">
+                <span className="inline-flex items-center gap-1.5 text-[length:var(--text-small)] text-subtle">
                   <Loader2 size={13} className="animate-spin" /> thinking
                 </span>
               )}
@@ -191,7 +191,7 @@ export function AskChat({ files }: { files: Attachment[] }) {
       {/* attach from inbox */}
       {attachable.length ? (
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center gap-1 text-[11px] text-subtle">
+          <span className="inline-flex items-center gap-1 text-[length:var(--text-micro)] text-subtle">
             <Paperclip size={12} /> attach:
           </span>
           {attachable.slice(0, 12).map((f) => {
@@ -245,7 +245,7 @@ export function AskChat({ files }: { files: Attachment[] }) {
           }}
           rows={1}
           placeholder="Ask, or tell it what happened in class…"
-          className="max-h-40 min-h-[36px] flex-1 resize-y bg-transparent px-2 py-1.5 text-[13px] outline-none placeholder:text-subtle"
+          className="max-h-40 min-h-[36px] flex-1 resize-y bg-transparent px-2 py-1.5 text-[length:var(--text-small)] outline-none placeholder:text-subtle"
         />
         {busy ? (
           <button
@@ -268,7 +268,7 @@ export function AskChat({ files }: { files: Attachment[] }) {
         )}
       </form>
 
-      <p className="flex items-center gap-1.5 px-1 text-[11px] text-subtle">
+      <p className="flex items-center gap-1.5 px-1 text-[length:var(--text-micro)] text-subtle">
         <Wrench size={11} /> It can add checkpoints, questions and notes directly. Check what it
         writes — it can be wrong.
       </p>

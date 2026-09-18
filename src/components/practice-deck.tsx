@@ -33,16 +33,16 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
     const total = tally.correct + tally.partial + tally.wrong;
     return (
       <Card className="p-8 text-center">
-        <p className="text-[15px] font-medium">
+        <p className="text-[length:var(--text-body)] font-medium">
           {total ? "Deck finished." : "No questions to drill yet."}
         </p>
         {total ? (
-          <p className="mx-auto mt-1.5 max-w-sm text-[13px] leading-relaxed text-muted">
+          <p className="mx-auto mt-1.5 max-w-sm text-[length:var(--text-small)] leading-relaxed text-muted">
             {tally.correct} right · {tally.partial} half · {tally.wrong} wrong. Anything you got
             wrong comes back to the front of the deck next time.
           </p>
         ) : (
-          <p className="mx-auto mt-1.5 max-w-sm text-[13px] leading-relaxed text-muted">
+          <p className="mx-auto mt-1.5 max-w-sm text-[length:var(--text-small)] leading-relaxed text-muted">
             Add questions from any topic page — past papers, tutorial sheets, whatever your
             teacher actually drills — and they show up here.
           </p>
@@ -50,13 +50,13 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
         <div className="mt-4 flex justify-center gap-2">
           <Link
             href="/subjects"
-            className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 px-3 text-[13px] hover:bg-surface-3 focus-ring"
+            className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 px-3 text-[length:var(--text-small)] hover:bg-surface-3 focus-ring"
           >
             Subjects
           </Link>
           <Link
             href="/"
-            className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 px-3 text-[13px] hover:bg-surface-3 focus-ring"
+            className="inline-flex h-8 items-center rounded-lg border border-line bg-surface-2 px-3 text-[length:var(--text-small)] hover:bg-surface-3 focus-ring"
           >
             Today
           </Link>
@@ -83,7 +83,7 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-[12px] text-subtle">
+      <div className="flex items-center justify-between text-[length:var(--text-micro)] text-subtle">
         <span>
           {index + 1} of {items.length}
         </span>
@@ -104,7 +104,7 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
       </div>
 
       <Card className={cn("p-5", pending && "opacity-60")}>
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-subtle">
+        <div className="flex flex-wrap items-center gap-2 text-[length:var(--text-micro)] text-subtle">
           {subjectShort ? <span>{subjectShort}</span> : null}
           {topicTitle ? <span className="truncate">· {topicTitle}</span> : null}
           <Badge>{question.kind}</Badge>
@@ -124,18 +124,18 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
           )}
         </div>
 
-        <div className="prose-note mt-3 text-[15px] leading-relaxed">
+        <div className="prose-note mt-3 text-[length:var(--text-body)] leading-relaxed">
           <Markdown>{question.prompt}</Markdown>
         </div>
 
         {revealed ? (
           <div className="mt-4 rounded-lg border border-line bg-surface-2 px-3.5 py-3">
             {question.answer ? (
-              <div className="prose-note text-[13px]">
+              <div className="prose-note text-[length:var(--text-small)]">
                 <Markdown>{question.answer}</Markdown>
               </div>
             ) : (
-              <p className="text-[12.5px] text-subtle">
+              <p className="text-[length:var(--text-small)] text-subtle">
                 No answer saved for this one — check your notes, then add it so next time it&rsquo;s
                 here.
               </p>
@@ -143,7 +143,7 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
             {topicHref ? (
               <Link
                 href={topicHref}
-                className="mt-2.5 inline-flex items-center gap-1 rounded text-[12px] text-[var(--accent)] hover:underline focus-ring"
+                className="mt-2.5 inline-flex items-center gap-1 rounded text-[length:var(--text-micro)] text-[var(--accent)] hover:underline focus-ring"
               >
                 Open the topic <ArrowRight size={12} />
               </Link>
@@ -155,13 +155,13 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
           {!revealed ? (
             <button
               onClick={() => setRevealed(true)}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3.5 text-[13px] font-medium transition-colors hover:bg-surface-3 focus-ring"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-3.5 text-[length:var(--text-small)] font-medium transition-colors hover:bg-surface-3 focus-ring"
             >
               <Eye size={14} /> Show the answer
             </button>
           ) : (
             <>
-              <p className="text-[12px] font-medium text-muted">Be honest — how did you do?</p>
+              <p className="text-[length:var(--text-micro)] font-medium text-muted">Be honest — how did you do?</p>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
                 <Outcome
                   tone="good"
@@ -197,12 +197,12 @@ export function PracticeDeck({ items }: { items: DeckItem[] }) {
             setIndex((i) => i + 1);
           }}
           disabled={pending}
-          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[12.5px] text-subtle hover:text-fg focus-ring disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[length:var(--text-small)] text-subtle hover:text-fg focus-ring disabled:opacity-50"
         >
           <SkipForward size={13} /> Skip
         </button>
         {pending ? (
-          <span className="inline-flex items-center gap-1.5 text-[12.5px] text-subtle">
+          <span className="inline-flex items-center gap-1.5 text-[length:var(--text-small)] text-subtle">
             <Loader2 size={13} className="animate-spin" /> saving
           </span>
         ) : null}
@@ -229,7 +229,7 @@ function Outcome({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex h-9 flex-1 min-w-[112px] items-center justify-center gap-1.5 rounded-lg border bg-surface-2 px-3 text-[13px] font-medium transition-colors focus-ring disabled:opacity-50",
+        "inline-flex h-9 flex-1 min-w-[112px] items-center justify-center gap-1.5 rounded-lg border bg-surface-2 px-3 text-[length:var(--text-small)] font-medium transition-colors focus-ring disabled:opacity-50",
         tone === "good" && "border-line hover:border-[var(--good)] hover:text-[var(--good)]",
         tone === "warn" && "border-line hover:border-[var(--warn)] hover:text-[var(--warn)]",
         tone === "bad" && "border-line hover:border-[var(--bad)] hover:text-[var(--bad)]",

@@ -17,8 +17,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold tracking-tight">Settings</h1>
-        <p className="text-[13px] text-muted mt-0.5">Preferences and attendance tracking.</p>
+        <h1 className="text-[length:var(--text-page)]">Settings</h1>
+        <p className="mt-1 text-[length:var(--text-small)] text-muted">Preferences and attendance tracking.</p>
       </div>
 
       <Card className="max-w-2xl">
@@ -31,13 +31,13 @@ export default async function SettingsPage() {
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} />
 
       <Card className="max-w-2xl p-4">
-        <h2 className="text-[13px] font-semibold">Adding next semester</h2>
-        <p className="text-[12.5px] text-muted mt-1.5 leading-relaxed">
+        <h2 className="text-[length:var(--text-small)] font-semibold">Adding next semester</h2>
+        <p className="text-[length:var(--text-small)] text-muted mt-1.5 leading-relaxed">
           The database is built around semesters, not this one semester. When Sem 2 starts, add
-          new subject files under <code className="font-mono text-[12px]">src/data/subjects/</code>,
+          new subject files under <code className="font-mono text-[length:var(--text-micro)]">src/data/subjects/</code>,
           bump the semester number in{" "}
-          <code className="font-mono text-[12px]">src/data/index.ts</code>, and run{" "}
-          <code className="font-mono text-[12px]">npm run seed</code> again. Your notes, marks and
+          <code className="font-mono text-[length:var(--text-micro)]">src/data/index.ts</code>, and run{" "}
+          <code className="font-mono text-[length:var(--text-micro)]">npm run seed</code> again. Your notes, marks and
           screenshots from Sem 1 stay exactly where they are.
         </p>
       </Card>

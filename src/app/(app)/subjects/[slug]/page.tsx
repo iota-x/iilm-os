@@ -80,7 +80,9 @@ export default async function SubjectPage({
   ]);
 
   const hasLab = subject.has_lab && experiments.length > 0;
-  const tab: Tab = (TABS.includes(rawTab as Tab) ? rawTab : "syllabus") as Tab;
+  // A pure lab course has nothing on the syllabus tab, so open it on the lab list.
+  const defaultTab: Tab = hasLab && topics.length === 0 ? "lab" : "syllabus";
+  const tab: Tab = (TABS.includes(rawTab as Tab) ? rawTab : defaultTab) as Tab;
 
   const midTopics = topics.filter((t) => t.in_midsem);
   const midProgress = progressOf(midTopics.map((t) => t.status));
@@ -118,7 +120,7 @@ export default async function SubjectPage({
               {subject.name}
             </h1>
             <p className="text-[length:var(--text-small)] text-muted mt-1">
-              {[subject.code, subject.ltpc, subject.teacher].filter(Boolean).join("   ")}
+              {[subject.code, subject.ltpc, subject.teacher].filter(Boolean).join("\u2002\u2002")}
             </p>
             {mySlots.length ? (
               <p className="text-[length:var(--text-micro)] text-subtle mt-1.5">
@@ -250,7 +252,7 @@ export default async function SubjectPage({
                       u.assessment,
                     ]
                       .filter(Boolean)
-                      .join("   ")}
+                      .join("\u2002\u2002")}
                     right={
                       own.length ? (
                         <Ring value={progressOf(own.map((t) => t.status))} size={34} stroke={3} />
@@ -272,6 +274,23 @@ export default async function SubjectPage({
                 </Card>
               );
             })
+          ) : hasLab ? (
+            /* A pure lab course has no units — the experiment list is the syllabus. */
+            <Card>
+              <Empty
+                icon={<FlaskConical size={26} strokeWidth={1.5} />}
+                title="This course is taught entirely in the lab"
+                body={`All ${experiments.length} experiments are on the Lab tab.`}
+                action={
+                  <Link
+                    href={`/subjects/${slug}?tab=lab`}
+                    className="text-[length:var(--text-small)] text-[var(--accent)] hover:underline focus-ring rounded"
+                  >
+                    Open the lab list
+                  </Link>
+                }
+              />
+            </Card>
           ) : (
             <Card>
               <Empty
@@ -443,7 +462,7 @@ export default async function SubjectPage({
               title={subject.lab_title ?? "Lab"}
               sub={[subject.lab_code, subject.lab_ltpc, subject.lab_teacher]
                 .filter(Boolean)
-                .join("   ")}
+                .join("\u2002\u2002")}
               right={
                 <Ring
                   value={

@@ -73,47 +73,50 @@
 .dark {
   color-scheme: dark;
 
-  /* Warm-neutral rather than cold near-black, so it matches the paper. */
-  --bg: #141316;
-  --surface: #1b1a1f;
-  --surface-2: #232228;
-  --surface-3: #2d2b33;
-  --border: #2e2c34;
-  --border-strong: #423f4a;
+  /* Neutral deep slate. The old palette mixed a violet-grey ground with
+     cream text, which read as two different themes fighting. Everything
+     here sits on one neutral axis so the subject accents can do the
+     colouring. */
+  --bg: #0f1114;
+  --surface: #16191d;
+  --surface-2: #1d2126;
+  --surface-3: #262b31;
+  --border: #262b32;
+  --border-strong: #39414b;
 
-  --fg: #ecead0;
-  --fg-muted: #a09aa8;
-  --fg-subtle: #736e7c;
+  --fg: #e8ecf1;
+  --fg-muted: #9aa4b1;
+  --fg-subtle: #737f8d;
 
-  --accent: #a394ff;
-  --accent-fg: #171526;
-  --accent-soft: #241f3d;
+  --accent: #8fa6ff;
+  --accent-fg: #0f1114;
+  --accent-soft: #1c2340;
 
-  --good: #57d6a0;
-  --good-soft: #10261f;
-  --warn: #efb45f;
-  --warn-soft: #2a2015;
-  --bad: #f4817b;
-  --bad-soft: #2d1817;
+  --good: #4ade9f;
+  --good-soft: #0f2a20;
+  --warn: #f2b45c;
+  --warn-soft: #2b2114;
+  --bad: #f58b84;
+  --bad-soft: #2e1a19;
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
-  --shadow: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.45), 0 12px 28px -12px rgb(0 0 0 / 0.7);
 
   /* subject accents — dark */
-  --c-violet: #b3a3ff;
-  --c-violet-soft: #241f3d;
-  --c-blue: #79b6f7;
-  --c-blue-soft: #16273c;
-  --c-emerald: #5fd9aa;
-  --c-emerald-soft: #0f2a22;
-  --c-orange: #f3ac6c;
-  --c-orange-soft: #2e2015;
-  --c-rose: #f490b4;
-  --c-rose-soft: #2f1a23;
-  --c-amber: #e3bd68;
-  --c-amber-soft: #2b2416;
-  --c-slate: #a2abb8;
-  --c-slate-soft: #212329;
+  --c-violet: #a99cff;
+  --c-violet-soft: #211f3a;
+  --c-blue: #6fb2f5;
+  --c-blue-soft: #12253a;
+  --c-emerald: #4fd6a3;
+  --c-emerald-soft: #0e2a21;
+  --c-orange: #f0a765;
+  --c-orange-soft: #2c1f13;
+  --c-rose: #f38cae;
+  --c-rose-soft: #2d1a22;
+  --c-amber: #e0bb63;
+  --c-amber-soft: #292214;
+  --c-slate: #9fabba;
+  --c-slate-soft: #1e2229;
 }
 
 * {

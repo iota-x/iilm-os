@@ -281,6 +281,6 @@ Six answers. Learn them properly and the viva is free marks.`,
     "linux/Linux_History_BasicCommands.ppt",
   ],
   gaps: [
-    "Syllabus confirmed against the official document (0-0-2, Batch 2024-28): the four COs and all 14 experiments match, including their CO mapping. The marking scheme is still the one thing not in it — the 50 quiz + 50 execution/viva split above is the standard IILM lab scheme inferred from your Applied Calculus Lab plan. Confirm that with Dr. Pooja Batra.",
+    "The marking scheme. The syllabus itself is confirmed against the official document (0-0-2, Batch 2024-28) — four COs and all 14 experiments match, CO mapping included — but the 50 quiz + 50 execution/viva split above is the standard IILM lab scheme inferred from your Applied Calculus Lab plan. Confirm it with Dr. Pooja Batra.",
   ],
 };

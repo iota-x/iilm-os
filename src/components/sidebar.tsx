@@ -199,11 +199,18 @@ export function Sidebar({
           {tree.map((subject) => {
             const open = isOpen(subject.slug);
             const isActive = activeSlug === subject.slug;
-            const total = subject.units.reduce((n, u) => n + u.topics.length, 0);
-            const done = subject.units.reduce(
-              (n, u) => n + u.topics.filter((t) => t.status === "mastered").length,
-              0,
-            );
+            // Lab-only courses (Linux) have no units at all — their syllabus is
+            // the experiment list, so count that instead of showing nothing.
+            const labOnly = subject.units.length === 0 && subject.experiments.length > 0;
+            const total = labOnly
+              ? subject.experiments.length
+              : subject.units.reduce((n, u) => n + u.topics.length, 0);
+            const done = labOnly
+              ? subject.experiments.filter((e) => e.status === "done").length
+              : subject.units.reduce(
+                  (n, u) => n + u.topics.filter((t) => t.status === "mastered").length,
+                  0,
+                );
 
             return (
               <li key={subject.id}>
@@ -254,7 +261,29 @@ export function Sidebar({
 
                 {open ? (
                   <ul className="ml-[11px] mt-0.5 space-y-0.5 border-l border-line pl-2">
-                    {subject.units.length === 0 ? (
+                    {labOnly ? (
+                      subject.experiments.map((e) => (
+                        <li key={e.id}>
+                          <Link
+                            href={`/subjects/${subject.slug}?tab=lab`}
+                            className="flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-ring"
+                            title={`Experiment ${e.number} — ${e.title}`}
+                          >
+                            <span className="shrink-0 text-[length:var(--text-micro)] tabular-nums text-subtle">
+                              {e.number}
+                            </span>
+                            <span
+                              className={cn(
+                                "min-w-0 flex-1 truncate text-[length:var(--text-micro)]",
+                                e.status === "done" ? "text-subtle line-through" : "text-muted",
+                              )}
+                            >
+                              {e.title}
+                            </span>
+                          </Link>
+                        </li>
+                      ))
+                    ) : subject.units.length === 0 ? (
                       <li className="px-2 py-1.5 text-[length:var(--text-micro)] text-subtle">
                         No units yet — course plan missing.
                       </li>

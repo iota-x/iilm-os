@@ -119,9 +119,13 @@ export function progressOf(statuses: string[]): number {
   if (!statuses.length) return 0;
   const score: Record<string, number> = {
     not_started: 0,
+    // topics
     learning: 0.45,
     revising: 0.8,
     mastered: 1,
+    // lab experiments
+    in_progress: 0.5,
+    done: 1,
   };
   return statuses.reduce((a, s) => a + (score[s] ?? 0), 0) / statuses.length;
 }

@@ -8,6 +8,7 @@ import {
   getPlanDays,
   getSlots,
   getNotes,
+  getExperiments,
 } from "@/lib/queries";
 import { attendanceBySubject } from "@/lib/attendance";
 import { AttendanceToday } from "@/components/attendance-today";
@@ -33,10 +34,11 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const [profile, subjects, topics, planDays, slots, notes] = await Promise.all([
+  const [profile, subjects, topics, experiments, planDays, slots, notes] = await Promise.all([
     getProfile(),
     getSubjects(),
     getTopics(),
+    getExperiments(),
     getPlanDays(),
     getSlots(),
     getNotes({ limit: 5 }),
@@ -69,14 +71,27 @@ export default async function Dashboard() {
 
   const subjectById = Object.fromEntries(subjects.map((s) => [s.id, s]));
 
-  // mid-sem progress per subject
+  // Mid-sem progress per subject. A lab-only course like Linux has no topics at
+  // all — its syllabus is the experiment list — so measure whichever of the two
+  // the course actually has.
   const midsemStats = subjects.map((s) => {
     const own = topics.filter((t) => t.subject_id === s.id && t.in_midsem);
+    if (own.length) {
+      return {
+        subject: s,
+        total: own.length,
+        noun: own.length === 1 ? "topic" : "topics",
+        progress: progressOf(own.map((t) => t.status)),
+        untouched: own.filter((t) => t.status === "not_started").length,
+      };
+    }
+    const labs = experiments.filter((e) => e.subject_id === s.id);
     return {
       subject: s,
-      total: own.length,
-      progress: progressOf(own.map((t) => t.status)),
-      untouched: own.filter((t) => t.status === "not_started").length,
+      total: labs.length,
+      noun: labs.length === 1 ? "experiment" : "experiments",
+      progress: progressOf(labs.map((e) => e.status)),
+      untouched: labs.filter((e) => e.status === "not_started").length,
     };
   });
 
@@ -241,7 +256,7 @@ export default async function Dashboard() {
             <ul className="divide-y divide-[var(--border)]">
               {midsemStats
                 .sort((a, b) => a.progress - b.progress)
-                .map(({ subject, total, progress, untouched }) => (
+                .map(({ subject, total, noun, progress, untouched }) => (
                   <li key={subject.id} className={cn("px-4 py-3", ACCENT_CLASS[subject.color])}>
                     <Link
                       href={`/subjects/${subject.slug}`}
@@ -254,9 +269,9 @@ export default async function Dashboard() {
                           {total === 0 ? (
                             <span className="text-[var(--warn)]">no syllabus loaded</span>
                           ) : untouched === 0 ? (
-                            "all topics started"
+                            `all ${noun} started`
                           ) : (
-                            `${untouched} of ${total} topics untouched`
+                            `${untouched} of ${total} ${noun} untouched`
                           )}
                         </p>
                       </div>
@@ -454,13 +469,13 @@ function Figure({
     >
       <p
         className={cn(
-          "font-serif text-[length:var(--text-figure)] leading-none tabular-nums",
+          "font-sans font-semibold tracking-[-0.03em] text-[length:var(--text-figure)] leading-none tabular-nums",
           emphasis ? "text-[var(--accent)]" : "text-fg",
         )}
       >
         {value}
         {unit ? (
-          <span className="ml-1.5 align-baseline text-[length:var(--text-small)] font-sans text-subtle">
+          <span className="ml-1.5 align-baseline text-[length:var(--text-small)] font-normal tracking-normal text-subtle">
             {unit}
           </span>
         ) : null}

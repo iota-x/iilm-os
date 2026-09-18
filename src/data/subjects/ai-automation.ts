@@ -1,117 +1,306 @@
 import type { SeedSubject } from "../types";
 
+/**
+ * Transcribed from "Course Plan — Foundations of AI & Automation v1"
+ * (CSE26107, Semester I, Session 2026-27, Batch 2026-30).
+ *
+ * The mid-sem scope is confirmed by the assessment table: Assessment 2,
+ * the Mid Term Test, covers Units I and II.
+ */
 export const aiAutomation: SeedSubject = {
   slug: "foundation-of-ai",
-  name: "Foundation of AI and Automation",
+  name: "Foundations of AI & Automation",
   shortName: "AI",
-  code: null,
-  credits: 3,
-  ltpc: "3-0-0-3",
+  code: "CSE26107",
+  credits: 2,
+  ltpc: "2-0-0-2",
   color: "rose",
-  status: "partial",
-  teacher: "Dr. Sonam Lata",
+  status: "complete",
+  teacher: "Dr. Sapna Arora",
   hasLab: false,
   overview:
-    "Foundations of artificial intelligence — what AI is and how it differs from human intelligence, the Turing Test, how problems are represented and what makes a problem an AI problem, the components of an AI system, state space search, and the search techniques used to solve problems.",
+    "What artificial intelligence is and where it came from, how a problem is framed so a machine can search for the answer, the search algorithms themselves — breadth-first through to A* — then machine learning, and finally robotics and automation. Thirty sessions across four units, two credits.",
   midsemScope:
-    "Not confirmed — the course plan isn't in your folder yet. All eight decks you have are Unit 1, so Unit 1 is certainly in scope; expect Units 1–3.",
-  midsemConfirmed: false,
+    "Units I and II — introduction to AI, and intelligent agents and problem solving. The course plan states the mid-term test covers Units I and II.",
+  midsemConfirmed: true,
   objectives: [
-    "Define AI, its scope, and its historical evolution.",
-    "Represent a problem in a form an AI system can search over.",
-    "Identify the characteristics that make a problem suitable for AI techniques.",
-    "Apply state space search and the standard search strategies.",
+    "Describe what AI is, where it came from, and where it is used.",
+    "Frame a problem as a state space and search it.",
+    "Work the standard search algorithms by hand, including A*.",
+    "Explain how machine learning fits inside AI, and how a model is trained and evaluated.",
+    "Describe the parts of a robot and where automation is applied.",
   ],
-  outcomes: [],
+  outcomes: [
+    {
+      code: "CO1",
+      text: "Understand and describe the scope, domains and evolution of AI and automation technologies.",
+      bloom: "K1, K2",
+    },
+    {
+      code: "CO2",
+      text: "Apply basic logic and reasoning techniques for solving AI-related problems.",
+      bloom: "K3",
+    },
+    {
+      code: "CO3",
+      text: "Understand the components, structure and functioning of basic robotic and automated systems.",
+      bloom: "K2",
+    },
+    {
+      code: "CO4",
+      text: "Analyse current applications and emerging trends in AI and robotics, along with their ethical and societal implications.",
+      bloom: "K4, K5",
+    },
+  ],
   units: [
     {
       number: 1,
-      title: "Introduction to AI, Problem Representation and Search",
-      sessions: 9,
+      title: "Introduction to Artificial Intelligence",
+      sessions: 7,
       co: "CO1",
-      assessment: "Not confirmed",
+      assessment: "Quiz 1",
       inMidsem: true,
       topics: [
         {
           code: "ai-u1-defn",
           session: "S1",
-          title: "Definition and scope of Artificial Intelligence; historical context and evolution",
-          weight: 5,
-          inMidsem: true,
-          outcome:
-            "Define AI and list its five task areas: learning, reasoning, problem-solving, decision-making, self-correction.",
-        },
-        {
-          code: "ai-u1-vshuman",
-          session: "S2",
-          title: "Differences between AI and human intelligence",
+          title: "Introduction to AI: definition, scope and characteristics",
           weight: 4,
           inMidsem: true,
-          outcome:
-            "Compare on five axes: information processing, learning efficiency, adaptability, emotional understanding, ethical reasoning.",
+          outcome: "Define AI in your own words and list the characteristics that distinguish it.",
         },
         {
           code: "ai-u1-turing",
-          session: "S3",
-          title: "The Turing Test",
+          session: "S2",
+          title: "Historical evolution of AI; the Turing Test and the Chinese Room argument",
           weight: 5,
           inMidsem: true,
           outcome:
-            "Describe the three participants and the setup, cite Turing's 1950 paper 'Computing Machinery and Intelligence', and state the standard objections.",
+            "State what the Turing Test measures, and explain what the Chinese Room argues against it.",
+        },
+        {
+          code: "ai-u1-domains",
+          session: "S3",
+          title: "AI domains and real-world applications",
+          weight: 3,
+          inMidsem: true,
+          outcome: "Name the main domains of AI and give a real application of each.",
         },
         {
           code: "ai-u1-representation",
           session: "S4",
-          title: "Problem representation in AI",
-          weight: 5,
+          title: "Problem formulation and problem reduction",
+          weight: 4,
           inMidsem: true,
           outcome:
-            "Explain why representation matters — efficiency, comprehensiveness, simplicity — and model a problem's environment, constraints, states and actions.",
-        },
-        {
-          code: "ai-u1-characteristics",
-          session: "S5",
-          title: "Characteristics of an AI problem",
-          weight: 5,
-          inMidsem: true,
-          outcome:
-            "List and explain: non-deterministic, complex, uncertain, search/optimisation-based, knowledge representation, learning and adaptation, autonomy, real-time decision making, goal-oriented.",
-        },
-        {
-          code: "ai-u1-components",
-          session: "S6",
-          title: "Components of AI — technical and functional",
-          weight: 5,
-          inMidsem: true,
-          outcome:
-            "Technical: data, algorithms, model, compute, feedback, evaluation metrics, UI, ethics & governance. Plus the functional view.",
-        },
-        {
-          code: "ai-u1-problemsolving",
-          session: "S7",
-          title: "Problem solving in AI; types of problems",
-          weight: 5,
-          inMidsem: true,
-          outcome:
-            "Classify problems as ignorable, recoverable or irrecoverable, with an example and handling strategy for each.",
+            "Turn a described problem into a formal one: initial state, goal, operators — and reduce it into sub-problems.",
         },
         {
           code: "ai-u1-statespace",
-          session: "S8",
-          title: "State space search",
+          session: "S5",
+          title: "State space representation",
           weight: 5,
           inMidsem: true,
-          outcome:
-            "Define state, initial state, goal state, operators, state space; draw the state space for a small problem (water jug, 8-puzzle).",
+          outcome: "Draw the state space for a small problem and identify the path to the goal.",
+        },
+        {
+          code: "ai-u1-problemsolving",
+          session: "S6",
+          title: "The general problem-solving process",
+          weight: 4,
+          inMidsem: true,
+          outcome: "Lay out the steps from a raw problem to a searched solution.",
         },
         {
           code: "ai-u1-search",
+          session: "S6",
+          title: "The search process",
+          weight: 5,
+          inMidsem: true,
+          outcome: "Explain how search explores a state space, and what makes one strategy differ from another.",
+        },
+      ],
+    },
+    {
+      number: 2,
+      title: "Intelligent Agents and Problem Solving",
+      sessions: 8,
+      co: "CO1, CO2",
+      assessment: "Mid Semester Exam, Class Test",
+      inMidsem: true,
+      topics: [
+        {
+          code: "ai-u2-agents",
+          session: "S8",
+          title: "Intelligent agents and environments; nature of environments and types of agents",
+          weight: 4,
+          inMidsem: true,
+          outcome:
+            "Classify an environment (observable, deterministic, static…) and name the agent type that suits it.",
+        },
+        {
+          code: "ai-u2-brute",
           session: "S9",
-          title: "AI and the search process — search techniques",
+          title: "The problem-solving agent and brute force search",
+          weight: 3,
+          inMidsem: true,
+          outcome: "Describe what a problem-solving agent does, and where brute force stops being viable.",
+        },
+        {
+          code: "ai-u2-bfsdfs",
+          session: "S10",
+          title: "Breadth first search and depth first search",
           weight: 5,
           inMidsem: true,
           outcome:
-            "Classify and compare uninformed (blind), informed (heuristic), adversarial, and local search algorithms.",
+            "Trace BFS and DFS over a given tree, and say which is complete, which is optimal, and at what memory cost.",
+        },
+        {
+          code: "ai-u2-hill",
+          session: "S11",
+          title: "Heuristic search and the hill climbing algorithm",
+          weight: 5,
+          inMidsem: true,
+          outcome:
+            "Define a heuristic, run hill climbing on an example, and name the three ways it gets stuck.",
+        },
+        {
+          code: "ai-u2-bestfirst",
+          session: "S12",
+          title: "Best first search",
+          weight: 4,
+          inMidsem: true,
+          outcome: "Trace best first search and contrast it with hill climbing.",
+        },
+        {
+          code: "ai-u2-astar",
+          session: "S13",
+          title: "A* and AO* algorithms",
+          weight: 5,
+          inMidsem: true,
+          outcome:
+            "Apply f(n) = g(n) + h(n) step by step, and state the condition under which A* is optimal.",
+        },
+        {
+          code: "ai-u2-knowledge",
+          session: "S14",
+          title: "Knowledge representation",
+          weight: 3,
+          inMidsem: true,
+          outcome: "Describe the common ways knowledge is represented for an AI system.",
+        },
+      ],
+    },
+    {
+      number: 3,
+      title: "Machine Learning for Intelligent Systems",
+      sessions: 8,
+      co: "CO2, CO3",
+      assessment: "Assignment",
+      inMidsem: false,
+      topics: [
+        {
+          code: "ai-u3-fundamentals",
+          session: "S16",
+          title: "Machine learning fundamentals; how AI and machine learning relate",
+          weight: 3,
+          inMidsem: false,
+          outcome: "Place machine learning inside AI rather than alongside it.",
+        },
+        {
+          code: "ai-u3-supervised",
+          session: "S17",
+          title: "Supervised learning",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u3-unsupervised",
+          session: "S18",
+          title: "Unsupervised learning and reinforcement learning",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u3-data",
+          session: "S19",
+          title: "Data, features and labels",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u3-evaluation",
+          session: "S20",
+          title: "Training data, testing data and model evaluation",
+          weight: 4,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u3-workflow",
+          session: "S21",
+          title: "The basic machine learning workflow",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u3-ethics",
+          session: "S22",
+          title: "Applications of machine learning, and its ethical considerations",
+          weight: 3,
+          inMidsem: false,
+        },
+      ],
+    },
+    {
+      number: 4,
+      title: "Robotics, Automation and Applications",
+      sessions: 7,
+      co: "CO3, CO4",
+      assessment: "Quiz 2",
+      inMidsem: false,
+      topics: [
+        {
+          code: "ai-u4-basics",
+          session: "S24",
+          title: "Robotics and automation: basic concepts, history and classification of robots",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u4-types",
+          session: "S25",
+          title: "Types of robots: industrial, mobile and humanoid",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u4-components",
+          session: "S26",
+          title: "Basic components of robots: sensors, actuators and controllers",
+          weight: 4,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u4-control",
+          session: "S27",
+          title: "Introduction to control systems",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u4-applications",
+          session: "S28",
+          title:
+            "Robotics and automation in manufacturing, smart homes, healthcare and agriculture",
+          weight: 3,
+          inMidsem: false,
+        },
+        {
+          code: "ai-u4-trends",
+          session: "S30",
+          title: "Emerging trends in robotics",
+          weight: 2,
+          inMidsem: false,
         },
       ],
     },
@@ -119,70 +308,82 @@ export const aiAutomation: SeedSubject = {
   experiments: [],
   components: [
     {
-      name: "Continuous Learning Assessment",
-      marks: 30,
-      weightage: 30,
-      scope: "Class test / assignment / quiz / project / innovative practices",
-      timing: "Throughout the semester",
-      co: "Not confirmed",
+      name: "Quiz 1",
+      marks: 5,
+      weightage: 5,
+      scope: "Unit I",
+      timing: "After Unit I",
+      co: "CO1",
       track: "theory",
     },
     {
-      name: "Mid-Term Examination",
+      name: "Mid Term Test",
       marks: 20,
       weightage: 20,
-      scope: "Not confirmed — expect Units 1–3",
-      timing: "5–11 Oct",
-      co: "Not confirmed",
+      scope: "Units I and II",
+      timing: "After Unit II",
+      co: "CO1, CO2",
       track: "theory",
     },
     {
-      name: "End-Term Examination",
-      marks: 100,
+      name: "Class Test",
+      marks: 10,
+      weightage: 10,
+      scope: "Units I and II",
+      timing: "After Unit II",
+      co: "CO1, CO2",
+      track: "theory",
+    },
+    {
+      name: "Assignment",
+      marks: 10,
+      weightage: 10,
+      scope: "Units III and IV — real-world applications of AI, ML, robotics and automation",
+      timing: "After Unit III",
+      co: "CO3, CO4",
+      track: "theory",
+    },
+    {
+      name: "Quiz 2",
+      marks: 5,
+      weightage: 5,
+      scope: "Units III and IV",
+      timing: "After Unit IV",
+      co: "CO3, CO4",
+      track: "theory",
+    },
+    {
+      name: "End Term Examination",
+      marks: 50,
       weightage: 50,
-      scope: "Entire syllabus",
-      timing: "End-Term",
-      co: "Not confirmed",
+      scope: "Units I–IV",
+      timing: "End of semester",
+      co: "CO1, CO2, CO3, CO4",
       track: "theory",
     },
   ],
   strategies: [
     {
-      title: "Ignore everything you know about modern AI while writing this paper",
-      body: `You use LLMs daily. That knowledge will actively cost you marks here.
-
-This syllabus is classical, pre-deep-learning AI: Turing Test, state space search, BFS/DFS, heuristics, A*, minimax. When the paper asks "what are the components of AI", the expected answer is the eight-item list from your deck — data, algorithms, model, compute power, feedback mechanisms, evaluation metrics, user interface, ethics and governance. Not "transformers and attention."
-
-Answer from the slides. Your real-world knowledge is a bonus you can add in the last line of a long answer, never a replacement for the taught list.`,
+      title: "Units I and II are the whole mid-sem",
+      body:
+        "The mid-term test covers Units I and II only — introduction, agents, and the search algorithms. Unit III (machine learning) and Unit IV (robotics) are assessed by the assignment and Quiz 2, and only reappear in the end-term.",
     },
     {
-      title: "This subject is 90% lists. Learn the lists.",
-      body: `Go through your eight decks and you'll notice nearly every slide is an enumerated list: five differences between AI and human intelligence, nine characteristics of an AI problem, eight technical components, three types of problems, four categories of search.
-
-That is exactly how it'll be examined — "List and explain the characteristics of an AI problem (10 marks)" means write nine bullets, each with a sentence.
-
-So build one page per list, with a mnemonic. Then test yourself by writing the list from a blank page. Recognition ("yeah I've seen that") is not recall, and only recall scores.`,
+      title: "The search algorithms are where the marks are",
+      body:
+        "S10 to S13 is four sessions on BFS, DFS, hill climbing, best first, A* and AO*. These are traced by hand in exams — given a tree and heuristics, expand the nodes in order and show the f-values. Practise on paper rather than reading about them.",
     },
     {
-      title: "State space search is the one place you'll actually solve something",
-      body: `Everything else in Unit 1 is descriptive. State space search is procedural, so it's where numerical/diagram questions come from.
-
-Drill these three by hand: the **water jug problem** (4L and 3L, measure 2L), the **8-puzzle** (draw two levels of the tree), and the **missionaries and cannibals** problem. For each, write the state representation as a tuple, list the operators, and draw the tree.
-
-If you can draw a state space tree cleanly you can answer any question in this area. If you can't, you'll lose the whole question.`,
-    },
-    {
-      title: "Only two lectures a week — the thinnest contact time you have",
-      body: `Wednesday 12:20–13:20 and Thursday 8:50–9:50, both Room 94, Dr. Sonam Lata.
-
-Two hours a week means the syllabus moves slowly but also that missing one lecture costs you half a week. Given you started a month late, this is the subject where you're most likely to have a silent gap you don't notice until the paper.
-
-Concretely: your eight decks all say "Unit 1". Find out in the next lecture how far the class has actually got, because if they're into Unit 2 and you have no Unit 2 material, that's a bigger problem than anything in Calculus.`,
+      title: "Know the two thought experiments",
+      body:
+        "The Turing Test and the Chinese Room argument are named explicitly in the session plan for S2, inside Quiz 1's and the mid-term's scope. Both are short definitional answers, so they cost almost nothing to learn.",
     },
   ],
   textbooks: [],
   references: [],
+  gaps: [],
   localFiles: [
+    "AI_automation/Course Plan _ Foundations of AI & Automation_v1.pdf",
     "AI_automation/1-Introduction.pptx.pdf",
     "AI_automation/2-turing test.pptx.pdf",
     "AI_automation/3-Problem representation in AI.pptx.pdf",
@@ -191,10 +392,5 @@ Concretely: your eight decks all say "Unit 1". Find out in the next lecture how 
     "AI_automation/6-Components of AI.pptx.pdf",
     "AI_automation/7 - Problem Solving in AI.pptx.pdf",
     "AI_automation/8-AI and Search Process.pdf",
-  ],
-  gaps: [
-    "Course plan missing — no course code, no course outcomes, no confirmed mid-sem scope, no marking scheme, no reading list.",
-    "Units 2 onwards missing. All eight decks in your folder are Unit 1.",
-    "Two screenshots in the AI_automation folder couldn't be read — rename them to simple filenames and they'll be picked up.",
   ],
 };

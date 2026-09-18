@@ -244,6 +244,12 @@ export interface NavUnit {
   in_midsem: boolean;
   topics: NavTopic[];
 }
+export interface NavExperiment {
+  id: string;
+  number: number;
+  title: string;
+  status: Experiment["status"];
+}
 export interface NavSubject {
   id: string;
   slug: string;
@@ -253,11 +259,13 @@ export interface NavSubject {
   status: Subject["status"];
   has_lab: boolean;
   units: NavUnit[];
+  /** lab-only courses carry their syllabus here instead of in units */
+  experiments: NavExperiment[];
 }
 
 export async function getNavTree(): Promise<NavSubject[]> {
   const db = await createClient();
-  const [subjectsRes, unitsRes, topicsRes] = await Promise.all([
+  const [subjectsRes, unitsRes, topicsRes, experimentsRes] = await Promise.all([
     db
       .from("subjects")
       .select("id, slug, name, short_name, color, status, has_lab")
@@ -267,10 +275,12 @@ export async function getNavTree(): Promise<NavSubject[]> {
       .from("topics")
       .select("id, subject_id, unit_id, code, title, status, in_midsem, weight")
       .order("sort_order"),
+    db.from("experiments").select("id, subject_id, number, title, status").order("number"),
   ]);
 
   const units = unitsRes.data ?? [];
   const topics = topicsRes.data ?? [];
+  const experiments = experimentsRes.data ?? [];
 
   return (subjectsRes.data ?? []).map((s) => ({
     id: s.id,
@@ -298,6 +308,9 @@ export async function getNavTree(): Promise<NavSubject[]> {
             weight: t.weight,
           })),
       })),
+    experiments: experiments
+      .filter((e) => e.subject_id === s.id)
+      .map((e) => ({ id: e.id, number: e.number, title: e.title, status: e.status })),
   })) as NavSubject[];
 }
 

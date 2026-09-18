@@ -209,7 +209,7 @@ export function InboxUpload({
                   <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
                     {[subject?.short_name, prettySize(f.size_bytes), fmtDate(f.created_at)]
                       .filter(Boolean)
-                      .join("   ")}
+                      .join("\u2002\u2002")}
                   </p>
 
                   <input

@@ -43,7 +43,7 @@ export function MobileNav() {
   const countdown = examCountdown();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-app/85 backdrop-blur-xl md:hidden">
+    <header className="sticky top-0 z-40 border-b border-line bg-[var(--bg)]/85 backdrop-blur-xl md:hidden">
       <div className="flex h-14 items-center gap-2 px-3">
         <Link href="/" className="flex shrink-0 items-center gap-2 focus-ring rounded">
           <Mark size={28} />

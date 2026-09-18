@@ -42,7 +42,7 @@ export function LandingGoal({
             </span>
           </p>
         </div>
-        <div key={days.length} className="pop text-right">
+        <div key={days.length} className="pop text-left sm:text-right">
           <p className="text-[length:var(--text-figure)] font-semibold leading-none tabular-nums tracking-[-0.03em]">
             {days.length}
             <span className="ml-1 text-[length:var(--text-small)] font-normal text-subtle">day{days.length === 1 ? "" : "s"}</span>
@@ -73,7 +73,8 @@ export function LandingGoal({
 
       <ol
         className="mt-4 grid gap-1.5"
-        style={{ gridTemplateColumns: `repeat(${allDays.length}, minmax(0, 1fr))` }}
+        // one row on a laptop; on a phone the cells keep a readable size and wrap
+        style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${Math.max(30, Math.floor(560 / allDays.length))}px, 1fr))` }}
       >
         {allDays.map((date, i) => {
           const d = plan[i];

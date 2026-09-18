@@ -77,23 +77,23 @@ export default function LandingPage() {
       {/* ── top bar ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-20 border-b border-line/60 bg-[var(--bg)]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-3.5">
-          <div className="flex items-center gap-2.5">
+          <div className="flex min-w-0 items-center gap-2.5">
             <Mark size={30} />
-            <span className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">
+            <span className="whitespace-nowrap font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">
               IILM OS
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <span className="hidden sm:inline-flex"><ThemeToggle /></span>
             <Link
               href="/login"
-              className="rounded-lg px-3 py-1.5 text-[length:var(--text-small)] font-medium text-muted hover:text-fg focus-ring"
+              className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[length:var(--text-small)] font-medium text-muted hover:text-fg focus-ring sm:px-3"
             >
               Sign in
             </Link>
             <Link
               href="/login?mode=up"
-              className="rounded-lg bg-[var(--accent)] px-3.5 py-1.5 text-[length:var(--text-small)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring"
+              className="whitespace-nowrap rounded-lg bg-[var(--accent)] px-3 py-1.5 text-[length:var(--text-small)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring sm:px-3.5"
             >
               Create account
             </Link>
@@ -104,12 +104,12 @@ export default function LandingPage() {
       <main>
         {/* ── hero: the copy, and the product itself ────────── */}
         <section className="mx-auto max-w-[1280px] px-5 pt-14 sm:pt-20">
-          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)]">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] [&>*]:min-w-0">
             <div>
               <p className="reveal text-[length:var(--text-small)] text-muted" style={{ "--i": 0 } as React.CSSProperties}>
                 B.Tech CSE · Semester I · Section E
               </p>
-              <h1 style={{ "--i": 1 } as React.CSSProperties} className="reveal mt-4 font-serif text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem]">
+              <h1 style={{ "--i": 1 } as React.CSSProperties} className="reveal mt-4 font-serif text-[2.1rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.6rem] lg:text-[3.4rem]">
                 <span className="tabular-nums">{countdown.headline}</span>
                 <br />
                 {countdown.phase === "after"
@@ -167,7 +167,7 @@ export default function LandingPage() {
 
         {/* ── why this exists ───────────────────────────────── */}
         <section className="mx-auto max-w-[1280px] px-5 pt-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] [&>*]:min-w-0">
             <div>
               <h2 className="font-serif text-[2rem] font-semibold leading-[1.15] tracking-tight">
                 Made by someone who joined a month late.
@@ -198,7 +198,7 @@ export default function LandingPage() {
 
         {/* ── goals: a deadline, turned into days ───────────── */}
         <section className="mx-auto max-w-[1280px] px-5 pt-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center [&>*]:min-w-0">
             <div>
               <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
                 <Target size={15} /> Goals
@@ -220,7 +220,7 @@ export default function LandingPage() {
 
         {/* ── ask: a dark band, with a real exchange ────────── */}
         <section className="dark mt-24 border-y border-line bg-app text-fg">
-          <div className="mx-auto grid max-w-[1280px] gap-12 px-5 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+          <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-12 px-5 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center [&>*]:min-w-0">
             <div>
               <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
                 <Sparkles size={15} /> Ask
@@ -303,7 +303,7 @@ export default function LandingPage() {
 
         {/* ── photos: the mechanism, drawn ──────────────────── */}
         <section className="mx-auto max-w-[1280px] px-5 pt-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center [&>*]:min-w-0">
             <div>
               <p className="flex items-center gap-2 text-[length:var(--text-small)] text-[var(--accent)]">
                 <Camera size={15} /> Photos
@@ -340,7 +340,7 @@ export default function LandingPage() {
               return (
                 <li
                   key={s.slug}
-                  className={cn("grid items-center gap-3 py-3.5 sm:grid-cols-[minmax(0,3fr)_minmax(0,5fr)_minmax(0,2fr)]", ACCENT_CLASS[s.color])}
+                  className={cn("grid grid-cols-1 items-center gap-2 py-3.5 sm:grid-cols-[minmax(0,3fr)_minmax(0,5fr)_minmax(0,2fr)] sm:gap-3", ACCENT_CLASS[s.color])}
                 >
                   <p className="flex items-center gap-2.5 text-[length:var(--text-small)] font-medium">
                     <span className="h-2 w-2 shrink-0 rounded-full bg-sc" aria-hidden />
@@ -366,7 +366,7 @@ export default function LandingPage() {
         {/* ── close ─────────────────────────────────────────── */}
         <section className="mx-auto max-w-[1280px] px-5 pb-24 pt-24">
           <div className="rounded-[var(--radius-panel)] border border-line bg-surface p-8 shadow-card sm:p-12">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end [&>*]:min-w-0">
               <div>
                 <h2 className="font-serif text-[2rem] font-semibold leading-[1.15] tracking-tight">
                   Your data is yours.
@@ -482,7 +482,7 @@ function Bubble({ who, children }: { who: "you" | "ask"; children: React.ReactNo
     <div className={cn("flex", you ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "max-w-[85%] rounded-[var(--radius-card)] px-4 py-3 text-[length:var(--text-small)] leading-relaxed",
+          "max-w-[92%] rounded-[var(--radius-card)] px-4 py-3 text-[length:var(--text-small)] leading-relaxed sm:max-w-[85%]",
           you ? "bg-[var(--accent)] text-[var(--accent-fg)]" : "bg-surface-2 text-fg",
         )}
       >

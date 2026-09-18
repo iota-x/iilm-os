@@ -150,6 +150,10 @@ h1, h2, h3 { letter-spacing: -0.012em; line-height: 1.2; }
   color: var(--fg);
 }
 
+/* Grid items default to min-width:auto, which lets one wide child push a
+   whole page past the phone's edge. Nothing here wants that behaviour. */
+.grid > * { min-width: 0; }
+
 /* ─── utility layer ─────────────────────────────────────────── */
 @layer utilities {
   .bg-app { background: var(--bg); }

@@ -34,7 +34,7 @@ const db = createClient(URL, SERVICE, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const ok = (label: string, n?: number) =>
+const ok = (label: string, n?: number | string) =>
   console.log(`  \x1b[32m✓\x1b[0m ${label}${n !== undefined ? ` \x1b[2m(${n})\x1b[0m` : ""}`);
 
 function die(label: string, error: unknown): never {
@@ -430,10 +430,33 @@ async function main() {
   }
 
   // ─── timetable ────────────────────────────────────────────────────
-  await db.from("timetable_slots").delete().eq("semester_id", semesterId);
+  // Slots have to keep their ids across re-seeds. class_marks.slot_id is
+  // "on delete cascade", so deleting and reinserting the timetable — which is
+  // what this used to do — silently took every attendance mark with it, and
+  // left any page already open posting slot ids that no longer existed.
+  // Match each slot on (day, start_time, lab_group), which is unique within a
+  // semester, and reuse the id that's already there.
+  const slotKey = (day: string, start: string, group: number | null) =>
+    `${day}|${start.slice(0, 5)}|${group ?? "-"}`;
   {
-    const { error } = await db.from("timetable_slots").insert(
-      slots.map((s) => ({
+    const { data: existing, error: readErr } = await db
+      .from("timetable_slots")
+      .select("id, day, start_time, lab_group")
+      .eq("semester_id", semesterId);
+    if (readErr) die("timetable read", readErr);
+
+    const idByKey = new Map<string, string>();
+    for (const e of existing ?? []) {
+      idByKey.set(slotKey(e.day, e.start_time, e.lab_group), e.id);
+    }
+
+    const seen = new Set<string>();
+    const rows = slots.map((s) => {
+      const key = slotKey(s.day, s.start, s.group);
+      seen.add(key);
+      const id = idByKey.get(key);
+      return {
+        ...(id ? { id } : {}),
         user_id: userId,
         semester_id: semesterId,
         day: s.day,
@@ -445,11 +468,21 @@ async function main() {
         lab_group: s.group,
         room: s.room,
         teacher: s.teacher,
-      })),
-    );
+      };
+    });
+
+    const { error } = await db.from("timetable_slots").upsert(rows);
     if (error) die("timetable", error);
+
+    // Slots the timetable no longer has. Their marks go too, which is right —
+    // the class isn't on the timetable any more.
+    const stale = [...idByKey.entries()].filter(([k]) => !seen.has(k)).map(([, id]) => id);
+    if (stale.length) {
+      const { error: delErr } = await db.from("timetable_slots").delete().in("id", stale);
+      if (delErr) die("timetable cleanup", delErr);
+    }
+    ok("timetable slots", `${slots.length}${stale.length ? `, ${stale.length} removed` : ""}`);
   }
-  ok("timetable slots", slots.length);
 
   // ─── exams ────────────────────────────────────────────────────────
   {

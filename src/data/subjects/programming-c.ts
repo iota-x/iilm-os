@@ -13,8 +13,8 @@ export const programmingC: SeedSubject = {
   labTeacher: "Dr. Sapna Arora",
   hasLab: true,
   labTitle: "Programming in C Lab",
-  labCode: null,
-  labLtpc: "0-0-2-1",
+  labCode: "CSE26108P",
+  labLtpc: "0-0-4-2",
   overview:
     "Fundamentals of computer programming using C. Starts from computer basics, algorithms and structured problem solving, then C syntax and semantics — variables, operators, I/O, control structures, functions, arrays, strings, pointers, user-defined data types, dynamic memory allocation and file handling.",
   midsemScope:
@@ -511,7 +511,458 @@ export const programmingC: SeedSubject = {
       ],
     },
   ],
-  experiments: [],
+  experiments: [
+    {
+      number: 1,
+      title: "Computer Familiarization and C Programming Environment",
+      co: "CO1",
+      objective:
+        "Familiarise yourself with the C programming environment, the program execution cycle, and basic program structure.",
+      tasks: [
+        "Think — read the given Hello World and name the header file, the main function, the output statement and the special symbols; predict the output before running it.",
+        "Explore — compile and run it in the IDE, read the compilation messages, and say what Compile, Build, Run and Debug each actually do.",
+        "Develop — print your name, your address, your college details, then all of it together using formatted output.",
+        "Debug — the faculty hand out five programs with syntax errors; find and fix every one before it will compile.",
+        "Challenge — a welcome screen for IILM University showing university name, department, student name, course and current semester, properly formatted.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 2,
+      title: "Algorithms, Flowcharts and Basic Program Development",
+      co: "CO1",
+      objective:
+        "Understand algorithmic thinking before writing C programs.",
+      tasks: [
+        "Think — write algorithms for adding two numbers, finding the larger of two, and the area of a rectangle.",
+        "Design — draw flowcharts for the largest of three numbers, simple interest, and temperature conversion.",
+        "Develop — turn each of those algorithms into a working C program.",
+        "Improve — extend the temperature converter so the user chooses Celsius to Fahrenheit or Fahrenheit to Celsius.",
+        "Challenge — invent your own real-life problem, write its algorithm, draw its flowchart, and implement it.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 3,
+      title: "Variables, Data Types and Input/Output Operations",
+      co: "CO1",
+      objective:
+        "Understand variables, constants, data types, and formatted input and output.",
+      tasks: [
+        "Think — predict the output of programs involving integer overflow, character variables, float variables and type conversion.",
+        "Develop — read and display an int, a float, a char and a double.",
+        "Improve — swap two numbers three ways: with a third variable, without one, and using arithmetic operators.",
+        "Analyze — compare what %d, %f, %lf, %c and %s produce, and explain why they differ.",
+        "Challenge — a student information program taking name, roll number, branch, semester and CGPA, printed with proper formatting.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 4,
+      title: "Operators and Expressions",
+      co: "CO1",
+      objective:
+        "Understand the different operators and how expressions are evaluated.",
+      tasks: [
+        "Think — predict the output of expressions using arithmetic, relational, logical and increment/decrement operators.",
+        "Develop — demonstrate arithmetic, relational and logical operations.",
+        "Improve — add modulus, increment and decrement to the calculator.",
+        "Analyze — evaluate expressions involving precedence and associativity, working every step by hand before you run it.",
+        "Challenge — a scientific calculator covering addition, subtraction, multiplication, division and modulus.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 5,
+      title: "Decision Making using if-else Statements",
+      co: "CO1",
+      objective:
+        "Develop logical decision-making skills using conditional statements.",
+      tasks: [
+        "Think — predict the output of five if-else programs without executing them.",
+        "Develop — check positive/negative/zero, even/odd, and the largest of three numbers.",
+        "Improve — classify a number as positive even, positive odd, negative even, negative odd, or zero.",
+        "Analyze — a grading system showing grade, pass/fail and distinction, using nested if-else.",
+        "Challenge — one real application of your choice: loan eligibility, voting eligibility, movie ticket pricing or scholarship eligibility.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 6,
+      title: "switch Statement and the Conditional Operator",
+      co: "CO1",
+      objective:
+        "Solve multi-way decision problems efficiently.",
+      tasks: [
+        "Think — predict the output of programs using switch, break, default and the conditional operator.",
+        "Develop — a menu-driven calculator built on switch.",
+        "Improve — extend it with square, cube, modulus and power.",
+        "Analyze — compare nested if-else against switch and say when each is preferable.",
+        "Challenge — a menu-driven ATM, restaurant ordering or library menu using switch.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 7,
+      title: "Looping Statements (Basic)",
+      co: "CO1",
+      objective:
+        "Understand repetitive execution using loops.",
+      tasks: [
+        "Think — predict the output of programs using while, do-while and for.",
+        "Develop — print the first N natural numbers, the even numbers, the odd numbers, and count backwards.",
+        "Improve — generate the multiplication table for any number the user enters.",
+        "Analyze — compare what while, do-while and for produce for the same task, and explain the differences.",
+        "Challenge — print multiplication tables from 1 to N, formatted as a table.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 8,
+      title: "Advanced Loop Programming",
+      co: "CO1",
+      objective:
+        "Solve computational problems using iterative statements.",
+      tasks: [
+        "Think — trace the loops by hand for factorial, Fibonacci and prime checking.",
+        "Develop — factorial, the Fibonacci series, and the sum of digits.",
+        "Improve — test for prime, Armstrong and palindrome numbers.",
+        "Analyze — compare the time different loop constructs take on the same problem.",
+        "Challenge — a menu-driven Number Analyzer checking prime, Armstrong, palindrome, perfect number and factorial.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 9,
+      title: "Pattern Programming using Nested Loops",
+      co: "CO1",
+      objective:
+        "Sharpen logical thinking through nested loop programming.",
+      tasks: [
+        "Think — predict the output of several nested loop programs.",
+        "Develop — print a half pyramid, an inverted pyramid and a number pyramid.",
+        "Improve — Floyd's triangle and Pascal's triangle.",
+        "Analyze — turn one pattern into another by changing only the loop conditions.",
+        "Challenge — design your own pattern from stars, numbers or letters and explain the logic behind it.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 10,
+      title: "User-Defined Functions",
+      co: "CO2",
+      objective:
+        "Understand modular programming using functions.",
+      tasks: [
+        "Think — predict the output of programs using function calls, return statements, and local versus global variables.",
+        "Develop — write all four forms: no arguments and no return, arguments and no return, no arguments with a return, arguments with a return.",
+        "Improve — rebuild the menu-driven calculator out of user-defined functions.",
+        "Analyze — split a monolithic program into functions and compare readability and reusability.",
+        "Challenge — a Student Result Management System with separate functions for reading details, totalling marks, calculating percentage, assigning grades and displaying the result.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 11,
+      title: "Recursive Functions",
+      co: "CO2",
+      objective:
+        "Understand recursion and compare it with iterative programming.",
+      tasks: [
+        "Think — trace recursive factorial, Fibonacci and sum-of-first-N, drawing the function call stack for each.",
+        "Develop — recursive factorial, Fibonacci series, and power of a number.",
+        "Improve — recursive GCD of two numbers, and reversing a number's digits.",
+        "Analyze — implement factorial both recursively and iteratively, then compare length, readability, number of calls and efficiency.",
+        "Challenge — a recursive menu-driven application solving several mathematical problems.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 12,
+      title: "One-Dimensional Arrays",
+      co: "CO2",
+      objective:
+        "Understand array representation and manipulation.",
+      tasks: [
+        "Think — trace the contents of an array after each iteration of a given program.",
+        "Develop — read an array, display it, find its sum and average, and its largest and smallest elements.",
+        "Improve — reverse an array, count even and odd elements, count positives and negatives.",
+        "Analyze — solve the same problem with individual variables and then with an array, and compare.",
+        "Challenge — a Student Marks Analyzer reporting highest, lowest, average and pass percentage.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 13,
+      title: "Two-Dimensional Arrays (Matrices)",
+      co: "CO2",
+      objective:
+        "Perform operations on matrices.",
+      tasks: [
+        "Think — predict the output of programs that traverse a matrix.",
+        "Develop — read a matrix, display it, and add and subtract two matrices.",
+        "Improve — matrix multiplication and transpose.",
+        "Analyze — find the row sums, column sums, principal diagonal sum and secondary diagonal sum.",
+        "Challenge — a Matrix Calculator offering several matrix operations from a menu.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 14,
+      title: "Searching and Sorting",
+      co: "CO2",
+      objective:
+        "Understand searching and sorting techniques.",
+      tasks: [
+        "Think — trace every iteration of linear search, binary search and bubble sort.",
+        "Develop — implement linear search and binary search.",
+        "Improve — implement bubble sort and selection sort.",
+        "Analyze — compare the number of comparisons, the number of swaps, and where each algorithm is the right choice.",
+        "Challenge — a Student Record Search System that both searches and sorts marks.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 15,
+      title: "Character Arrays and Basic String Operations",
+      co: "CO2",
+      objective:
+        "Understand strings and character manipulation.",
+      tasks: [
+        "Think — predict the output of string programs built on character arrays.",
+        "Develop — find a string's length without a library function, copy one string into another, and reverse a string.",
+        "Improve — check whether a string is a palindrome, and count vowels, consonants, digits and spaces.",
+        "Analyze — compare your own string functions against the library ones.",
+        "Challenge — a Text Analyzer reporting word count, vowels, consonants, digits and special characters.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 16,
+      title: "Advanced String Processing",
+      co: "CO2",
+      objective:
+        "Perform advanced string manipulation.",
+      tasks: [
+        "Think — predict the output of programs combining several string operations.",
+        "Develop — concatenate, compare and copy strings without using library functions.",
+        "Improve — strip spaces, and convert between lower and upper case both ways.",
+        "Analyze — compare the library functions with your own implementations.",
+        "Challenge — a Password Validator scoring strength on length, uppercase, lowercase, digits and special characters.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 17,
+      title: "Introduction to Pointers",
+      co: "CO2",
+      objective:
+        "Understand pointers and memory addressing.",
+      tasks: [
+        "Think — draw memory diagrams of variables and pointers, and predict the output of pointer programs.",
+        "Develop — declare pointers, display addresses, and read values through them.",
+        "Improve — swap two numbers with pointers, then try pointer arithmetic and pointer comparison.",
+        "Analyze — compare passing a variable directly against passing it through a pointer.",
+        "Challenge — a Number Analyzer using pointers for largest, smallest, sum and average.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 18,
+      title: "Arrays, Functions and Pointers",
+      co: "CO2",
+      objective:
+        "Understand how arrays, functions and pointers relate to one another.",
+      tasks: [
+        "Think — predict the output of programs mixing arrays, pointer arithmetic and function parameters.",
+        "Develop — walk an array with pointers, and access a string through a pointer.",
+        "Improve — write pointer-based functions for maximum, minimum and average.",
+        "Analyze — compare array notation with pointer notation and explain where they are the same and where they differ.",
+        "Challenge — an Array Processing Toolkit doing searching, sorting and statistics through pointers.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 19,
+      title: "Dynamic Memory Allocation",
+      co: "CO3",
+      objective:
+        "Understand memory allocated at runtime.",
+      tasks: [
+        "Think — predict how malloc(), calloc(), realloc() and free() behave.",
+        "Develop — demonstrate malloc() and calloc().",
+        "Improve — rework those using realloc() and free(), explaining what changes in memory.",
+        "Analyze — compare static and dynamic allocation with worked examples.",
+        "Challenge — a Dynamic Student Marks System where the number of students is decided at runtime.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 20,
+      title: "Integrated Programming using Functions, Arrays and Pointers",
+      co: "CO2, CO3",
+      objective:
+        "Bring several programming concepts together on one real-world problem.",
+      tasks: [
+        "Think — work out what a simple Student Management System needs: which functions, which arrays, where pointers help.",
+        "Develop — separate functions for reading records, displaying them, and calculating total and average marks.",
+        "Improve — use pointers and arrays to make it more modular and more efficient.",
+        "Analyze — run it against different datasets, find the logical errors, and improve readability through documentation and function decomposition.",
+        "Challenge — a Student Performance Analyzer for N students: total, percentage, highest, lowest and average marks, grade distribution, class topper, in a formatted tabular report.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 21,
+      title: "Structures",
+      co: "CO2",
+      objective:
+        "Organise and manipulate related data using structures.",
+      tasks: [
+        "Think — take a real entity (student, employee, book, product) and decide what its structure members should be.",
+        "Develop — define a Student structure, read and display its details, then do the same for Employee records.",
+        "Improve — store many students in an array of structures, find the topper by marks, and list everyone above a given percentage.",
+        "Analyze — compare holding student information in individual variables, in arrays, and in structures, and say what structures buy you.",
+        "Challenge — a Student Information Management System that adds a student, displays all students, searches for one, and reports class statistics.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 22,
+      title: "Advanced Structures, Unions and Enumeration",
+      co: "CO2",
+      objective:
+        "Understand memory-efficient data representation using structures, unions and enumerations.",
+      tasks: [
+        "Think — predict the memory a structure and a union each use, and explain why union members share memory.",
+        "Develop — nested structures, structures inside arrays, and arrays inside structures.",
+        "Improve — demonstrate a union, an enumeration, and menu selection driven by an enum.",
+        "Analyze — compare structure against union, and integer constants against an enumeration.",
+        "Challenge — a Vehicle Registration System built on structures and enumerations.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 23,
+      title: "Introduction to File Handling",
+      co: "CO3",
+      objective:
+        "Understand permanent data storage using files.",
+      tasks: [
+        "Think — work out why variables lose their values when a program ends, and distinguish RAM from secondary storage, and text files from binary files.",
+        "Develop — create a file, write data into it, and read the data back.",
+        "Improve — append more records to an existing file and display the whole thing.",
+        "Analyze — compare console input/output with file input/output.",
+        "Challenge — a Personal Diary application storing daily notes in a text file.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 24,
+      title: "File Operations and Record Management",
+      co: "CO3",
+      objective:
+        "Perform advanced file operations.",
+      tasks: [
+        "Think — predict what programs do under each of the different file opening modes.",
+        "Develop — copy one file into another, and count the characters, words and lines in a text file.",
+        "Improve — search for a record, update one, and delete one logically.",
+        "Analyze — compare sequential file access with random access.",
+        "Challenge — a Book Record Management System backed by files.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 25,
+      title: "Debugging Techniques",
+      co: "CO3",
+      objective:
+        "Improve your debugging and program correction skills.",
+      tasks: [
+        "Think — predict the output of five broken programs without executing them.",
+        "Debug — fix programs carrying syntax errors, logical errors and runtime errors.",
+        "Improve — tighten inefficient programs by cutting unnecessary statements and improving readability.",
+        "Analyze — use the IDE debugger: set breakpoints, step through, and watch the variables change.",
+        "Challenge — the instructor hands over a faulty application with several errors; find them, classify them, and fix them all.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 26,
+      title: "Integrated Programming Practice I",
+      co: "CO3",
+      objective:
+        "Integrate arrays, functions, structures and file handling.",
+      tasks: [
+        "Think — identify the modules a Student Result Management System needs.",
+        "Develop — separate functions for input, calculation and display.",
+        "Improve — hold the records in structures.",
+        "Analyze — save the records to a file and read them back.",
+        "Challenge — a Student Result Processing System that calculates grades, displays toppers, and stores results permanently.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 27,
+      title: "Integrated Programming Practice II",
+      co: "CO3",
+      objective:
+        "Solve a real-world application using modular programming.",
+      tasks: [
+        "Think — identify the modules a Library Management System needs.",
+        "Develop — add a book, display the books, and search for one.",
+        "Improve — keep the records in files.",
+        "Analyze — test it against different datasets.",
+        "Challenge — a Library Management System handling book issue, book return, search and availability status.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 28,
+      title: "Computational Thinking Challenge",
+      co: "CO3",
+      objective:
+        "Sharpen logical reasoning and algorithmic thinking.",
+      tasks: [
+        "Think — predict the output of complex programs mixing nested loops, functions, arrays and pointers.",
+        "Analyze — pick the most efficient algorithm from several given solutions.",
+        "Improve — rewrite long programs as modular ones.",
+        "Debug — correct programs with hidden logical mistakes.",
+        "Challenge — solve an unseen real-life problem using anything you have learned this semester.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 29,
+      title: "Mini Programming Project",
+      co: "CO2, CO3",
+      objective:
+        "Integrate multiple C programming concepts into one complete application.",
+      tasks: [
+        "Plan — write the problem statement, the algorithm, the flowchart and the modular design.",
+        "Develop — build the whole application. Suggested domains: inventory management, employee payroll, hospital registration, banking, course registration.",
+        "Improve — add menus, input validation and better output formatting.",
+        "Test — work through it systematically with multiple test cases.",
+        "Present — demonstrate it and explain the program logic, the functions used, the data structures used, and what gave you trouble.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 30,
+      title: "Capstone Programming Challenge and Viva",
+      co: "CO1, CO2, CO3",
+      objective:
+        "Assess the overall programming competence built up across the semester.",
+      tasks: [
+        "Think — analyse a real-world problem and identify its inputs, outputs, constraints and required modules.",
+        "Design — prepare the algorithm, the flowchart and the modular solution design.",
+        "Develop — implement the whole solution independently using the appropriate C constructs.",
+        "Validate — test with normal, boundary and invalid inputs, then debug and optimise where needed.",
+        "Reflect and demonstrate — present the solution in a viva, explaining your logic, your choice of constructs, your debugging process and what you learned.",
+      ],
+      inMidsem: false,
+    },
+  ],
   components: [
     {
       name: "Quiz 1 (online)",
@@ -567,8 +1018,31 @@ export const programmingC: SeedSubject = {
       co: "CO1–CO4",
       track: "theory",
     },
+    {
+      name: "Lab Quizzes",
+      marks: 50,
+      weightage: 50,
+      scope: "Ten compulsory quizzes of 5 marks each, across basic concepts and syntax, problem solving, implementation, debugging, and advanced application",
+      timing: "Continuous, through the lab sessions",
+      co: "CO1, CO2, CO3",
+      track: "lab",
+    },
+    {
+      name: "Execution & Viva Voce",
+      marks: 50,
+      weightage: 50,
+      scope: "Five compulsory assessments of 10 marks each — problem solving, implementation and output accuracy, assessed at the machine",
+      timing: "Continuous, through the lab sessions",
+      co: "CO1, CO2, CO3",
+      track: "lab",
+    },
   ],
   strategies: [
+    {
+      title: "The lab is worth as much as the theory paper, and it is all continuous",
+      body:
+        "Programming in C Lab is a separate 2-credit course with its own code (CSE26108P) and no end-sem paper at all — 50 marks of quizzes across ten compulsory sittings, and 50 marks of execution and viva across five. Miss a session and those marks cannot be made up later. The plan also says the previous experiment's lab file is checked at the end of every lab, so the write-up is due before the next class, not at the end of term.",
+    },
     {
       title: "You already program. That is both your edge and your trap.",
       body: `Three years of JS/PHP means loops, functions and conditionals are free marks for you. Do not spend study hours re-learning what a for loop is.
@@ -648,6 +1122,9 @@ Practical tip: write your C on your Mac with \`gcc\` (or \`clang\`, already inst
       author: "R. S. Salaria, Khanna Book Publishing",
     },
   ],
-  localFiles: ["C/lec_Course Plan_Programming in C.pdf"],
-  gaps: ["Programming in C Lab course plan / experiment list is not in your folder yet."],
+  localFiles: [
+    "C/lec_Course Plan_Programming in C.pdf",
+    "C/Lab_Course Plan_Programming in C.pdf",
+  ],
+  gaps: [],
 };

@@ -41,6 +41,7 @@ export async function getProfile(): Promise<Profile | null> {
       theme: "system",
       section: null,
       must_change_password: false,
+      is_admin: false,
       gemini_key: null,
     }
   );

@@ -14,9 +14,15 @@ export async function GET(req: Request) {
   const next = url.searchParams.get("next") ?? "/";
   const to = new URL(next.startsWith("/") ? next : "/", req.url);
 
+  const db = await createClient();
   if (token_hash && type) {
-    const db = await createClient();
     const { error } = await db.auth.verifyOtp({ token_hash, type });
+    if (!error) return NextResponse.redirect(to);
+  }
+  // Supabase's default email templates send a PKCE code instead of a token
+  const code = url.searchParams.get("code");
+  if (code) {
+    const { error } = await db.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(to);
   }
   to.pathname = "/login";

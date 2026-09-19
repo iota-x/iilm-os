@@ -15,7 +15,7 @@ export function TopicStatusControl({ topic }: { topic: Topic }) {
   const [pending, start] = useTransition();
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-4", pending && "opacity-60")}>
+    <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-3", pending && "opacity-60")}>
       <div>
         <span className="mb-1.5 block text-[length:var(--text-micro)] font-medium text-subtle">Where you are</span>
         <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
@@ -56,6 +56,12 @@ export function TopicStatusControl({ topic }: { topic: Topic }) {
           ))}
         </div>
       </div>
+
+      <p className="basis-full text-[length:var(--text-micro)] leading-relaxed text-subtle">
+        These two decide when this topic comes back in Review: once it&rsquo;s past &ldquo;not
+        started&rdquo;, confidence 1 brings it back tomorrow, 3 in about four days, 5 in three
+        weeks. Be honest — a 5 you don&rsquo;t mean hides it from you.
+      </p>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Markdown } from "@/components/markdown";
 import { Replies } from "@/components/class/replies";
 import { DeletePost } from "@/components/class/delete-post";
 import { Helpful } from "@/components/class/helpful";
+import { PinPost } from "@/components/class/pin-post";
 import { Badge, Card } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtDate } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const { post, replies } = data;
   const subject = post.subject_slug ? subjects.find((s) => s.slug === post.subject_slug) : null;
   const mine = profile?.id === post.user_id;
+  const admin = Boolean(profile?.is_admin);
 
   return (
     <div className={cn("mx-auto max-w-[760px] space-y-5", subject ? ACCENT_CLASS[subject.color] : "")}>
@@ -27,6 +29,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
       <Card className="p-5">
         <div className="flex flex-wrap items-center gap-2">
+          {post.pinned ? <Badge tone="accent">pinned</Badge> : null}
           <Badge tone="neutral">{post.kind}</Badge>
           {subject ? (
             <Link href={`/subjects/${subject.slug}`}>
@@ -56,13 +59,23 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <Markdown>{post.body}</Markdown>
           </div>
         ) : null}
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
           <Helpful target="post" id={post.id} count={post.helpful} mine={post.mine} size="md" />
-          {mine ? <DeletePost id={post.id} /> : null}
+          <div className="flex items-center gap-1.5">
+            {admin ? <PinPost id={post.id} pinned={post.pinned} /> : null}
+            {mine || admin ? <DeletePost id={post.id} /> : null}
+          </div>
         </div>
       </Card>
 
-      <Replies postId={post.id} replies={replies} meId={profile?.id ?? null} />
+      <Replies
+        postId={post.id}
+        replies={replies}
+        meId={profile?.id ?? null}
+        canModerate={admin}
+        canAccept={mine && post.kind === "question"}
+        answerId={post.answer_reply_id}
+      />
     </div>
   );
 }

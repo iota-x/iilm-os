@@ -17,6 +17,7 @@ export interface Profile {
   theme: string;
   section: string | null;
   must_change_password: boolean;
+  is_admin: boolean;
   /** the student's own Gemini key for /ask; null means the shared one */
   gemini_key: string | null;
 }
@@ -296,6 +297,8 @@ export interface Post {
   body: string;
   url: string | null;
   pinned: boolean;
+  answer_reply_id: string | null;
+  image_path: string | null;
   created_at: string;
   updated_at: string;
   /** joined from member_names */

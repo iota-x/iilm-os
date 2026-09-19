@@ -30,6 +30,24 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
+  async function forgot() {
+    if (!email) {
+      setError("Type your email first, then tap this again.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const { error } = await createClient().auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/confirm?next=/reset-password`,
+    });
+    setBusy(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setInfo("Check your college inbox — the link there lets you set a new password.");
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -130,6 +148,14 @@ function LoginForm() {
             </div>
 
             {mode === "up" ? (
+              <div className="rounded-[var(--radius-control)] border border-line bg-surface-2 px-3 py-2 text-[length:var(--text-micro)] text-muted">
+                <span className="font-medium text-fg">Section E only, for now.</span> The timetable,
+                lab groups and test dates in here are Section E&rsquo;s. Other sections can sign up
+                once their timetables are in.
+              </div>
+            ) : null}
+
+            {mode === "up" ? (
               <div>
                 <p className="text-[length:var(--text-micro)] font-medium text-muted">Lab group</p>
                 <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
@@ -171,6 +197,16 @@ function LoginForm() {
             </Button>
           </form>
 
+          {mode === "in" ? (
+            <button
+              type="button"
+              onClick={forgot}
+              disabled={busy}
+              className="mt-3 w-full text-[length:var(--text-micro)] text-muted hover:text-fg transition-colors focus-ring rounded"
+            >
+              Forgot your password?
+            </button>
+          ) : null}
           <button
             onClick={() => {
               setMode(mode === "in" ? "up" : "in");

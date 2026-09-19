@@ -105,6 +105,7 @@ export default async function ClassPage({
                           {p.title}
                         </span>
                         <Badge tone={KIND_TONE[p.kind]}>{KIND_LABEL[p.kind]}</Badge>
+                        {p.kind === "question" && p.answer_reply_id ? <Badge tone="good">answered</Badge> : null}
                         {s ? <Badge tone="subject">{s.short_name}</Badge> : null}
                       </p>
                       {p.body ? (

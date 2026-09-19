@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { daysBetween, distribute, minutesFor, remaining } from "@/lib/goals";
 import { istToday } from "@/lib/utils";
 import type { Topic } from "@/lib/db-types";
+import { encrypt } from "@/lib/secret";
 
 async function uid() {
   const db = await createClient();
@@ -233,7 +234,7 @@ export async function setGeminiKey(key: string) {
   if (k && !/^AI[A-Za-z0-9_-]{20,}$|^AQ\.[A-Za-z0-9_-]{20,}$/.test(k)) {
     throw new Error("That doesn't look like a Gemini key — they start with AIza… or AQ.…");
   }
-  const { error } = await db.from("profiles").update({ gemini_key: k || null }).eq("id", userId);
+  const { error } = await db.from("profiles").update({ gemini_key: k ? encrypt(k) : null }).eq("id", userId);
   if (error) throw new Error(error.message);
   revalidatePath("/settings");
   revalidatePath("/ask");
@@ -761,4 +762,22 @@ export async function deleteGoal(id: string) {
   const { error } = await db.from("goals").delete().eq("id", id); // tasks cascade
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
+}
+
+/** Admin: pin or unpin a post. RLS lets only admins update posts they don't own. */
+export async function setPostPinned(id: string, pinned: boolean) {
+  const { db } = await uid();
+  const { error } = await db.from("posts").update({ pinned }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/class");
+  revalidatePath(`/class/${id}`);
+}
+
+/** The post's author marks one reply as the answer (or clears it). */
+export async function setAnswer(postId: string, replyId: string | null) {
+  const { db } = await uid();
+  const { error } = await db.from("posts").update({ answer_reply_id: replyId }).eq("id", postId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/class/${postId}`);
+  revalidatePath("/class");
 }

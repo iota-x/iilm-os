@@ -18,6 +18,8 @@ import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
 import { Badge, Card, CardHead, Ring } from "@/components/ui";
 import { CountUp } from "@/components/count-up";
+import { FirstRun } from "@/components/first-run";
+import { getGoals, getInboxFiles } from "@/lib/queries";
 import {
   ACCENT_CLASS,
   cn,
@@ -110,6 +112,46 @@ export default async function Dashboard() {
   // "material" — that note lives on its own page.
   const gapSubjects = subjects.filter((s) => s.status !== "complete");
 
+  // The first-run checklist: what this account has and hasn't done yet.
+  const [goals, inbox] = await Promise.all([getGoals(), getInboxFiles()]);
+  const firstRun = [
+    {
+      key: "key",
+      label: "Add your Gemini key",
+      why: "Ask runs on your own free key — two minutes at aistudio.google.com.",
+      href: "/settings",
+      done: Boolean(profile?.gemini_key),
+    },
+    {
+      key: "goal",
+      label: "Set a goal",
+      why: "Pick a subject and a date; each day's share lands here on Today.",
+      href: "/goals",
+      done: goals.some((g) => g.status === "active"),
+    },
+    {
+      key: "photo",
+      label: "Share a board photo from your phone",
+      why: "It files itself to the lecture it was taken in.",
+      href: "/inbox",
+      done: inbox.length > 0,
+    },
+    {
+      key: "attend",
+      label: "Tick today's classes",
+      why: "Attendance against the 75% bar, from what you actually went to.",
+      href: "/attendance",
+      done: classMarks.length > 0,
+    },
+    {
+      key: "status",
+      label: "Mark one topic as started",
+      why: "Status and confidence decide when a topic comes back for review.",
+      href: `/subjects/${subjects[0]?.slug ?? ""}`,
+      done: topics.some((t) => t.status !== "not_started"),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* ── header ─────────────────────────────────────────── */}
@@ -138,6 +180,8 @@ export default async function Dashboard() {
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
       </div>
+
+      <FirstRun steps={firstRun} />
 
       {/* ── the four numbers worth glancing at ─────────────── */}
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] bg-[var(--border)] shadow-card sm:grid-cols-4 dark:shadow-none">
@@ -250,7 +294,7 @@ export default async function Dashboard() {
             <TaskList
               tasks={todayTasks}
               subjects={subjects}
-              emptyText="No blocks for today. Add one, or open the planner."
+              emptyText="Nothing planned for today. Set a goal and each day\u2019s share appears here."
             />
           </Card>
 

@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "pull": "tsx scripts/pull-notes.ts",
     "intake": "tsx scripts/intake.ts",
-    "onboard": "tsx scripts/onboard.ts"
+    "onboard": "tsx scripts/onboard.ts",
+    "reseed": "tsx scripts/reseed.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.56",

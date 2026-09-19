@@ -2,6 +2,7 @@ import { getAttendance, getProfile, getSubjects } from "@/lib/queries";
 import { SettingsForm } from "@/components/settings-form";
 import { ThemeToggle } from "@/components/theme";
 import { GeminiKeyForm } from "@/components/gemini-key-form";
+import { decrypt } from "@/lib/secret";
 import { Card, CardHead } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export default async function SettingsPage() {
       <div>
         <h1 className="text-[length:var(--text-page)]">Settings</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Five things, and then you&rsquo;re done.
+          Four things, and then you&rsquo;re done.
         </p>
       </div>
 
@@ -31,19 +32,22 @@ export default async function SettingsPage() {
         </div>
       </Card>
 
-      <GeminiKeyForm current={profile.gemini_key} />
+      <GeminiKeyForm current={decrypt(profile.gemini_key)} />
 
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} />
 
+      {profile.is_admin ? (
       <Card className="p-5">
         <h2 className="text-[length:var(--text-small)] font-semibold">Adding next semester</h2>
         <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-muted">
           The database is built around semesters, not this one semester. When Sem 2 starts, add new
           subject files under <Code>src/data/subjects/</Code>, bump the semester number in{" "}
           <Code>src/data/index.ts</Code>, and run <Code>npm run seed</Code> again. Your notes,
-          marks and screenshots from Sem 1 stay exactly where they are.
+          marks and screenshots from Sem 1 stay exactly where they are. Then{" "}
+          <Code>npm run reseed</Code> to push the new curriculum into every account.
         </p>
       </Card>
+      ) : null}
     </div>
   );
 }

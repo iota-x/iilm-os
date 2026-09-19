@@ -2,6 +2,7 @@ import { streamText, tool, isStepCount, type ModelMessage } from "ai";
 import { z } from "zod";
 import { resolveModel } from "@/lib/ai-model";
 import { createClient } from "@/lib/supabase/server";
+import { decrypt } from "@/lib/secret";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
 
   // The student's own key, if they've added one in Settings.
   const { data: prof } = await db.from("profiles").select("gemini_key").eq("id", user.id).maybeSingle();
-  const resolved = resolveModel(prof?.gemini_key ?? null);
+  const resolved = resolveModel(decrypt(prof?.gemini_key ?? null));
   if (!resolved) {
     return Response.json(
       { error: "No AI key yet. Add your Gemini key in Settings — it takes two minutes and is free." },

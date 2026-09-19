@@ -2,16 +2,30 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Trash2 } from "lucide-react";
+import { CheckCircle2, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { createReply, deleteReply } from "@/lib/actions";
+import { createReply, deleteReply, setAnswer } from "@/lib/actions";
 import type { Reply } from "@/lib/db-types";
 import { Markdown } from "@/components/markdown";
-import { Button, Card, CardHead, inputCls } from "@/components/ui";
+import { Badge, Button, Card, CardHead, inputCls } from "@/components/ui";
 import { Helpful } from "@/components/class/helpful";
 import { cn, fmtDate } from "@/lib/utils";
 
-export function Replies({ postId, replies, meId }: { postId: string; replies: Reply[]; meId: string | null }) {
+export function Replies({
+  postId,
+  replies,
+  meId,
+  canModerate = false,
+  canAccept = false,
+  answerId = null,
+}: {
+  postId: string;
+  replies: Reply[];
+  meId: string | null;
+  canModerate?: boolean;
+  canAccept?: boolean;
+  answerId?: string | null;
+}) {
   const router = useRouter();
   const [text, setText] = useState("");
   const [pending, start] = useTransition();
@@ -53,8 +67,21 @@ export function Replies({ postId, replies, meId }: { postId: string; replies: Re
               <div className="prose-note mt-1 text-[length:var(--text-small)]">
                 <Markdown>{r.body}</Markdown>
               </div>
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Helpful target="reply" id={r.id} count={r.helpful} mine={r.mine} />
+                {canAccept ? (
+                  <button
+                    onClick={() => run(() => setAnswer(postId, r.id === answerId ? null : r.id))}
+                    className={cn(
+                      "rounded-md border px-2 py-0.5 text-[length:var(--text-micro)] transition-colors focus-ring",
+                      r.id === answerId
+                        ? "border-[var(--good)] text-[var(--good)]"
+                        : "border-line text-muted hover:text-fg",
+                    )}
+                  >
+                    {r.id === answerId ? "Unmark answer" : "This answered it"}
+                  </button>
+                ) : null}
               </div>
             </li>
           ))}

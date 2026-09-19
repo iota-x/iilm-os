@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme";
+import { Analytics } from "@vercel/analytics/next";
 import { RegisterSW } from "@/components/register-sw";
 import "katex/dist/katex.min.css";
 import "./globals.css";
@@ -81,6 +82,8 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <RegisterSW />
+          {/* page views only — no cookies, no user ids; see vercel.com/analytics */}
+          <Analytics />
           {children}
           <Toaster
             position="bottom-right"

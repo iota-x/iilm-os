@@ -9,6 +9,7 @@ const PUBLIC = [
   "/landing",
   "/manifest.webmanifest",
   "/sw.js",
+  "/offline",
   "/api/pwa-icon",
   "/api/signup",
   "/opengraph-image",

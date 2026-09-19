@@ -268,8 +268,9 @@ function Rule({
  * One line on the internals: what's recorded against the 40% you need. Null
  * until a mark is entered — a row of "0 of 50" is noise, not information.
  */
-function internalsStanding(components: { name: string; marks: number; obtained: number | null }[]) {
-  const internal = components.filter((c) => !/end[- ]?(term|sem)/i.test(c.name));
+function internalsStanding(components: { name: string; marks: number; obtained: number | null; track: string }[]) {
+  // theory only: the lab track is marked on its own 100 and has no 40% gate
+  const internal = components.filter((c) => c.track === "theory" && !/end[- ]?(term|sem)/i.test(c.name));
   const recorded = internal.filter((c) => c.obtained !== null);
   if (!recorded.length) return null;
   const total = internal.reduce((a, c) => a + c.marks, 0);

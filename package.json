@@ -12,7 +12,9 @@
     "pull": "tsx scripts/pull-notes.ts",
     "intake": "tsx scripts/intake.ts",
     "onboard": "tsx scripts/onboard.ts",
-    "reseed": "tsx scripts/reseed.ts"
+    "reseed": "tsx scripts/reseed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.56",
@@ -20,6 +22,7 @@
     "@ai-sdk/groq": "^4.0.44",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.105",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
@@ -40,7 +43,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.13.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.4.2",
@@ -48,6 +51,7 @@
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.1"
   }
 }

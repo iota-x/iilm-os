@@ -105,7 +105,7 @@ export async function getPosts(subjectSlug?: string, sort: "new" | "helpful" = "
   } = await db.auth.getUser();
   let q = db
     .from("posts")
-    .select("*, replies(count), post_votes(count)")
+    .select("*, replies!post_id(count), post_votes(count)")
     .order("pinned", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(200);
@@ -114,6 +114,7 @@ export async function getPosts(subjectSlug?: string, sort: "new" | "helpful" = "
     q,
     user ? db.from("post_votes").select("post_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
   ]);
+  if (error) console.error("getPosts", error.message);
   if (error || !data) return [];
   const voted = new Set((mine ?? []).map((v) => v.post_id as string));
   const names = await namesFor(db, [...new Set(data.map((p) => p.user_id as string))]);

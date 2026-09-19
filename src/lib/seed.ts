@@ -219,6 +219,16 @@ export async function seedUser(
     }
 
     // components, strategies and books are replace-on-seed (no natural key)
+    // Components are replaced wholesale (the plan is the source of truth),
+    // but a mark you've entered survives: carried across by (name, track).
+    const { data: prevComponents } = await db
+      .from("components")
+      .select("name, track, obtained, status")
+      .eq("subject_id", subjectId)
+      .not("obtained", "is", null);
+    const kept = new Map(
+      (prevComponents ?? []).map((c) => [`${c.track}::${c.name}`, { obtained: c.obtained as number, status: c.status as string }]),
+    );
     await db.from("components").delete().eq("subject_id", subjectId);
     if (s.components.length) {
       const { error: e } = await db.from("components").insert(
@@ -233,6 +243,7 @@ export async function seedUser(
           co: c.co,
           track: c.track,
           sort_order: j,
+          ...(kept.get(`${c.track}::${c.name}`) ?? {}),
         })),
       );
       if (e) fail(`components ${s.slug}`, e);

@@ -406,8 +406,8 @@ export const planDays: PlanDay[] = [
       {
         subject: "digital-electronics",
         minutes: 30,
-        label: "K-maps",
-        topics: ["2, 3 and 4-variable K-map simplification"],
+        label: "Combinational blocks — MUX, decoder, adder",
+        topics: ["deco-u2-mux", "deco-u2-codec", "deco-u2-adders"],
         kind: "learn",
       },
     ],
@@ -604,8 +604,8 @@ export const planDays: PlanDay[] = [
       {
         subject: "digital-electronics",
         minutes: 90,
-        label: "Whatever the real course plan says — by now you have it",
-        topics: ["Work the actual mid-sem scope"],
+        label: "Unit III — flip-flops, counters, shift registers",
+        topics: ["deco-u3-flipflops", "deco-u3-master-slave", "deco-u3-counters", "deco-u3-registers"],
         kind: "learn",
       },
       {
@@ -699,7 +699,7 @@ export const planDays: PlanDay[] = [
       {
         subject: "digital-electronics",
         minutes: 60,
-        label: "Number systems, Boolean algebra, K-maps",
+        label: "Units I–III method sheet: complements, K-map, MUX, flip-flop tables, counter design",
         topics: [],
         kind: "revise",
       },

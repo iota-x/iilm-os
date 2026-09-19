@@ -98,14 +98,15 @@ export const exams: SeedExam[] = [
   },
   {
     key: "ct1-deco",
-    name: "DE+CO — Class Test on K-maps",
+    name: "DE+CO — Class Test 1",
     kind: "class_test",
     subject: "digital-electronics",
     date: "2026-09-21",
     window: null,
     maxMarks: 10,
     weightage: 10,
-    scope: "Karnaugh maps — plotting from Σm/ΠM, grouping with wrap-around, don't-cares, essential prime implicants, minimal SOP and POS. Marks assume the standard 10-mark class test; unconfirmed.",
+    scope:
+      "Unit II and half of Unit III. The course plan prints the rubric: (1) 4-variable K-map simplification + gate realisation, (2) F(A,B,C) = Σm(...) on an 8:1 MUX with I₀–I₇ justified, (3) SR latch and the forbidden state, (4) race-around in JK and the master–slave fix, (5) latch vs edge-triggered flip-flop with a timing diagram. 2 marks each. CO1, CO2.",
   },
   {
     key: "viva1-c-lab",
@@ -127,7 +128,7 @@ export const exams: SeedExam[] = [
     window: "5–11 Oct 2026",
     maxMarks: 20,
     weightage: 20,
-    scope: "Not confirmed — get the course plan.",
+    scope: "Units I, II & III — conceptual, analytical and application-based questions. CO1, CO2, CO3.",
   },
   {
     key: "mse-cdt",

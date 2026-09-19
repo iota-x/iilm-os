@@ -1,8 +1,9 @@
 import type { SeedSubject } from "../types";
 
 // Source: "Course Plan — Digital Electronics and Computer Organization,
-// CSE26102, Session 2026-27, Batch 2026-30" (Dr. Sambhavi Shukla, coordinator)
-// and the CSE26102 syllabus sheet. Both PDFs are in digital_electronics/.
+// CSE26102", the CSE26102 syllabus sheet, and "Lab Course Plan — Digital
+// Electronics Lab, CSE26102P" (all Dr. Sambhavi Shukla, coordinator; Session
+// 2026-27, Batch 2026-30). All three PDFs are in digital_electronics/.
 //
 // Topic codes: the eight `deco-u1-*` codes from before the plan arrived are
 // kept on purpose — the user's board photos, checkpoints and statuses hang
@@ -19,11 +20,11 @@ export const digitalElectronics: SeedSubject = {
   teacher: "Dr. Puja Acharya (course coordinator: Dr. Sambhavi Shukla)",
   labTeacher: "Dr. Sambhavi Shukla",
   hasLab: true,
-  labTitle: "Digital Electronics and Computer Organization Lab",
-  labCode: null,
+  labTitle: "Digital Electronics Lab",
+  labCode: "CSE26102P",
   labLtpc: "0-0-2-1",
   overview:
-    "Two halves. The first is digital logic: number systems and codes, Boolean algebra and gates, then combinational design (SOP/POS, K-maps, adders, multiplexers, encoders, decoders) and sequential design (latches, flip-flops, counters, shift registers). The second is how a computer is put together: functional units, buses and the Von Neumann model, then registers, memory hierarchy and the fetch–decode–execute cycle. 45 sessions of 60 minutes. Mid-sem covers Units I–III; the whole syllabus comes back in the end-term.",
+    "Two halves. The first is digital logic: number systems and codes, Boolean algebra and gates, then combinational design (SOP/POS, K-maps, adders, multiplexers, encoders, decoders) and sequential design (latches, flip-flops, counters, shift registers). The second is how a computer is put together: functional units, buses and the Von Neumann model, then registers, memory hierarchy and the fetch–decode–execute cycle. 45 sessions of 60 minutes. Mid-sem covers Units I–III; the whole syllabus comes back in the end-term. The lab (CSE26102P, 1 credit, 15 two-hour sessions) is twelve experiments on the digital trainer kits — gates through flip-flops, counters, a simple ALU and register transfer — marked entirely by five quizzes and five execution-and-viva sittings.",
   midsemScope:
     "Units I, II and III — number systems and Boolean algebra, combinational logic design, synchronous sequential circuits. Conceptual, analytical and application-based questions. CO1, CO2, CO3.",
   midsemConfirmed: true,
@@ -486,7 +487,166 @@ export const digitalElectronics: SeedSubject = {
       ],
     },
   ],
-  experiments: [],
+  experiments: [
+    // Titles and CO mapping are from the lab course plan; the tasks are the
+    // standard trainer-kit procedure for each, since the plan lists titles only.
+    {
+      number: 1,
+      title: "Implementation of basic logic gates",
+      co: "CO1",
+      objective: "Verify the truth tables of AND, OR, NOT, NAND, NOR, XOR and XNOR on the trainer kit.",
+      tasks: [
+        "Identify the ICs: 7408 (AND), 7432 (OR), 7404 (NOT), 7400 (NAND), 7402 (NOR), 7486 (XOR) — pin 14 Vcc, pin 7 GND.",
+        "Wire one gate of each IC to the input switches and an output LED.",
+        "Record the output for every input combination and compare with the theoretical truth table.",
+        "Lab file: aim, apparatus, IC pin diagrams, truth tables (theoretical vs observed), result.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 2,
+      title: "Designing basic gates with the universal gates NAND and NOR",
+      co: "CO1",
+      objective: "Build NOT, AND, OR, XOR from NAND gates only, then from NOR gates only, and verify each.",
+      tasks: [
+        "Derive each construction on paper first using De Morgan — NOT = NAND with inputs tied; AND = NAND → NAND-NOT; OR = NAND of the two inverted inputs.",
+        "Implement on a 7400 (quad NAND), then repeat on a 7402 (quad NOR).",
+        "Count the gates used for each — the viva asks why NAND/NOR are called universal.",
+        "Record truth tables for every derived gate.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 3,
+      title: "Half adder and full adder using basic logic gates",
+      co: "CO1",
+      objective: "Implement a half adder (Sum = A⊕B, Carry = AB) and a full adder, and verify all input combinations.",
+      tasks: [
+        "Write the truth tables and derive Sum and Carry expressions — full adder: Sum = A⊕B⊕Cin, Cout = AB + Cin(A⊕B).",
+        "Wire the half adder with one XOR and one AND; the full adder with two XORs, two ANDs and one OR (or from two half adders).",
+        "Verify all 4 (half) and 8 (full) input combinations on LEDs.",
+        "Viva: how many full adders make a 4-bit ripple-carry adder, and where the delay comes from.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 4,
+      title: "Half subtractor and full subtractor",
+      co: "CO1",
+      objective: "Implement a half subtractor (Diff = A⊕B, Borrow = A'B) and a full subtractor, and verify them.",
+      tasks: [
+        "Derive Difference and Borrow from the truth tables — full subtractor: D = A⊕B⊕Bin, Bout = A'B + Bin(A⊕B)'.",
+        "Note the single difference from the adder circuit: the inverter on A in the borrow term.",
+        "Wire, verify all combinations, record observed vs theoretical.",
+        "Viva: how subtraction is actually done in an ALU (2's complement addition) and why a dedicated subtractor is rarely built.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 5,
+      title: "4×1 and 8×1 multiplexers and a multiplexer tree",
+      co: "CO1, CO3",
+      objective: "Build a 4:1 MUX from gates, use the 74153 / 74151 ICs, and combine two 4:1 MUXes into an 8:1 tree.",
+      tasks: [
+        "Write the 4:1 MUX expression Y = S1'S0'I0 + S1'S0 I1 + S1 S0'I2 + S1 S0 I3 and wire it with AND-OR gates.",
+        "Verify the 74151 (8:1) by walking every select combination.",
+        "Build the 8:1 tree: two 4:1 MUXes selected by S1,S0, their outputs fed to a 2:1 stage selected by S2.",
+        "Implement F(A,B,C) = Σm(1,3,5,6) on the 8:1 MUX — the same question as Class Test 1.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 6,
+      title: "3-to-8-line decoder",
+      co: "CO1, CO3",
+      objective: "Implement a 3:8 decoder with gates and verify the 74138, including the enable input.",
+      tasks: [
+        "Write all eight minterm outputs D0–D7 and wire three inverters plus eight 3-input ANDs (or use the 74138, active-low outputs).",
+        "Verify each input combination lights exactly one output.",
+        "Use the decoder plus OR gates to realise a given function from its minterm list.",
+        "Viva: decoder vs demultiplexer; why the 74138 outputs are active-low.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 7,
+      title: "4-to-10-line decoder (BCD to decimal)",
+      co: "CO1, CO3",
+      objective: "Implement a BCD-to-decimal decoder (7442) and verify that the invalid codes 1010–1111 produce no output.",
+      tasks: [
+        "Write the ten output expressions from the BCD truth table; note the six don't-care codes.",
+        "Wire the 7442 and verify all sixteen input combinations.",
+        "Record which inputs give no active output and explain why.",
+        "Viva: how the don't-cares simplify the decoder logic.",
+      ],
+      inMidsem: true,
+    },
+    {
+      number: 8,
+      title: "SR, JK, D and T flip-flops",
+      co: "CO2, CO3",
+      objective: "Implement each flip-flop (SR from NAND latch with clock; JK, D, T from the 7476 / 7474) and verify the characteristic tables.",
+      tasks: [
+        "Build the clocked SR from four NAND gates; show the forbidden S = R = 1 case.",
+        "Verify the 7476 JK: hold, set, reset, toggle. Wire D and T from JK (D: K = J'; T: J = K).",
+        "Record characteristic tables and observe the output only changing on the clock edge.",
+        "Viva: race-around condition — reproduce it with a slow clock if the kit allows.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 9,
+      title: "Master–slave flip-flop",
+      co: "CO2, CO3",
+      objective: "Build a master–slave JK from two flip-flops with complemented clocks and show that it removes race-around.",
+      tasks: [
+        "Wire the master (clocked by CLK) and slave (clocked by CLK') and connect the slave outputs back to the master's J and K.",
+        "Apply J = K = 1 and a clock pulse; observe exactly one toggle per pulse.",
+        "Draw the timing diagram: master captures on the high level, slave transfers on the falling edge.",
+        "Viva: master–slave vs edge-triggered; where the 7476 is master–slave internally.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 10,
+      title: "Synchronous counter",
+      co: "CO3",
+      objective: "Design and build a 3-bit synchronous up counter with JK flip-flops and verify the count sequence 000 → 111.",
+      tasks: [
+        "Write the state table, use the JK excitation table to get J/K for each flip-flop, and simplify with K-maps (J0 = K0 = 1; J1 = K1 = Q0; J2 = K2 = Q0Q1).",
+        "Wire three 7476 flip-flops on a common clock and pulse it manually.",
+        "Record the LED sequence; extend to a MOD-6 counter by clearing on 110.",
+        "Viva: synchronous vs ripple counter; why the ripple one is slower.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 11,
+      title: "Simple ALU operations: addition, subtraction, AND, OR",
+      co: "CO1, CO3",
+      objective: "Simulate a 1-bit (or 4-bit) ALU that selects between ADD, SUB, AND, OR using a function-select input.",
+      tasks: [
+        "Build the four operation blocks: full adder, adder with B complemented and Cin = 1 for subtraction, AND, OR.",
+        "Feed the four results into a 4:1 MUX; the two select lines are the opcode.",
+        "Verify each opcode with several operand pairs, including a subtraction that produces a borrow.",
+        "Viva: how a real ALU shares the adder between ADD and SUB using 2's complement.",
+      ],
+      inMidsem: false,
+    },
+    {
+      number: 12,
+      title: "Register transfer logic (RTL) for basic operations",
+      co: "CO2, CO3",
+      objective: "Implement a register transfer R2 ← R1 on a control signal, and a simple load/increment register, using D flip-flops and gates.",
+      tasks: [
+        "Build two 2-bit registers from 7474 D flip-flops on a common clock.",
+        "Gate the transfer with a control signal P: R2 loads R1 only on a clock edge when P = 1.",
+        "Extend to a register with load / increment / clear selected by control lines and a MUX at each D input.",
+        "Viva: RTL notation (P: R2 ← R1), what a micro-operation is, and how this scales into a CPU datapath.",
+      ],
+      inMidsem: false,
+    },
+  ],
   components: [
     {
       name: "Quiz 1",
@@ -543,12 +703,21 @@ export const digitalElectronics: SeedSubject = {
       track: "theory",
     },
     {
-      name: "Lab — Quizzes + Execution & Viva",
-      marks: 100,
-      weightage: 100,
-      scope: "Not in this course plan (the theory course is 3-0-0-3). The Thursday lab with Dr. Sambhavi is marked separately — scheme unknown",
-      timing: "Continuous",
-      co: "Unknown",
+      name: "Lab Quizzes (5 compulsory × 10)",
+      marks: 50,
+      weightage: 50,
+      scope: "Concepts, logic building, implementation, debugging — conducted during lab sessions",
+      timing: "Continuous, five across the semester",
+      co: "CO1–CO3",
+      track: "lab",
+    },
+    {
+      name: "Execution & Viva Voce (5 compulsory × 10)",
+      marks: 50,
+      weightage: 50,
+      scope: "Problem solving + implementation + output accuracy on the trainer kit; previous experiment's lab file checked at the end of every lab",
+      timing: "Continuous, five sittings",
+      co: "CO1–CO3",
       track: "lab",
     },
   ],
@@ -584,6 +753,14 @@ Practise until step 1 is automatic. Then do ten timed ones; the solver link unde
 Order of return on time: **K-maps and MUX/decoder implementation** (they appear in both the class test and the mid-term), then **flip-flops and counters** (the whole of Unit III is fresh and examinable), then **2's complement arithmetic** (quick marks, easy to drop through carelessness), then everything else.
 
 Units IV and V are not in the mid-sem. Don't touch them until October.`,
+    },
+    {
+      title: "The lab is 100 marks with no exam — and the file is checked every week",
+      body: `CSE26102P is marked entirely in the lab: **five quizzes (10 each) + five execution-and-viva sittings (10 each) = 100**, 40% to pass, 75% attendance or you fail the lab outright. "Lab files of the previous experiment need to be checked at the end of every lab" — so a missing write-up costs marks the following Thursday, not at the end of the semester.
+
+The twelve experiments track the theory almost one-to-one: gates (1–2) → adders and subtractors (3–4) → MUX and decoders (5–7) → flip-flops and master–slave (8–9) → counter (10) → ALU and register transfer (11–12). The viva questions are the theory questions: why NAND is universal, the full-adder carry expression, decoder vs demultiplexer, race-around. Doing the write-up properly *is* mid-sem revision for Units I–III.
+
+For each experiment the file needs: aim, apparatus with IC numbers, pin diagram, theory with the expression, circuit diagram, truth table (theoretical and observed), result. Keep a template and fill it in the same night.`,
     },
     {
       title: "The 40% rule applies here too",
@@ -629,9 +806,10 @@ Units IV and V are not in the mid-sem. Don't touch them until October.`,
   localFiles: [
     "digital_electronics/299204_Course Plan_DECO_updatedpolicy.pdf",
     "digital_electronics/299206_DE syllabus 26102.pdf",
+    "digital_electronics/299203_Lab_Course Plan_DECO_NEWPOLICY.pdf",
   ],
   gaps: [
-    "The lab is not in this course plan (the theory course is 3-0-0-3). The Thursday 14:00–16:10 lab with Dr. Sambhavi has its own experiment list and marking scheme — still needed.",
     "Exact dates for Quiz 1 and Class Test 1 are 'after Unit I' / 'Unit II & half of Unit III' — the Monday 21 Sept test is assumed to be Class Test 1.",
+    "The lab plan gives experiment titles only; the procedures listed are the standard trainer-kit versions. Which experiment number the class is on, and when the five quiz/viva sittings fall, is not in the plan.",
   ],
 };

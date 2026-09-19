@@ -7,6 +7,8 @@ import { Replies } from "@/components/class/replies";
 import { DeletePost } from "@/components/class/delete-post";
 import { Helpful } from "@/components/class/helpful";
 import { PinPost } from "@/components/class/pin-post";
+import { MarkSeen } from "@/components/class/seen";
+import { boardImageUrl } from "@/lib/board-image";
 import { Badge, Card } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtDate } from "@/lib/utils";
 
@@ -54,6 +56,16 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             {post.url.replace(/^https?:\/\/(www\.)?/, "").slice(0, 60)}
           </a>
         ) : null}
+        {post.image_path ? (
+          <a href={boardImageUrl(post.image_path)} target="_blank" rel="noopener noreferrer" className="mt-4 block focus-ring rounded-[var(--radius-control)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={boardImageUrl(post.image_path)}
+              alt=""
+              className="max-h-[520px] w-auto max-w-full rounded-[var(--radius-control)] border border-line"
+            />
+          </a>
+        ) : null}
         {post.body ? (
           <div className="prose-note mt-4">
             <Markdown>{post.body}</Markdown>
@@ -68,6 +80,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         </div>
       </Card>
 
+      <MarkSeen postId={post.id} replies={replies.length} />
       <Replies
         postId={post.id}
         replies={replies}

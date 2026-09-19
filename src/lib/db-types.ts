@@ -332,3 +332,18 @@ export interface Goal {
   status: "active" | "done" | "dropped";
   created_at: string;
 }
+
+/** One Ask conversation, saved as it goes. */
+export interface AskTurn {
+  role: "user" | "assistant";
+  content: string;
+  tools?: string[];
+  images?: number;
+}
+export interface AskThread {
+  id: string;
+  title: string;
+  messages: AskTurn[];
+  created_at: string;
+  updated_at: string;
+}

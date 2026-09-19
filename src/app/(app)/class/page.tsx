@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { MessageSquare, Pin } from "lucide-react";
+import { ImageIcon, MessageSquare, Pin } from "lucide-react";
 import { getPosts, getSubjects } from "@/lib/queries";
 import { NewPost } from "@/components/class/new-post";
 import { Helpful } from "@/components/class/helpful";
+import { NewSince } from "@/components/class/seen";
 import { Badge, Card, Empty } from "@/components/ui";
 import { ACCENT_CLASS, cn, relativeDay } from "@/lib/utils";
 import type { PostKind } from "@/lib/db-types";
@@ -107,6 +108,8 @@ export default async function ClassPage({
                         <Badge tone={KIND_TONE[p.kind]}>{KIND_LABEL[p.kind]}</Badge>
                         {p.kind === "question" && p.answer_reply_id ? <Badge tone="good">answered</Badge> : null}
                         {s ? <Badge tone="subject">{s.short_name}</Badge> : null}
+                        <NewSince postId={p.id} replies={p.reply_count} />
+                        {p.image_path ? <ImageIcon size={12} className="text-subtle" aria-label="has an image" /> : null}
                       </p>
                       {p.body ? (
                         <p className="mt-0.5 line-clamp-2 text-[length:var(--text-small)] text-muted">

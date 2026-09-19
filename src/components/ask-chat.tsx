@@ -4,17 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUp, Check, FileText, Loader2, Paperclip, Square, Wrench } from "lucide-react";
 import { toast } from "sonner";
-import type { Attachment } from "@/lib/db-types";
+import { saveAskThread } from "@/lib/actions";
+import type { Attachment, AskTurn } from "@/lib/db-types";
 import { Card } from "@/components/ui";
 import { Markdown } from "@/components/markdown";
 import { cn } from "@/lib/utils";
 
-type Turn = {
-  role: "user" | "assistant";
-  content: string;
-  tools?: string[];
-  images?: number;
-};
+type Turn = AskTurn;
 
 const SUGGESTIONS = [
   "Turn today's lecture into checkpoints",
@@ -23,9 +19,20 @@ const SUGGESTIONS = [
   "What should I study tonight?",
 ];
 
-export function AskChat({ files }: { files: Attachment[] }) {
+export function AskChat({
+  files,
+  threadId: initialThreadId = null,
+  initialTurns = [],
+}: {
+  files: Attachment[];
+  threadId?: string | null;
+  initialTurns?: Turn[];
+}) {
   const router = useRouter();
-  const [turns, setTurns] = useState<Turn[]>([]);
+  const [turns, setTurns] = useState<Turn[]>(initialTurns);
+  const threadRef = useRef<string | null>(initialThreadId);
+  const turnsRef = useRef<Turn[]>(initialTurns);
+  turnsRef.current = turns;
   const [draft, setDraft] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
@@ -105,6 +112,18 @@ export function AskChat({ files }: { files: Attachment[] }) {
             return [...prev.slice(0, -1), updated];
           });
         }
+      }
+
+      // the exchange is complete — keep it. The first save names the
+      // conversation and puts its id in the URL so a reload lands back here.
+      try {
+        const id = await saveAskThread(threadRef.current, turnsRef.current);
+        if (!threadRef.current) {
+          threadRef.current = id;
+          window.history.replaceState(null, "", `/ask?t=${id}`);
+        }
+      } catch {
+        // saving is a convenience; the answer is already on screen
       }
 
       // tools wrote to the database — refresh so the rest of the app catches up

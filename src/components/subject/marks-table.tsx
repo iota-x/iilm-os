@@ -14,6 +14,7 @@ export function MarksTable({ components }: { components: Component[] }) {
   return (
     <div className="space-y-5">
       {theory.length ? <Track title="Theory" rows={theory} /> : null}
+      {theory.length ? <Internals rows={theory} /> : null}
       {lab.length ? (
         <Track
           title="Lab"
@@ -155,5 +156,64 @@ function Row({ c }: { c: Component }) {
         )}
       </td>
     </tr>
+  );
+}
+
+/**
+ * The running number that matters in October: internals (everything except
+ * the end-term) against the 40% you need to be allowed to pass. Recorded so
+ * far, what's still to come, and how much of that you need.
+ */
+function Internals({ rows }: { rows: Component[] }) {
+  const internal = rows.filter((c) => !/end[- ]?(term|sem)/i.test(c.name));
+  if (!internal.length) return null;
+  const total = internal.reduce((a, c) => a + c.marks, 0);
+  const need = Math.ceil(total * 0.4);
+  const recorded = internal.filter((c) => c.obtained !== null);
+  const got = recorded.reduce((a, c) => a + (c.obtained ?? 0), 0);
+  const recordedMax = recorded.reduce((a, c) => a + c.marks, 0);
+  const ahead = total - recordedMax;
+  const cleared = got >= need;
+  const stillNeed = Math.max(0, need - got);
+  const possible = got + ahead;
+
+  return (
+    <div className="rounded-[var(--radius-card)] border border-line bg-surface p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-[length:var(--text-small)] font-medium">Internals against the 40% bar</p>
+        <p className="text-[length:var(--text-micro)] tabular-nums text-muted">
+          need {need} of {total}
+        </p>
+      </div>
+
+      {/* recorded so far, with the bar marked */}
+      <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-surface-3">
+        <div
+          className={cn("h-full rounded-full", cleared ? "bg-[var(--good)]" : "bg-[var(--accent)]")}
+          style={{ width: `${Math.min(100, (got / total) * 100)}%` }}
+        />
+        <div className="absolute inset-y-0 w-px bg-[var(--fg)]" style={{ left: `${(need / total) * 100}%` }} aria-hidden />
+      </div>
+
+      <p className="mt-2 text-[length:var(--text-small)] leading-relaxed text-muted">
+        {!recorded.length ? (
+          <>Nothing recorded yet. Enter marks as they come back and this tracks itself.</>
+        ) : cleared ? (
+          <>
+            <span className="font-medium text-[var(--good)]">Cleared.</span> {got} of {recordedMax} recorded — past the {need} you need, with {ahead} still to come.
+          </>
+        ) : possible < need ? (
+          <>
+            <span className="font-medium text-[var(--bad)]">Can&rsquo;t reach it.</span> {got} recorded, {ahead} still to come — even full marks lands at {possible}, under {need}.
+          </>
+        ) : (
+          <>
+            <span className="font-medium text-fg">{got} of {recordedMax}</span> recorded. You need{" "}
+            <span className="font-medium text-fg">{stillNeed} more</span> from the {ahead} still to come —{" "}
+            {Math.round((stillNeed / ahead) * 100)}% of it.
+          </>
+        )}
+      </p>
+    </div>
   );
 }

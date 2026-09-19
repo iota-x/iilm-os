@@ -1,13 +1,19 @@
 import Link from "next/link";
 import { AskChat } from "@/components/ask-chat";
+import { AskThreads } from "@/components/ask-threads";
 import { Card } from "@/components/ui";
 import { hasModelCredential } from "@/lib/ai-model";
-import { getInboxFiles } from "@/lib/queries";
+import { getAskThread, getAskThreads, getInboxFiles } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
-export default async function AskPage() {
-  const files = await getInboxFiles();
+export default async function AskPage({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
+  const { t } = await searchParams;
+  const [files, threads, current] = await Promise.all([
+    getInboxFiles(),
+    getAskThreads(),
+    t ? getAskThread(t) : Promise.resolve(null),
+  ]);
   const configured = hasModelCredential();
 
   return (
@@ -20,7 +26,15 @@ export default async function AskPage() {
       </div>
 
       {configured ? (
-        <AskChat files={files} />
+        <>
+          <AskThreads threads={threads} currentId={current?.id ?? null} />
+          <AskChat
+            key={current?.id ?? "new"}
+            files={files}
+            threadId={current?.id ?? null}
+            initialTurns={current?.messages ?? []}
+          />
+        </>
       ) : (
         <Card className="p-5">
           <p className="text-[length:var(--text-small)] font-medium">Not switched on yet</p>

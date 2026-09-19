@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Check, X } from "lucide-react";
 import { Card } from "@/components/ui";
@@ -21,18 +21,23 @@ export interface FirstRunStep {
  * which is the right behaviour for a device you haven't set up.
  */
 export function FirstRun({ steps }: { steps: FirstRunStep[] }) {
-  const [hidden, setHidden] = useState(true);
   const remaining = steps.filter((s) => !s.done).length;
-
-  useEffect(() => {
+  // localStorage isn't there on the server, so read it once after mount
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+  const [dismissed, setDismissed] = useState(false);
+  const wasDismissed = (() => {
     try {
-      setHidden(remaining === 0 || localStorage.getItem("first-run-dismissed") === "1");
+      return mounted && localStorage.getItem("first-run-dismissed") === "1";
     } catch {
-      setHidden(remaining === 0);
+      return false;
     }
-  }, [remaining]);
+  })();
 
-  if (hidden) return null;
+  if (!mounted || remaining === 0 || dismissed || wasDismissed) return null;
 
   return (
     <Card className="border border-[var(--accent)]/30">
@@ -52,7 +57,7 @@ export function FirstRun({ steps }: { steps: FirstRunStep[] }) {
             try {
               localStorage.setItem("first-run-dismissed", "1");
             } catch {}
-            setHidden(true);
+            setDismissed(true);
           }}
           className="rounded p-1 text-subtle hover:text-fg focus-ring"
           aria-label="Hide this"

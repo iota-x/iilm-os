@@ -41,20 +41,30 @@ export function Replies({
     });
   }
 
+  // the accepted answer reads first
+  const ordered = answerId
+    ? [...replies].sort((a, b) => Number(b.id === answerId) - Number(a.id === answerId))
+    : replies;
+
   return (
     <Card>
-      <CardHead title={replies.length ? `${replies.length} ${replies.length === 1 ? "reply" : "replies"}` : "No replies yet"} />
+      <CardHead
+        title={replies.length ? `${replies.length} ${replies.length === 1 ? "reply" : "replies"}` : "No replies yet"}
+        sub={canAccept && replies.length && !answerId ? "Mark the reply that answered it — it goes to the top for everyone." : undefined}
+      />
       {replies.length ? (
         <ul className={cn("divide-y divide-[var(--border)]", pending && "opacity-70")}>
-          {replies.map((r) => (
-            <li key={r.id} className="group px-5 py-3">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-[length:var(--text-micro)] text-subtle">
+          {ordered.map((r) => (
+            <li key={r.id} className={cn("group px-5 py-3", r.id === answerId && "bg-[var(--good-soft)]/50")}>
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <p className="flex items-center gap-2 text-[length:var(--text-micro)] text-subtle">
                   <span className="font-medium text-fg">{r.author}</span>
-                  {"  "}
                   {fmtDate(r.created_at)}
+                  {r.id === answerId ? (
+                    <Badge tone="good"><CheckCircle2 size={10} /> answer</Badge>
+                  ) : null}
                 </p>
-                {r.user_id === meId ? (
+                {r.user_id === meId || canModerate ? (
                   <button
                     onClick={() => run(() => deleteReply(r.id, postId))}
                     className="rounded p-1 text-subtle opacity-0 transition-opacity hover:text-[var(--bad)] focus-ring group-hover:opacity-100"

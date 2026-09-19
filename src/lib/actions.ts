@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { daysBetween, distribute, minutesFor, remaining } from "@/lib/goals";
 import { istToday } from "@/lib/utils";
-import type { Topic } from "@/lib/db-types";
+import type { Topic, AskTurn } from "@/lib/db-types";
 import { encrypt } from "@/lib/secret";
 
 async function uid() {
@@ -585,10 +585,14 @@ export async function createPost(input: {
   url?: string | null;
   kind?: string;
   subject_slug?: string | null;
+  image_path?: string | null;
 }) {
   const { db, userId } = await uid();
   const title = input.title.trim();
   if (!title) throw new Error("Give it a title.");
+  // the image was uploaded to the board bucket under the caller's own folder;
+  // don't let a path point anywhere else
+  const image = input.image_path && input.image_path.startsWith(`${userId}/`) ? input.image_path : null;
   const { data, error } = await db
     .from("posts")
     .insert({
@@ -598,6 +602,7 @@ export async function createPost(input: {
       url: input.url?.trim() || null,
       kind: input.kind ?? "discussion",
       subject_slug: input.subject_slug || null,
+      image_path: image,
     })
     .select("id")
     .single();
@@ -608,8 +613,10 @@ export async function createPost(input: {
 
 export async function deletePost(id: string) {
   const { db } = await uid();
-  const { error } = await db.from("posts").delete().eq("id", id); // RLS: own rows only
+  const { data: row } = await db.from("posts").select("image_path").eq("id", id).maybeSingle();
+  const { error } = await db.from("posts").delete().eq("id", id); // RLS: own rows or admin
   if (error) throw new Error(error.message);
+  if (row?.image_path) await db.storage.from("board").remove([row.image_path]);
   revalidatePath("/class");
 }
 
@@ -780,4 +787,78 @@ export async function setAnswer(postId: string, replyId: string | null) {
   if (error) throw new Error(error.message);
   revalidatePath(`/class/${postId}`);
   revalidatePath("/class");
+}
+
+/**
+ * Turn a board photo into a note on its topic: the image embedded, the
+ * caption as the first line, the date as the title. Ask can then expand it.
+ */
+export async function writeUpPhoto(attachmentId: string) {
+  const { db, userId } = await uid();
+  const { data: f, error } = await db.from("attachments").select("*").eq("id", attachmentId).single();
+  if (error || !f) throw new Error("Photo not found");
+  const when = f.taken_at ?? f.created_at;
+  const date = new Date(when).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const title = f.caption ? f.caption.slice(0, 80) : `Board, ${date}`;
+  const body = [
+    `![board](/api/vault/${f.storage_path})`,
+    "",
+    f.caption ? `*${f.caption}*` : "",
+    "",
+    "## What it says",
+    "",
+    "",
+    "## What I need to be able to do",
+    "",
+    "- ",
+  ].join("\n");
+  const { data: note, error: nErr } = await db
+    .from("notes")
+    .insert({
+      user_id: userId,
+      title,
+      content: body,
+      subject_id: f.subject_id,
+      topic_id: f.topic_id,
+    })
+    .select("id")
+    .single();
+  if (nErr) throw new Error(nErr.message);
+  revalidatePath("/notes");
+  return note.id as string;
+}
+
+/**
+ * Save a conversation after each exchange. First save creates the row and
+ * titles it from the opening question; later saves just replace the messages.
+ */
+export async function saveAskThread(id: string | null, messages: AskTurn[]): Promise<string> {
+  const { db, userId } = await uid();
+  // don't save half a turn — an assistant bubble still streaming has no content
+  const clean = messages.filter((m) => m.content.trim() || m.tools?.length);
+  if (!clean.length) throw new Error("Nothing to save");
+  if (id) {
+    const { error } = await db
+      .from("ask_threads")
+      .update({ messages: clean, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return id;
+  }
+  const first = clean.find((m) => m.role === "user")?.content ?? "New conversation";
+  const title = first.replace(/\s+/g, " ").slice(0, 72);
+  const { data, error } = await db
+    .from("ask_threads")
+    .insert({ user_id: userId, title, messages: clean })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return data.id as string;
+}
+
+export async function deleteAskThread(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("ask_threads").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/ask");
 }

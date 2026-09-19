@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  AskThread,
   Goal,
   Post,
   Reply,
@@ -496,4 +497,21 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
     });
   }
   return docs;
+}
+
+/** Recent conversations, newest first — titles only, the messages come with getAskThread. */
+export async function getAskThreads(): Promise<Pick<AskThread, "id" | "title" | "updated_at">[]> {
+  const db = await createClient();
+  const { data } = await db
+    .from("ask_threads")
+    .select("id, title, updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(30);
+  return data ?? [];
+}
+
+export async function getAskThread(id: string): Promise<AskThread | null> {
+  const db = await createClient();
+  const { data } = await db.from("ask_threads").select("*").eq("id", id).maybeSingle();
+  return (data as AskThread | null) ?? null;
 }

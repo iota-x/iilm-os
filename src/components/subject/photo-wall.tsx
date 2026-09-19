@@ -3,7 +3,8 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { setAttachmentPlace } from "@/lib/actions";
+import { setAttachmentPlace, writeUpPhoto } from "@/lib/actions";
+import { NotebookPen } from "lucide-react";
 import type { Attachment, Slot, Topic } from "@/lib/db-types";
 import { chipCls } from "@/components/ui";
 import { cn, fmtTime } from "@/lib/utils";
@@ -90,6 +91,21 @@ export function PhotoWall({
                         : null}
                       {f.caption ? <span className="text-muted"> — {f.caption}</span> : null}
                     </p>
+                    <button
+                      onClick={() =>
+                        start(async () => {
+                          try {
+                            const id = await writeUpPhoto(f.id);
+                            router.push(`/notes?open=${id}`);
+                          } catch (e) {
+                            toast.error(e instanceof Error ? e.message : "Couldn't create the note");
+                          }
+                        })
+                      }
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-surface-2 px-2 py-1 text-[length:var(--text-micro)] font-medium hover:bg-surface-3 focus-ring"
+                    >
+                      <NotebookPen size={12} /> Write this up
+                    </button>
                     <select
                       value={f.topic_id ?? ""}
                       onChange={(e) => place(f.id, e.target.value || null)}

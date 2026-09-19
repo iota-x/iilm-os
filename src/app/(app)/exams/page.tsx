@@ -129,6 +129,7 @@ export default async function ExamsPage() {
               const noun = mid.length ? "topics" : "experiments";
               const p = progressOf(measured);
               const exam = subjectExams.find((e) => e.subject_id === s.id);
+              const internals = internalsStanding(components.filter((c) => c.subject_id === s.id));
 
               return (
                 <li key={s.id} className={cn("px-4 py-3", ACCENT_CLASS[s.color])}>
@@ -158,6 +159,18 @@ export default async function ExamsPage() {
                           no syllabus loaded — nothing to measure
                         </p>
                       )}
+                      {internals ? (
+                        <p
+                          className={cn(
+                            "mt-1.5 text-[length:var(--text-micro)] tabular-nums",
+                            internals.tone === "good" && "text-[var(--good)]",
+                            internals.tone === "bad" && "text-[var(--bad)]",
+                            internals.tone === "muted" && "text-subtle",
+                          )}
+                        >
+                          {internals.text}
+                        </p>
+                      ) : null}
                     </div>
                   </Link>
                 </li>
@@ -249,4 +262,21 @@ function Rule({
       </div>
     </li>
   );
+}
+
+/**
+ * One line on the internals: what's recorded against the 40% you need. Null
+ * until a mark is entered — a row of "0 of 50" is noise, not information.
+ */
+function internalsStanding(components: { name: string; marks: number; obtained: number | null }[]) {
+  const internal = components.filter((c) => !/end[- ]?(term|sem)/i.test(c.name));
+  const recorded = internal.filter((c) => c.obtained !== null);
+  if (!recorded.length) return null;
+  const total = internal.reduce((a, c) => a + c.marks, 0);
+  const need = Math.ceil(total * 0.4);
+  const got = recorded.reduce((a, c) => a + (c.obtained ?? 0), 0);
+  const ahead = total - recorded.reduce((a, c) => a + c.marks, 0);
+  if (got >= need) return { tone: "good" as const, text: `internals ${got}/${total} — past the ${need} bar` };
+  if (got + ahead < need) return { tone: "bad" as const, text: `internals ${got}/${total} — can't reach ${need}` };
+  return { tone: "muted" as const, text: `internals ${got}/${total} — need ${need - got} more from ${ahead} to come` };
 }

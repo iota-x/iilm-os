@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button, Card, inputCls } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme";
 
-/** "ankit.pandey.26@gg.iilm.edu" → "Ankit Pandey" */
+/** "priya.sharma.26@gg.iilm.edu" → "Priya Sharma" */
 function nameFromEmail(email: string) {
   return email
     .split("@")[0]

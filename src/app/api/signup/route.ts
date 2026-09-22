@@ -9,7 +9,7 @@ const DOMAIN = "@gg.iilm.edu";
 /** first.last.26 — the college's pattern. Digits are the batch year. */
 const LOCAL = /^[a-z]+(?:\.[a-z]+)+\.\d{2}$/;
 
-/** "ankit.pandey.26" → "Ankit Pandey" */
+/** "priya.sharma.26" → "Priya Sharma" */
 function nameFromEmail(email: string) {
   return email
     .split("@")[0]

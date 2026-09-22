@@ -6,8 +6,8 @@
  * for a curriculum re-seed (which never touches notes, marks or photos).
  *
  * roster.csv columns:  email,name,group
- *   email  — the college address, e.g. ankit.pandey.26@gg.iilm.edu
- *   name   — optional; derived from the email when blank ("Ankit Pandey")
+ *   email  — the college address, e.g. priya.sharma.26@gg.iilm.edu
+ *   name   — optional; derived from the email when blank ("Priya Sharma")
  *   group  — lab group, 1 or 2
  *
  * New accounts get CLASS_DEFAULT_PASSWORD from .env.local and are flagged
@@ -33,7 +33,7 @@ const db = createClient(URL, SERVICE, { auth: { autoRefreshToken: false, persist
 
 type Student = { email: string; name: string; group: 1 | 2 };
 
-/** "ankit.pandey.26@gg.iilm.edu" → "Ankit Pandey" */
+/** "priya.sharma.26@gg.iilm.edu" → "Priya Sharma" */
 function nameFromEmail(email: string) {
   return email
     .split("@")[0]

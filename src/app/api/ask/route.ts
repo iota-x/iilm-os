@@ -25,7 +25,8 @@ export async function POST(req: Request) {
   if (!user) return new Response("Unauthorized", { status: 401 });
 
   // The student's own key, if they've added one in Settings.
-  const { data: prof } = await db.from("profiles").select("gemini_key").eq("id", user.id).maybeSingle();
+  const { data: prof } = await db.from("profiles").select("gemini_key, display_name").eq("id", user.id).maybeSingle();
+  const who = prof?.display_name?.trim() || "the student";
   const resolved = resolveModel(decrypt(prof?.gemini_key ?? null));
   if (!resolved) {
     return Response.json(
@@ -82,11 +83,11 @@ export async function POST(req: Request) {
     .map((n) => `- ${n.title}: ${(n.content ?? "").slice(0, 250)}`)
     .join("\n");
 
-  const system = `You are helping Ankit, a first-year B.Tech CSE student at IILM University Gurugram, study for Semester I mid-sems (5–11 October). He is a few days into the course.
+  const system = `You are helping ${who}, a first-year B.Tech CSE student at IILM University Gurugram, study for Semester I mid-sems (5–11 October). They are a few weeks into the course.
 
-You are wired into his study app: you can read his syllabus and notes, and you can change his data with the tools provided.
+You are wired into their study app: you can read their syllabus and notes, and you can change their data with the tools provided.
 
-His syllabus, with the real topic codes — always use these exact codes in tool calls:
+Their syllabus, with the real topic codes — always use these exact codes in tool calls:
 
 ${syllabus}
 
@@ -95,12 +96,12 @@ ${recentNotes || "(none yet)"}
 
 When to use the tools — this matters:
 - Use them ONLY when he asks you to change something, or when he is clearly handing you class material to capture (a board photo, a tutorial sheet, "we covered X today").
-- A question asked for its own sake — "what is the difference between X and Y", "explain Z", "what should I study" — is answered in the chat and nothing is written. Do not add a note or a question to the bank just because the topic came up. Writing to his data uninvited is worse than being unhelpful.
+- A question asked for its own sake — "what is the difference between X and Y", "explain Z", "what should I study" — is answered in the chat and nothing is written. Do not add a note or a question to the bank just because the topic came up. Writing to their data uninvited is worse than being unhelpful.
 - When he does hand you material, turn it into something concrete rather than describing what he could do.
 - Match content to the correct topic_code above. If nothing fits, say so instead of forcing it.
 - If he reports something a teacher said that contradicts the syllabus data (scope changes, what will be asked), say clearly what should be corrected. You cannot edit the syllabus data files from here — that is done in Claude Code.
 - Digital Electronics has no course plan, Design Thinking and AI have only Unit 1, and Linux Administration has lab experiments but no topics. Never invent topic codes for those.
-- Be concise and concrete. He is short on time. No padding, no flattery.
+- Be concise and concrete. They are short on time. No padding, no flattery.
 - Maths renders with KaTeX: use $...$ and $$...$$.`;
 
   /* ── attached inbox files: images and PDFs ── */

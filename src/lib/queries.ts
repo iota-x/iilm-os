@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { istDay } from "@/lib/streak";
 import type {
   AskThread,
   Goal,
@@ -515,4 +516,21 @@ export async function getAskThread(id: string): Promise<AskThread | null> {
   const db = await createClient();
   const { data } = await db.from("ask_threads").select("*").eq("id", id).maybeSingle();
   return (data as AskThread | null) ?? null;
+}
+
+/** Every IST day with some recorded activity — feeds the streak. */
+export async function getActivityDays(): Promise<string[]> {
+  const db = await createClient();
+  const [tasks, topics, notes, marks] = await Promise.all([
+    db.from("tasks").select("completed_at").not("completed_at", "is", null),
+    db.from("topics").select("last_studied_at").not("last_studied_at", "is", null),
+    db.from("notes").select("updated_at"),
+    db.from("class_marks").select("on_date"),
+  ]);
+  const days = new Set<string>();
+  for (const r of tasks.data ?? []) days.add(istDay(r.completed_at as string));
+  for (const r of topics.data ?? []) days.add(istDay(r.last_studied_at as string));
+  for (const r of notes.data ?? []) days.add(istDay(r.updated_at as string));
+  for (const r of marks.data ?? []) days.add(r.on_date as string);
+  return [...days];
 }

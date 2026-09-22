@@ -38,6 +38,14 @@ export function AskChat({
   const [busy, setBusy] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLTextAreaElement>(null);
+
+  // the composer grows with what's typed, up to ~8 lines, and shrinks back
+  function fit(el: HTMLTextAreaElement | null) {
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -50,6 +58,7 @@ export function AskChat({
     const history = [...turns, { role: "user" as const, content: message, images: picked.length }];
     setTurns([...history, { role: "assistant", content: "", tools: [] }]);
     setDraft("");
+    requestAnimationFrame(() => fit(boxRef.current));
     setBusy(true);
 
     const ctrl = new AbortController();
@@ -254,8 +263,12 @@ export function AskChat({
         className="sticky bottom-3 flex items-end gap-2 rounded-2xl border border-line bg-surface p-2 shadow-pop"
       >
         <textarea
+          ref={boxRef}
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            fit(e.target);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -264,7 +277,7 @@ export function AskChat({
           }}
           rows={1}
           placeholder="Ask, or tell it what happened in class…"
-          className="max-h-40 min-h-[36px] flex-1 resize-y bg-transparent px-2 py-1.5 text-[length:var(--text-small)] outline-none placeholder:text-subtle"
+          className="max-h-[200px] min-h-[36px] flex-1 resize-none overflow-y-auto bg-transparent px-2 py-1.5 text-[length:var(--text-small)] leading-relaxed outline-none placeholder:text-subtle"
         />
         {busy ? (
           <button

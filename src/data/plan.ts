@@ -79,13 +79,9 @@ export const planDays: PlanDay[] = [
       {
         subject: "digital-electronics",
         minutes: 30,
-        label: "Chase the DE+CO course plan",
-        topics: [
-          "Message Dr Puja Acharya or check the LMS for the Digital Electronics & Computer Organization course plan",
-          "Message Dr. Sambhavi for the lab experiment list",
-          "Ask a classmate how many lectures and labs have happened so far",
-        ],
-        kind: "admin",
+        label: "Unit 1 — number systems and complements",
+        topics: ["deco-u1-conversion", "deco-u1-arithmetic"],
+        kind: "learn",
       },
       {
         subject: "computational-design-thinking",

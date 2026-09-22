@@ -35,18 +35,24 @@ export function TaskList({
   subjects,
   showDate = false,
   emptyText = "Nothing scheduled.",
+  collapseAfter,
 }: {
   tasks: Task[];
   subjects: Subject[];
   showDate?: boolean;
   emptyText?: string;
+  /** show this many, then a "show all" row — for long carried-over lists */
+  collapseAfter?: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
   if (!tasks.length) {
     return <p className="px-4 py-6 text-[length:var(--text-small)] text-muted text-center">{emptyText}</p>;
   }
+  const hidden = collapseAfter && !expanded ? Math.max(0, tasks.length - collapseAfter) : 0;
+  const shown = hidden ? tasks.slice(0, collapseAfter) : tasks;
   return (
     <ul className="divide-y divide-[var(--border)]">
-      {tasks.map((t) => (
+      {shown.map((t) => (
         <TaskRow
           key={t.id}
           task={t}
@@ -54,6 +60,16 @@ export function TaskList({
           showDate={showDate}
         />
       ))}
+      {hidden ? (
+        <li>
+          <button
+            onClick={() => setExpanded(true)}
+            className="w-full px-4 py-2.5 text-left text-[length:var(--text-small)] text-muted hover:text-fg focus-ring"
+          >
+            Show {hidden} more
+          </button>
+        </li>
+      ) : null}
     </ul>
   );
 }
@@ -149,11 +165,27 @@ function TaskRow({
             {showDate && task.due_date ? (
               <span className="text-[length:var(--text-micro)] text-subtle">{task.due_date}</span>
             ) : null}
+            {!done && status !== "skipped" ? (
+              <button
+                onClick={() =>
+                  start(async () => {
+                    setStatusOptimistic("skipped" as typeof status);
+                    await setTaskStatus(task.id, "skipped");
+                  })
+                }
+                className="ml-auto text-[length:var(--text-micro)] text-subtle opacity-0 transition-opacity hover:text-fg focus:opacity-100 group-hover:opacity-100 focus-ring rounded"
+              >
+                skip
+              </button>
+            ) : null}
             {task.source === "manual" ? (
               <button
                 onClick={remove}
                 aria-label="Delete task"
-                className="ml-auto opacity-0 group-hover:opacity-100 focus:opacity-100 text-subtle hover:text-[var(--bad)] transition-opacity focus-ring rounded"
+                className={cn(
+                  "opacity-0 group-hover:opacity-100 focus:opacity-100 text-subtle hover:text-[var(--bad)] transition-opacity focus-ring rounded",
+                  (done || status === "skipped") && "ml-auto",
+                )}
               >
                 <Trash2 size={13} />
               </button>

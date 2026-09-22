@@ -245,6 +245,20 @@ So the loop is: do the experiment in the lab on Friday 11:10–13:20, write it u
 Screenshot every command's output as you go. That's what the write-up needs and re-running everything later to recapture screenshots is the thing that makes people hate lab files.`,
     },
     {
+      title: "The lab record has a prescribed format — and it's the same for every lab",
+      body: `The practical-file template for CSE2107 (in your linux folder) fixes the format, and the SOPs in it apply to all your labs:
+
+**Layout** — A4 portrait; margins left 1.5", others 1"; Times New Roman throughout; main heading 14 pt bold, section headings 12 pt bold, body 12 pt justified, 1.15 spacing; commands and code in Consolas / Courier New 10–11 pt. Each experiment starts on a new page. Footer on every page except the title: your URN and the course code.
+
+**Each experiment** — title with the CO(s) mapped, numbered procedure / commands, output, then whatever the faculty adds (objective, result).
+
+**Output rules** — screenshots only, taken live in the lab; typed, scanned or copied output is rejected. Every screenshot must show your **name or URN inside it** (the prompt is the easy way: set \`PS1\` to include your URN) and the **full window** with both the command and its result.
+
+**Cadence** — hard copy of the previous experiment to every session for the teacher to sign and date; a scanned copy of the whole record uploaded to DigiiCampus before the end-semester practical. Minimum five quizzes and five vivas per lab, all during lab hours on DigiiCampus.
+
+Set the document up once with these settings and a footer, then duplicate the page for each new experiment.`,
+    },
+    {
       title: "For the viva, know the 'why' behind the five commands you'll be asked",
       body: `Execution & viva is 50 of the 100 marks. The questions that come up over and over:
 
@@ -275,6 +289,7 @@ Six answers. Learn them properly and the viva is free marks.`,
   localFiles: [
     "linux/Linux Syllabus.docx",
     "linux/LinuxLabFile.docx",
+    "linux/Practical File Template CSE2107.docx",
     "linux/Lab 1.docx",
     "linux/linux basic commands.docx",
     "linux/Installing Linux Using a Virtual Machine.pdf",

@@ -1,7 +1,9 @@
 "use client";
 
 import { Mark } from "@/components/mark";
+import Link from "next/link";
 import { Suspense, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Card, inputCls } from "@/components/ui";
@@ -93,14 +95,20 @@ function LoginForm() {
   return (
     <div className="min-h-dvh grid place-items-center px-4">
       <div className="w-full max-w-[380px]">
+        <Link
+          href="/landing"
+          className="mb-5 inline-flex items-center gap-1.5 rounded text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring"
+        >
+          <ArrowLeft size={13} /> Back to the front page
+        </Link>
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5">
+          <Link href="/landing" className="flex items-center gap-2.5 rounded focus-ring">
             <Mark size={32} />
             <div>
               <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">IILM OS</p>
               <p className="text-[length:var(--text-micro)] text-muted leading-tight">B.Tech CSE, Semester I</p>
             </div>
-          </div>
+          </Link>
           <ThemeToggle />
         </div>
 

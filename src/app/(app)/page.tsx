@@ -9,6 +9,7 @@ import {
   getSlots,
   getNotes,
   getExperiments,
+  getActivityDays,
 } from "@/lib/queries";
 import { attendanceBySubject } from "@/lib/attendance";
 import { AttendanceToday } from "@/components/attendance-today";
@@ -18,6 +19,9 @@ import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
 import { Badge, Card, CardHead, Ring } from "@/components/ui";
 import { CountUp } from "@/components/count-up";
+import { Focus } from "@/components/focus";
+import { Flame } from "lucide-react";
+import { studyStreak } from "@/lib/streak";
 import { FirstRun } from "@/components/first-run";
 import { getGoals, getInboxFiles } from "@/lib/queries";
 import {
@@ -113,7 +117,13 @@ export default async function Dashboard() {
   const gapSubjects = subjects.filter((s) => s.status !== "complete");
 
   // The first-run checklist: what this account has and hasn't done yet.
-  const [goals, inbox] = await Promise.all([getGoals(), getInboxFiles()]);
+  const [goals, inbox, activity] = await Promise.all([getGoals(), getInboxFiles(), getActivityDays()]);
+  const streak = studyStreak(activity, today);
+
+  // the block to do now: first unfinished today, else the oldest carried over
+  const todayQueue = todayTasks.filter((t) => t.status === "todo");
+  const focusTask = todayQueue[0] ?? overdue[0] ?? null;
+  const focusQueue = todayQueue.length ? todayQueue.length - 1 : 0;
   const firstRun = [
     {
       key: "key",
@@ -170,12 +180,26 @@ export default async function Dashboard() {
             })}
             {plan?.headline ? <span className="text-subtle"> — {plan.headline}</span> : null}
           </p>
-          {plan?.phase ? (
-            <p className="mt-2">
-              <Badge tone="accent">{phaseLabel(plan.phase)}</Badge>
-            </p>
-          ) : null}
-          <p className="hidden">
+          <p className="mt-2 flex flex-wrap items-center gap-2">
+            {plan?.phase ? <Badge tone="accent">{phaseLabel(plan.phase)}</Badge> : null}
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[length:var(--text-micro)] font-medium",
+                streak.today
+                  ? "border-[var(--warn)]/40 bg-[var(--warn)]/10 text-[var(--warn)]"
+                  : streak.atRisk
+                    ? "border-line text-muted"
+                    : "border-line text-subtle",
+              )}
+              title={streak.best > streak.days ? `Best run: ${streak.best} days` : undefined}
+            >
+              <Flame size={12} className={streak.today ? "pop" : ""} />
+              {streak.days === 0
+                ? "No streak yet — one block starts it"
+                : streak.atRisk
+                  ? `${streak.days}-day streak — keep it alive today`
+                  : `${streak.days}-day streak`}
+            </span>
           </p>
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
@@ -234,7 +258,7 @@ export default async function Dashboard() {
           <span className="min-w-0 flex-1">
             <span className="font-medium">{atRisk.map((r) => r.subject.short_name).join(", ")}</span>{" "}
             <span className="text-muted">
-              below 75%. {atRisk[0].needToAttend} classes in a row fixes the worst of it.
+              below 75%. {atRisk[0].needToAttend} {atRisk[0].needToAttend === 1 ? "class" : "classes"} in a row fixes the worst of it.
             </span>
           </span>
           <ArrowRight size={14} className="shrink-0 text-subtle" />
@@ -263,16 +287,11 @@ export default async function Dashboard() {
       <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] items-start">
         {/* ── left column ──────────────────────────────────── */}
         <div className="space-y-5">
-          {overdue.length ? (
-            <Card>
-              <CardHead
-                title="Carried over"
-                sub={`${overdue.length} unfinished from earlier days`}
-                right={<Badge tone="warn">{overdue.length}</Badge>}
-              />
-              <TaskList tasks={overdue} subjects={subjects} showDate />
-            </Card>
-          ) : null}
+          <Focus
+            task={focusTask}
+            queue={focusQueue}
+            subject={focusTask?.subject_id ? (subjectById[focusTask.subject_id] ?? null) : null}
+          />
 
           <Card>
             <CardHead
@@ -297,6 +316,17 @@ export default async function Dashboard() {
               emptyText="Nothing planned for today. Set a goal and each day\u2019s share appears here."
             />
           </Card>
+
+          {overdue.length ? (
+            <Card>
+              <CardHead
+                title="Carried over"
+                sub={`${overdue.length} unfinished from earlier days — do, skip, or let them ride`}
+                right={<Badge tone="warn">{overdue.length}</Badge>}
+              />
+              <TaskList tasks={overdue} subjects={subjects} showDate collapseAfter={4} />
+            </Card>
+          ) : null}
 
           <Card>
             <CardHead title="Mid-sem readiness" sub="Units in scope only" />

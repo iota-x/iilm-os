@@ -469,6 +469,17 @@ export async function seedUser(
 
   // ─── study plan ───────────────────────────────────────────────────
   if (!opts.plan) return;
+  // The plan is rewritten from the data file, but a block you ticked stays
+  // ticked: status is carried across by (date, title).
+  const { data: prevTasks } = await db
+    .from("tasks")
+    .select("due_date, title, status, completed_at")
+    .eq("user_id", userId)
+    .eq("source", "plan")
+    .neq("status", "todo");
+  const keptTasks = new Map(
+    (prevTasks ?? []).map((t) => [`${t.due_date}::${t.title}`, { status: t.status as string, completed_at: t.completed_at as string | null }]),
+  );
   await db.from("tasks").delete().eq("user_id", userId).eq("source", "plan");
   let taskCount = 0;
   for (const d of planDays) {
@@ -498,6 +509,7 @@ export async function seedUser(
           kind: b.kind,
           source: "plan",
           sort_order: j,
+          ...(keptTasks.get(`${d.date}::${b.label}`) ?? {}),
         })),
       );
       if (error) fail(`plan blocks ${d.date}`, error);

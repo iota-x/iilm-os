@@ -10,11 +10,7 @@ import {
   CalendarCheck,
   CalendarRange,
   Dumbbell,
-  CheckCircle2,
   ChevronRight,
-  Circle,
-  CircleDashed,
-  CircleDot,
   GraduationCap,
   Inbox,
   LayoutDashboard,
@@ -35,27 +31,39 @@ import { cn } from "@/lib/utils";
 import { SearchTrigger } from "@/components/command-palette";
 import { ThemeToggle } from "@/components/theme";
 
-const LINKS = [
-  { href: "/", label: "Today", icon: LayoutDashboard, exact: true },
-  { href: "/goals", label: "Goals", icon: Target },
-  { href: "/review", label: "Review", icon: Repeat2 },
-  { href: "/practice", label: "Practice", icon: Dumbbell },
-  { href: "/planner", label: "Planner", icon: CalendarRange },
-  { href: "/ask", label: "Ask", icon: Sparkles },
-  { href: "/inbox", label: "Inbox", icon: Inbox },
-  { href: "/class", label: "Class", icon: Users },
-  { href: "/notes", label: "Notes", icon: NotebookPen },
-  { href: "/resources", label: "Resources", icon: Link2 },
-  { href: "/attendance", label: "Attendance", icon: CalendarCheck },
-  { href: "/exams", label: "Exams", icon: GraduationCap },
+const GROUPS: { label: string | null; links: { href: string; label: string; icon: typeof Target; exact?: boolean }[] }[] = [
+  {
+    label: null,
+    links: [{ href: "/", label: "Today", icon: LayoutDashboard, exact: true }],
+  },
+  {
+    label: "Study",
+    links: [
+      { href: "/goals", label: "Goals", icon: Target },
+      { href: "/planner", label: "Planner", icon: CalendarRange },
+      { href: "/review", label: "Review", icon: Repeat2 },
+      { href: "/practice", label: "Practice", icon: Dumbbell },
+      { href: "/ask", label: "Ask", icon: Sparkles },
+    ],
+  },
+  {
+    label: "Material",
+    links: [
+      { href: "/notes", label: "Notes", icon: NotebookPen },
+      { href: "/inbox", label: "Inbox", icon: Inbox },
+      { href: "/resources", label: "Resources", icon: Link2 },
+    ],
+  },
+  {
+    label: "College",
+    links: [
+      { href: "/class", label: "Class", icon: Users },
+      { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+      { href: "/exams", label: "Exams", icon: GraduationCap },
+    ],
+  },
 ];
-
-const STATUS_ICON = {
-  not_started: CircleDashed,
-  learning: CircleDot,
-  revising: Circle,
-  mastered: CheckCircle2,
-} as const;
+const LINKS = GROUPS.flatMap((g) => g.links);
 
 const NO_OVERRIDES: Record<string, boolean> = {};
 
@@ -164,27 +172,34 @@ export function Sidebar({
       </div>
 
       <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-        <ul className="space-y-0.5">
-          {LINKS.map(({ href, label, icon: Icon, exact }) => {
-            const active = exact ? pathname === href : pathname.startsWith(href);
-            return (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={cn(
-                    "flex h-8 items-center gap-2 rounded-lg px-2 text-[length:var(--text-small)] font-medium transition-colors focus-ring",
-                    active
-                      ? "bg-surface-2 text-fg"
-                      : "text-muted hover:bg-surface-2 hover:text-fg",
-                  )}
-                >
-                  <Icon size={15} strokeWidth={2} />
-                  {label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {GROUPS.map((g) => (
+          <div key={g.label ?? "top"} className={g.label ? "mt-3" : ""}>
+            {g.label ? (
+              <p className="mb-1 px-2 text-[length:var(--text-micro)] font-medium text-subtle">{g.label}</p>
+            ) : null}
+            <ul className="space-y-0.5">
+              {g.links.map(({ href, label, icon: Icon, exact }) => {
+                const active = exact ? pathname === href : pathname.startsWith(href);
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={cn(
+                        "flex h-8 items-center gap-2 rounded-lg px-2 text-[length:var(--text-small)] font-medium transition-colors focus-ring",
+                        active
+                          ? "bg-surface-2 text-fg"
+                          : "text-muted hover:bg-surface-2 hover:text-fg",
+                      )}
+                    >
+                      <Icon size={15} strokeWidth={2} />
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
 
         <div className="mt-4 mb-1 flex items-center justify-between px-2">
           <span className="text-[length:var(--text-micro)] font-medium text-subtle">
@@ -253,8 +268,15 @@ export function Sidebar({
                       {subject.short_name}
                     </span>
                     {total > 0 ? (
-                      <span className="shrink-0 text-[length:var(--text-micro)] tabular-nums text-subtle">
-                        {done}/{total}
+                      <span
+                        className="h-1 w-10 shrink-0 overflow-hidden rounded-full bg-surface-3"
+                        title={`${done} of ${total} solid`}
+                        aria-label={`${done} of ${total} solid`}
+                      >
+                        <span
+                          className="block h-full rounded-full"
+                          style={{ width: `${Math.max(done ? 6 : 0, Math.round((done / total) * 100))}%`, background: `var(--c-${subject.color})` }}
+                        />
                       </span>
                     ) : (
                       <span className="shrink-0 text-[length:var(--text-micro)] text-subtle">—</span>
@@ -291,52 +313,43 @@ export function Sidebar({
                         No units yet — course plan missing.
                       </li>
                     ) : (
-                      subject.units.map((unit) => (
-                        <li key={unit.id}>
-                          <Link
-                            href={`/subjects/${subject.slug}/unit-${unit.number}`}
-                            className="mt-1.5 flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors hover:bg-surface-2 focus-ring"
-                            title={`Unit ${unit.number} — ${unit.title}`}
-                          >
-                            <span className="text-[length:var(--text-micro)] font-medium text-subtle">
-                              Unit {unit.number}
-                            </span>
-                            <span className="min-w-0 flex-1 truncate text-[length:var(--text-micro)] text-subtle">
-                              {unit.title}
-                            </span>
-                            {unit.in_midsem ? (
-                              <span className="shrink-0 rounded bg-surface-3 px-1 text-[9px] text-muted">
-                                mid-sem
+                      subject.units.map((unit) => {
+                        const n = unit.topics.length;
+                        const solid = unit.topics.filter((t) => t.status === "mastered").length;
+                        const touched = unit.topics.filter((t) => t.status !== "not_started").length;
+                        return (
+                          <li key={unit.id}>
+                            <Link
+                              href={`/subjects/${subject.slug}/unit-${unit.number}`}
+                              className="group/unit flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-surface-2 focus-ring"
+                              title={`Unit ${unit.number} — ${unit.title} · ${touched} of ${n} started, ${solid} solid`}
+                            >
+                              <span className="w-4 shrink-0 text-[length:var(--text-micro)] font-semibold tabular-nums text-subtle">
+                                {unit.number}
                               </span>
-                            ) : null}
-                          </Link>
-                          <ul>
-                            {unit.topics.map((topic) => {
-                              const Icon = STATUS_ICON[topic.status];
-                              return (
-                                <li key={topic.id}>
-                                  <Link
-                                    href={`/subjects/${subject.slug}/unit-${unit.number}/${topic.code}`}
-                                    className="flex items-start gap-1.5 rounded-md px-2 py-1 text-[length:var(--text-micro)] leading-snug text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-ring"
-                                    title={topic.title}
-                                  >
-                                    <Icon
-                                      size={11}
-                                      className={cn(
-                                        "mt-[3px] shrink-0",
-                                        topic.status === "mastered"
-                                          ? "text-[var(--good)]"
-                                          : "text-subtle",
-                                      )}
-                                    />
-                                    <span className="line-clamp-2">{topic.title}</span>
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </li>
-                      ))
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-[length:var(--text-micro)] text-muted group-hover/unit:text-fg">
+                                  {unit.title}
+                                </span>
+                                {/* faint = started, solid = mastered */}
+                                <span className="relative mt-1 block h-[3px] w-full overflow-hidden rounded-full bg-surface-3">
+                                  <span
+                                    className="absolute inset-y-0 left-0 rounded-full opacity-35"
+                                    style={{ width: `${n ? Math.round((touched / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
+                                  />
+                                  <span
+                                    className="absolute inset-y-0 left-0 rounded-full"
+                                    style={{ width: `${n ? Math.round((solid / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
+                                  />
+                                </span>
+                              </span>
+                              <span className="shrink-0 text-[10px] tabular-nums text-subtle">
+                                {solid}/{n}
+                              </span>
+                            </Link>
+                          </li>
+                        );
+                      })
                     )}
                   </ul>
                 ) : null}

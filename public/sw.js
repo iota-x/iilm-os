@@ -9,7 +9,11 @@
 //   - HTML is never cached. Every page is live, per-user data behind a
 //     session; a cached copy could show one person's data to the next on a
 //     shared device. When a navigation fails, /offline is served instead.
-const VERSION = "v2";
+const VERSION = "v3";
+// In development chunk URLs are stable but their contents change on every
+// edit, so cache-first would serve stale code. Only cache assets on a real
+// deployment, where names are content-hashed.
+const DEV = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
 const SHELL = `shell-${VERSION}`;
 const ASSETS = `assets-${VERSION}`;
 const OFFLINE = "/offline";
@@ -23,8 +27,10 @@ self.addEventListener("install", (e) => {
       // pull the build assets it references into the asset cache now
       const html = await (await shell.match(OFFLINE))?.text();
       const refs = [...(html ?? "").matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map((m) => m[1]);
-      const assets = await caches.open(ASSETS);
-      await Promise.all(refs.map((u) => assets.add(u).catch(() => {})));
+      if (!DEV) {
+        const assets = await caches.open(ASSETS);
+        await Promise.all(refs.map((u) => assets.add(u).catch(() => {})));
+      }
       await self.skipWaiting();
     })(),
   );
@@ -52,7 +58,7 @@ self.addEventListener("fetch", (e) => {
   }
 
   // build assets: cache-first, they never change under the same name
-  if (url.pathname.startsWith("/_next/static/")) {
+  if (!DEV && url.pathname.startsWith("/_next/static/")) {
     e.respondWith(
       caches.match(req).then(
         (hit) =>

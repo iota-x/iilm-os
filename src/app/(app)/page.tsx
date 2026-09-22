@@ -20,6 +20,7 @@ import { QuickAdd } from "@/components/quick-add";
 import { Badge, Card, CardHead, Ring } from "@/components/ui";
 import { CountUp } from "@/components/count-up";
 import { Focus } from "@/components/focus";
+import { Tour } from "@/components/tour";
 import { Flame } from "lucide-react";
 import { studyStreak } from "@/lib/streak";
 import { FirstRun } from "@/components/first-run";
@@ -205,6 +206,8 @@ export default async function Dashboard() {
         <QuickAdd subjects={subjects} defaultDate={today} />
       </div>
 
+      {/* new account = nothing touched yet; the tour shows itself once */}
+      <Tour isNew={!topics.some((t) => t.status !== "not_started") && !classMarks.length} />
       <FirstRun steps={firstRun} />
 
       {/* ── the four numbers worth glancing at ─────────────── */}
@@ -361,7 +364,7 @@ export default async function Dashboard() {
         </div>
 
         {/* ── right column ─────────────────────────────────── */}
-        <div className="space-y-5">
+        <div className="space-y-5" id="classes">
           <Card>
             <CardHead
               title={`${fullDay(weekday)}'s classes`}

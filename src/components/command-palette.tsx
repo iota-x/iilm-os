@@ -1,6 +1,7 @@
 "use client";
 
 import { score } from "@/lib/search-score";
+import { APP_ACTIONS, APP_PAGES } from "@/lib/app-map";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -19,13 +20,20 @@ import type { SearchDoc } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
 const PAGES: SearchDoc[] = [
-  { kind: "page", title: "Today", href: "/", subtitle: "Dashboard" },
-  { kind: "page", title: "Subjects", href: "/subjects" },
-  { kind: "page", title: "Planner", href: "/planner", subtitle: "Timetable and the 18-day plan" },
-  { kind: "page", title: "Notes", href: "/notes" },
-  { kind: "page", title: "Resources", href: "/resources" },
-  { kind: "page", title: "Exams", href: "/exams", subtitle: "Marking scheme" },
-  { kind: "page", title: "Settings", href: "/settings" },
+  ...APP_PAGES.map((p) => ({
+    kind: "page" as const,
+    title: p.label,
+    href: p.href,
+    subtitle: p.blurb,
+    keywords: p.keywords?.join(" "),
+  })),
+  ...APP_ACTIONS.map((a) => ({
+    kind: "page" as const,
+    title: a.label,
+    href: a.href,
+    subtitle: "Action",
+    keywords: a.keywords.join(" "),
+  })),
 ];
 
 const ICON = {
@@ -68,7 +76,11 @@ export function CommandPalette() {
     return all
       .map((d) => ({
         doc: d,
-        s: Math.max(score(query, d.title), score(query, d.subtitle ?? "") - 120),
+        s: Math.max(
+          score(query, d.title),
+          score(query, d.subtitle ?? "") - 120,
+          d.keywords ? score(query, d.keywords) - 60 : -1,
+        ),
       }))
       .filter((r) => r.s > 0)
       .sort((a, b) => b.s - a.s)

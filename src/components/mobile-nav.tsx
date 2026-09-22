@@ -4,6 +4,7 @@ import { Mark } from "@/components/mark";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Compass,
   BookOpen,
   CalendarCheck,
   CalendarRange,
@@ -36,6 +37,7 @@ const LINKS = [
   { href: "/resources", label: "Resources", icon: Link2 },
   { href: "/attendance", label: "Attendance", icon: CalendarCheck },
   { href: "/exams", label: "Exams", icon: GraduationCap },
+  { href: "/guide", label: "Guide", icon: Compass },
 ];
 
 export function MobileNav() {

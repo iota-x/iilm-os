@@ -9,6 +9,7 @@ import {
   BookOpen,
   CalendarCheck,
   CalendarRange,
+  Compass,
   Dumbbell,
   ChevronRight,
   GraduationCap,
@@ -373,6 +374,17 @@ export function Sidebar({
               {displayName ?? "Set your name"}
             </span>
             <Settings size={13} className="shrink-0 text-subtle" />
+          </Link>
+          <Link
+            href="/guide"
+            className={cn(
+              "grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-surface-2 hover:text-fg focus-ring",
+              pathname === "/guide" ? "text-fg" : "text-subtle",
+            )}
+            aria-label="Guide — where everything is"
+            title="Guide — where everything is"
+          >
+            <Compass size={14} />
           </Link>
           <button
             onClick={signOut}

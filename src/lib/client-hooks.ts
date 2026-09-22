@@ -71,3 +71,20 @@ export function useHydrated() {
     () => false,
   );
 }
+
+/**
+ * True when the URL carries `?name=1` — lets a link (or the command palette)
+ * open a form that's otherwise behind a button. Read through
+ * useSyncExternalStore so the server render (false) and the client (maybe
+ * true) reconcile without a hydration error.
+ */
+export function useUrlFlag(name: string): boolean {
+  return useSyncExternalStore(
+    (fn) => {
+      window.addEventListener("popstate", fn);
+      return () => window.removeEventListener("popstate", fn);
+    },
+    () => new URLSearchParams(window.location.search).get(name) === "1",
+    () => false,
+  );
+}

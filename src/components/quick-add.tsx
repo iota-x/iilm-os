@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useUrlFlag } from "@/lib/client-hooks";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createTask, createNote, addResource } from "@/lib/actions";
@@ -21,7 +22,9 @@ export function QuickAdd({
   defaultDate?: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpen] = useState<boolean | null>(null);
+  const wantOpen = useUrlFlag("add");
+  const open = openState ?? wantOpen;
   const [mode, setMode] = useState<Mode>("task");
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");

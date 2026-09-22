@@ -49,7 +49,10 @@ export function FirstRun({ steps }: { steps: FirstRunStep[] }) {
           <p className="mt-0.5 text-[length:var(--text-small)] text-muted">
             {remaining === steps.length
               ? "None done yet — start anywhere."
-              : `${steps.length - remaining} of ${steps.length} done.`}
+              : `${steps.length - remaining} of ${steps.length} done.`}{" "}
+            <Link href="/guide" className="text-[var(--accent)] hover:underline">
+              Not sure what&rsquo;s where? Read the guide.
+            </Link>
           </p>
         </div>
         <button

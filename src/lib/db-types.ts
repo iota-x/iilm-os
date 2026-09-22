@@ -329,6 +329,8 @@ export interface Goal {
   scope: "midsem" | "unit" | "subject";
   deadline: string;
   daily_minutes: number;
+  /** 1 new to it · 2 seen it in class · 3 fairly solid */
+  level: 1 | 2 | 3;
   status: "active" | "done" | "dropped";
   created_at: string;
 }

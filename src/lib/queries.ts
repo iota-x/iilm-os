@@ -423,6 +423,8 @@ export interface SearchDoc {
   subtitle?: string;
   href: string;
   meta?: string;
+  /** extra words to match on, never shown */
+  keywords?: string;
 }
 
 export async function getSearchIndex(): Promise<SearchDoc[]> {

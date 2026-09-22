@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysBetween, distribute, minutesFor, remaining, summarise } from "@/lib/goals";
+import { daysBetween, describeFit, distribute, fit, minutesFor, remaining, summarise } from "@/lib/goals";
 import type { TopicStatus } from "@/lib/db-types";
 
 const topic = (over: Partial<{ status: TopicStatus; sort_order: number; unit_id: string; weight: number }> = {}) => ({
@@ -70,5 +70,39 @@ describe("summarise", () => {
     expect(summarise(17, 16, 16 * 70).text).toBe("17 topics · 16 days · about 1h 10m a day");
     expect(summarise(1, 1, 30).text).toBe("1 topic · 1 day · about 30m a day");
     expect(summarise(5, 1, 200).heavy).toBe(true);
+  });
+});
+
+describe("fit", () => {
+  const days = daysBetween("2026-09-22", "2026-09-25"); // 4 days
+  it("spreads evenly when the budget allows and reports it fits", () => {
+    const f = fit([topic(), topic(), topic(), topic()], days, 120);
+    expect(f.overflow).toEqual([]);
+    expect(f.plan.map((p) => p.topics.length)).toEqual([1, 1, 1, 1]);
+    expect(describeFit(f, 120).ok).toBe(true);
+  });
+  it("fills to budget and overflows what doesn't fit", () => {
+    // weight 3 → 61 min each at level 2; 30 min/day budget → one a day, never more
+    const f = fit(Array.from({ length: 8 }, () => topic()), days, 30);
+    expect(f.plan.map((p) => p.topics.length)).toEqual([1, 1, 1, 1]);
+    expect(f.overflow.length).toBe(4);
+    expect(f.neededPerDay).toBe(Math.ceil((8 * 61) / 4));
+    const d = describeFit(f, 30);
+    expect(d.ok).toBe(false);
+    expect(d.text).toMatch(/4 topics won't fit/);
+  });
+  it("scales estimates by level", () => {
+    expect(minutesFor({ weight: 3 }, 1)).toBeGreaterThan(minutesFor({ weight: 3 }, 2));
+    expect(minutesFor({ weight: 3 }, 3)).toBeLessThan(minutesFor({ weight: 3 }, 2));
+  });
+  it("says when it would finish at this budget", () => {
+    const f = fit(Array.from({ length: 8 }, () => topic()), days, 61);
+    expect(f.daysNeeded).toBe(8);
+    expect(f.finishBy).toBe("2026-09-29");
+  });
+  it("handles an empty scope", () => {
+    const f = fit([], days, 60);
+    expect(f.overflow).toEqual([]);
+    expect(f.totalMinutes).toBe(0);
   });
 });

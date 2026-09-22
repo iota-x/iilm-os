@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { daysBetween, distribute, minutesFor, remaining } from "@/lib/goals";
+import { daysBetween, fit, minutesFor, remaining, type Level } from "@/lib/goals";
 import { istToday } from "@/lib/utils";
 import type { Topic, AskTurn } from "@/lib/db-types";
 import { encrypt } from "@/lib/secret";
@@ -676,8 +676,18 @@ async function goalTopics(
 async function planGoal(
   db: Awaited<ReturnType<typeof createClient>>,
   userId: string,
-  goal: { id: string; subject_id: string | null; unit_id: string | null; scope: string; deadline: string },
+  goal: {
+    id: string;
+    subject_id: string | null;
+    unit_id: string | null;
+    scope: string;
+    deadline: string;
+    daily_minutes?: number | null;
+    level?: number | null;
+  },
 ) {
+  const budget = goal.daily_minutes && goal.daily_minutes > 0 ? goal.daily_minutes : 90;
+  const level = ([1, 2, 3].includes(goal.level ?? 2) ? goal.level ?? 2 : 2) as Level;
   const today = istToday();
   const start = today <= goal.deadline ? today : goal.deadline;
   const days = daysBetween(start, goal.deadline);
@@ -691,8 +701,10 @@ async function planGoal(
   const doneIds = new Set((done ?? []).map((t) => t.topic_id as string));
   const todo = topics.filter((t) => !doneIds.has(t.id));
 
-  const plan = distribute(todo, days);
-  const rows = plan.flatMap((day, di) =>
+  // budget-aware: nothing lands past the deadline, and what doesn't fit is
+  // reported back rather than silently dumped on the last day
+  const fitted = fit(todo, days, budget, level);
+  const rows = fitted.plan.flatMap((day, di) =>
     day.topics.map((t, j) => ({
       user_id: userId,
       goal_id: goal.id,
@@ -702,7 +714,7 @@ async function planGoal(
       detail: t.outcome ?? null,
       topic_codes: [t.code],
       due_date: day.date,
-      minutes: minutesFor(t),
+      minutes: minutesFor(t, level),
       kind: t.status === "not_started" ? "learn" : "revise",
       source: "goal",
       sort_order: 50 + di * 20 + j,
@@ -712,7 +724,13 @@ async function planGoal(
     const { error } = await db.from("tasks").insert(rows);
     if (error) throw new Error(error.message);
   }
-  return { topics: todo.length, days: days.length, minutes: todo.reduce((n, t) => n + minutesFor(t), 0) };
+  return {
+    topics: todo.length,
+    days: days.length,
+    minutes: fitted.totalMinutes,
+    overflow: fitted.overflow.length,
+    neededPerDay: fitted.neededPerDay,
+  };
 }
 
 export async function createGoal(input: {
@@ -721,31 +739,50 @@ export async function createGoal(input: {
   unit_id?: string | null;
   scope: "midsem" | "unit" | "subject";
   deadline: string;
+  /** minutes a day you can give it */
+  daily_minutes?: number;
+  level?: Level;
 }) {
   const { db, userId } = await uid();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.deadline)) throw new Error("Pick a deadline.");
   if (input.deadline < istToday()) throw new Error("That deadline has already passed.");
-  const { data, error } = await db
-    .from("goals")
-    .insert({
-      user_id: userId,
-      title: input.title.trim() || "Goal",
-      subject_id: input.subject_id,
-      unit_id: input.scope === "unit" ? input.unit_id ?? null : null,
-      scope: input.scope,
-      deadline: input.deadline,
-    })
-    .select("*")
-    .single();
+  const row = {
+    user_id: userId,
+    title: input.title.trim() || "Goal",
+    subject_id: input.subject_id,
+    unit_id: input.scope === "unit" ? input.unit_id ?? null : null,
+    scope: input.scope,
+    deadline: input.deadline,
+    daily_minutes: Math.min(480, Math.max(15, Math.round(input.daily_minutes ?? 90))),
+    level: input.level ?? 2,
+  };
+  let { data, error } = await db.from("goals").insert(row).select("*").single();
+  if (error && /level/.test(error.message)) {
+    // migration 010 not applied yet — plan at the default level rather than fail
+    const { level: _skip, ...without } = row;
+    void _skip;
+    ({ data, error } = await db.from("goals").insert(without).select("*").single());
+  }
   if (error) throw new Error(error.message);
   const plan = await planGoal(db, userId, data);
   revalidatePath("/", "layout");
   return { id: data.id as string, ...plan };
 }
 
-/** Rebuild the remaining days from what's still not done. */
-export async function replanGoal(id: string) {
+/** Rebuild the remaining days from what's still not done — optionally with a new budget, level or deadline. */
+export async function replanGoal(
+  id: string,
+  changes?: { daily_minutes?: number; level?: Level; deadline?: string },
+) {
   const { db, userId } = await uid();
+  if (changes && Object.keys(changes).length) {
+    const patch: Record<string, unknown> = {};
+    if (changes.daily_minutes) patch.daily_minutes = Math.min(480, Math.max(15, Math.round(changes.daily_minutes)));
+    if (changes.level) patch.level = changes.level;
+    if (changes.deadline && /^\d{4}-\d{2}-\d{2}$/.test(changes.deadline)) patch.deadline = changes.deadline;
+    const { error } = await db.from("goals").update(patch).eq("id", id);
+    if (error) throw new Error(error.message);
+  }
   const { data: goal } = await db.from("goals").select("*").eq("id", id).single();
   if (!goal) throw new Error("Goal not found");
   const plan = await planGoal(db, userId, goal);

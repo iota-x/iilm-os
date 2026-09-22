@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useUrlFlag } from "@/lib/client-hooks";
 import { ImagePlus, Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { createPost } from "@/lib/actions";
@@ -20,7 +21,9 @@ const KINDS = [
 
 export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; defaultSubject: string }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpen] = useState<boolean | null>(null);
+  const wantOpen = useUrlFlag("new");
+  const open = openState ?? wantOpen;
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");

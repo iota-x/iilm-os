@@ -1,13 +1,15 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarClock, Check, RefreshCw, Trash2 } from "lucide-react";
+import { CalendarClock, Check, RefreshCw, SlidersHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteGoal, replanGoal, setGoalStatus } from "@/lib/actions";
 import type { Goal, Subject, Task, Unit } from "@/lib/db-types";
 import { Badge, Bar, Button, Card } from "@/components/ui";
-import { ACCENT_CLASS, cn, daysUntil, fmtDuration } from "@/lib/utils";
+import { ACCENT_CLASS, cn, daysUntil, fmtDuration, istToday } from "@/lib/utils";
+import { LEVEL_LABEL, type Level } from "@/lib/goals";
+import { inputCls } from "@/components/ui";
 
 export function GoalCard({
   goal,
@@ -24,6 +26,10 @@ export function GoalCard({
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const [adjusting, setAdjusting] = useState(false);
+  const [minutes, setMinutes] = useState(goal.daily_minutes || 90);
+  const [level, setLevel] = useState<Level>(goal.level ?? 2);
+  const [deadline, setDeadline] = useState(goal.deadline);
 
   const total = tasks.length;
   const done = tasks.filter((t) => t.status === "done").length;
@@ -91,7 +97,13 @@ export function GoalCard({
               </span>
               <span>
                 pace needed: <span className="text-fg">{fmtDuration(perDay)}</span> a day
+                {goal.daily_minutes ? (
+                  <span className={cn("ml-1", perDay > goal.daily_minutes ? "text-[var(--warn)]" : "text-subtle")}>
+                    (you set {fmtDuration(goal.daily_minutes)})
+                  </span>
+                ) : null}
               </span>
+              <span>{LEVEL_LABEL[goal.level ?? 2].toLowerCase()}</span>
               {overdue ? (
                 <span className="text-[var(--warn)]">{overdue} slipped — replan to spread them</span>
               ) : (
@@ -104,11 +116,83 @@ export function GoalCard({
         </div>
       </div>
 
+      {adjusting ? (
+        <div className="mt-3 space-y-3 border-t border-line px-5 py-3">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <p className="mb-1.5 text-[length:var(--text-micro)] text-muted">Where you are</p>
+              <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
+                {([1, 2, 3] as const).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setLevel(k)}
+                    className={cn(
+                      "rounded-[7px] px-2 py-1 text-[length:var(--text-micro)] font-medium transition-colors focus-ring",
+                      level === k ? "bg-surface text-fg shadow-card" : "text-subtle hover:text-fg",
+                    )}
+                  >
+                    {LEVEL_LABEL[k]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-1.5 flex items-baseline justify-between text-[length:var(--text-micro)] text-muted">
+                <span>Time a day</span>
+                <span className="font-medium tabular-nums text-fg">{fmtDuration(minutes)}</span>
+              </p>
+              <input
+                type="range"
+                min={30}
+                max={240}
+                step={15}
+                value={minutes}
+                onChange={(e) => setMinutes(Number(e.target.value))}
+                className="slider w-full"
+                aria-label="Minutes a day"
+              />
+            </div>
+            <div>
+              <p className="mb-1.5 text-[length:var(--text-micro)] text-muted">Deadline</p>
+              <input
+                type="date"
+                value={deadline}
+                min={istToday()}
+                onChange={(e) => setDeadline(e.target.value)}
+                className={cn(inputCls, "h-8 w-auto text-[length:var(--text-small)]")}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() =>
+                run("Replanned with the new settings", async () => {
+                  const r = await replanGoal(goal.id, { daily_minutes: minutes, level, deadline });
+                  setAdjusting(false);
+                  if (r.overflow) toast.warning(`${r.overflow} topics still don't fit — needs ${fmtDuration(r.neededPerDay)} a day`);
+                })
+              }
+            >
+              <RefreshCw size={13} /> Replan with these
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setAdjusting(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-line px-4 py-2.5">
         {active ? (
           <>
             <Button size="sm" onClick={() => run("Replanned across the days left", () => replanGoal(goal.id))}>
               <RefreshCw size={13} /> Replan
+            </Button>
+            <Button size="sm" onClick={() => setAdjusting((v) => !v)} aria-expanded={adjusting}>
+              <SlidersHorizontal size={13} /> Adjust
             </Button>
             <Button size="sm" onClick={() => run("Marked done", () => setGoalStatus(goal.id, "done"))}>
               <Check size={13} /> Done

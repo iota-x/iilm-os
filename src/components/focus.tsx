@@ -138,10 +138,12 @@ export function Focus({
   }
   function done() {
     if (!task) return;
+    // what the timer actually measured; a plain Done with no timer logs the estimate
+    const measured = saved ? Math.round((saved.total - left) / 60) : 0;
     start(async () => {
-      await setTaskStatus(task.id, "done");
+      await setTaskStatus(task.id, "done", measured > 0 ? { measuredMinutes: measured } : undefined);
       update(null);
-      toast.success(`Done — ${fmtDuration(task.minutes || 25)} banked.`);
+      toast.success(`Done — ${fmtDuration(measured > 0 ? measured : task.minutes || 25)} banked.`);
       router.refresh();
     });
   }

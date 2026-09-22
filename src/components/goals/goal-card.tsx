@@ -17,12 +17,15 @@ export function GoalCard({
   unit,
   tasks,
   today,
+  spentMinutes = 0,
 }: {
   goal: Goal;
   subject: Subject | null;
   unit: Unit | null;
   tasks: Task[];
   today: string;
+  /** minutes logged against this goal */
+  spentMinutes?: number;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -30,6 +33,24 @@ export function GoalCard({
   const [minutes, setMinutes] = useState(goal.daily_minutes || 90);
   const [level, setLevel] = useState<Level>(goal.level ?? 2);
   const [deadline, setDeadline] = useState(goal.deadline);
+  const [daysOff, setDaysOff] = useState<string[]>(goal.days_off ?? []);
+  const [newOff, setNewOff] = useState("");
+
+  // weeks: learn blocks per sprint, done vs total
+  const sprints = (() => {
+    const m = new Map<number, { total: number; done: number; review: Task | null }>();
+    for (const t of tasks) {
+      const n = t.sprint ?? 0;
+      const cur = m.get(n) ?? { total: 0, done: 0, review: null };
+      if (t.kind === "revise" && !t.topic_id) cur.review = t;
+      else {
+        cur.total++;
+        if (t.status === "done") cur.done++;
+      }
+      m.set(n, cur);
+    }
+    return [...m.entries()].filter(([n]) => n > 0).sort((a, b) => a[0] - b[0]);
+  })();
 
   const total = tasks.length;
   const done = tasks.filter((t) => t.status === "done").length;
@@ -104,6 +125,16 @@ export function GoalCard({
                 ) : null}
               </span>
               <span>{LEVEL_LABEL[goal.level ?? 2].toLowerCase()}</span>
+              {spentMinutes ? (
+                <span>
+                  <span className="text-fg">{fmtDuration(spentMinutes)}</span> put in
+                </span>
+              ) : null}
+              {goal.overflow ? (
+                <span className="text-[var(--warn)]">
+                  {goal.overflow} topic{goal.overflow === 1 ? "" : "s"} don&rsquo;t fit before the deadline — adjust time or date
+                </span>
+              ) : null}
               {overdue ? (
                 <span className="text-[var(--warn)]">{overdue} slipped — replan to spread them</span>
               ) : (
@@ -115,6 +146,30 @@ export function GoalCard({
           )}
         </div>
       </div>
+
+      {active && sprints.length ? (
+        <div className="mt-3 flex flex-wrap gap-1.5 px-5">
+          {sprints.map(([n, w]) => {
+            const complete = w.total > 0 && w.done === w.total;
+            return (
+              <span
+                key={n}
+                title={`Week ${n}: ${w.done} of ${w.total} blocks done${w.review ? ` · review on ${w.review.due_date}` : ""}`}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[length:var(--text-micro)] tabular-nums",
+                  complete ? "border-[var(--good)]/40 bg-[var(--good)]/10 text-[var(--good)]" : "border-line text-muted",
+                )}
+              >
+                Week {n}
+                <span className={complete ? "" : "text-subtle"}>
+                  {w.done}/{w.total}
+                </span>
+                {w.review?.status === "done" ? <Check size={11} /> : null}
+              </span>
+            );
+          })}
+        </div>
+      ) : null}
 
       {adjusting ? (
         <div className="mt-3 space-y-3 border-t border-line px-5 py-3">
@@ -164,13 +219,48 @@ export function GoalCard({
               />
             </div>
           </div>
+          <div>
+            <p className="mb-1.5 text-[length:var(--text-micro)] text-muted">Days off — the plan skips these</p>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {daysOff.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDaysOff((xs) => xs.filter((x) => x !== d))}
+                  className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[length:var(--text-micro)] hover:text-[var(--bad)] focus-ring"
+                  title="Remove"
+                >
+                  {d} ×
+                </button>
+              ))}
+              <input
+                type="date"
+                value={newOff}
+                min={istToday()}
+                onChange={(e) => setNewOff(e.target.value)}
+                className={cn(inputCls, "h-7 w-auto text-[length:var(--text-micro)]")}
+                aria-label="Add a day off"
+              />
+              <Button
+                size="sm"
+                type="button"
+                disabled={!newOff || daysOff.includes(newOff)}
+                onClick={() => {
+                  setDaysOff((xs) => [...xs, newOff].sort());
+                  setNewOff("");
+                }}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <Button
               size="sm"
               variant="primary"
               onClick={() =>
                 run("Replanned with the new settings", async () => {
-                  const r = await replanGoal(goal.id, { daily_minutes: minutes, level, deadline });
+                  const r = await replanGoal(goal.id, { daily_minutes: minutes, level, deadline, days_off: daysOff });
                   setAdjusting(false);
                   if (r.overflow) toast.warning(`${r.overflow} topics still don't fit — needs ${fmtDuration(r.neededPerDay)} a day`);
                 })

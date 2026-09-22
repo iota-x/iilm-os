@@ -331,7 +331,7 @@ export const planDays: PlanDay[] = [
         kind: "drill",
       },
     ],
-    note: "DE+CO lab 14:00–16:10. By now you should have the DE+CO course plan — if not, chase it again today.",
+    note: "DE+CO lab 14:00–16:10 — experiment write-up from last week goes in the file tonight.",
   },
   {
     date: "2026-09-25",

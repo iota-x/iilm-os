@@ -1,5 +1,5 @@
 import { Target } from "lucide-react";
-import { getGoals, getSubjects, getTasks, getTopics, getUnits } from "@/lib/queries";
+import { getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits } from "@/lib/queries";
 import { NewGoal } from "@/components/goals/new-goal";
 import { GoalCard } from "@/components/goals/goal-card";
 import { Card, Empty } from "@/components/ui";
@@ -8,12 +8,13 @@ import { istToday, MIDSEM_START } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function GoalsPage() {
-  const [goals, subjects, units, topics, tasks] = await Promise.all([
+  const [goals, subjects, units, topics, tasks, minutesByGoal] = await Promise.all([
     getGoals(),
     getSubjects(),
     getUnits(),
     getTopics(),
     getTasks({ from: "2000-01-01" }),
+    getGoalMinutes(),
   ]);
   const today = istToday();
   const active = goals.filter((g) => g.status === "active");
@@ -25,8 +26,9 @@ export default async function GoalsPage() {
         <div>
           <h1 className="text-[length:var(--text-page)]">Goals</h1>
           <p className="mt-1 max-w-[56ch] text-[length:var(--text-small)] text-muted">
-            Pick what to finish and by when. It becomes one topic a day — or two — on your Today
-            page, in syllabus order, spread so no day is a cliff.
+            Pick what to finish, by when, how much time a day you have and where you&rsquo;re
+            starting from. It becomes learn blocks and short drills on your Today page, in weeks
+            that each end with a review — and it re-adjusts itself when a day slips.
           </p>
         </div>
         <NewGoal
@@ -47,6 +49,7 @@ export default async function GoalsPage() {
               unit={units.find((u) => u.id === g.unit_id) ?? null}
               tasks={tasks.filter((t) => t.goal_id === g.id)}
               today={today}
+              spentMinutes={minutesByGoal.get(g.id) ?? 0}
             />
           ))}
         </ul>
@@ -72,6 +75,7 @@ export default async function GoalsPage() {
                 unit={units.find((u) => u.id === g.unit_id) ?? null}
                 tasks={tasks.filter((t) => t.goal_id === g.id)}
                 today={today}
+                spentMinutes={minutesByGoal.get(g.id) ?? 0}
               />
             ))}
           </ul>

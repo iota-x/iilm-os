@@ -227,6 +227,8 @@ export interface Task {
   kind: TaskKind;
   status: TaskStatus;
   source: "plan" | "manual" | "goal";
+  /** week of its goal, 1-based */
+  sprint: number | null;
   goal_id: string | null;
   sort_order: number;
   completed_at: string | null;
@@ -280,10 +282,14 @@ export interface StudySession {
   id: string;
   subject_id: string | null;
   topic_id: string | null;
+  task_id: string | null;
+  goal_id: string | null;
   started_at: string;
   ended_at: string | null;
   minutes: number | null;
   kind: string;
+  /** timer = measured; tick = the block's estimate */
+  source: "timer" | "tick";
 }
 
 /* ─── class board (shared across the section) ───────────────── */
@@ -331,6 +337,11 @@ export interface Goal {
   daily_minutes: number;
   /** 1 new to it · 2 seen it in class · 3 fairly solid */
   level: 1 | 2 | 3;
+  /** ISO dates the plan skips */
+  days_off: string[];
+  /** topics that didn't fit before the deadline at the last plan */
+  overflow: number;
+  last_planned_on: string | null;
   status: "active" | "done" | "dropped";
   created_at: string;
 }

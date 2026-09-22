@@ -123,7 +123,11 @@ export function fit<T extends Pick<Topic, "weight">>(
   budget: number,
   level: Level = 2,
 ): Fit<T> {
-  const est = (t: T) => minutesFor(t, level);
+  return fitBy(topics, days, budget, (t) => minutesFor(t, level));
+}
+
+/** fit() with your own per-topic estimate (learn + drill, say). */
+export function fitBy<T>(topics: T[], days: string[], budget: number, est: (t: T) => number): Fit<T> {
   const totalMinutes = topics.reduce((n, t) => n + est(t), 0);
   const daysNeeded = budget > 0 ? Math.max(topics.length ? 1 : 0, Math.ceil(totalMinutes / budget)) : days.length;
   const neededPerDay = days.length ? Math.ceil(totalMinutes / days.length) : totalMinutes;
@@ -172,3 +176,42 @@ export function describeFit(f: Fit<unknown>, budget: number): { ok: boolean; tex
     text: `${f.overflow.length} topic${f.overflow.length === 1 ? "" : "s"} won't fit — needs ${t(f.neededPerDay)} a day${when ? `, or ${t(budget)} a day until ${when}` : ""}.`,
   };
 }
+
+/** Days you can actually study: the range minus days off. */
+export function studyDays(from: string, to: string, daysOff: string[] = []): string[] {
+  const off = new Set(daysOff);
+  return daysBetween(from, to).filter((d) => !off.has(d));
+}
+
+/** Week number (1-based) of a date, counted from the plan's first day. */
+export function sprintOf(date: string, firstDay: string): number {
+  const [y, m, d] = date.split("-").map(Number);
+  const [fy, fm, fd] = firstDay.split("-").map(Number);
+  const diff = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(fy, fm - 1, fd)) / 86_400_000);
+  return Math.floor(Math.max(0, diff) / 7) + 1;
+}
+
+/**
+ * Every sprint's last study day, with the topics that sprint covered —
+ * where the week review (drill + revision note) goes. A sprint with
+ * nothing scheduled gets no review.
+ */
+export function sprintEnds<T>(plan: Placement<T>[], firstDay: string): { sprint: number; date: string; topics: T[] }[] {
+  const by = new Map<number, { sprint: number; date: string; topics: T[] }>();
+  for (const day of plan) {
+    const n = sprintOf(day.date, firstDay);
+    const cur = by.get(n) ?? { sprint: n, date: day.date, topics: [] };
+    cur.date = day.date; // plan is in date order, so this ends on the last day
+    cur.topics.push(...day.topics);
+    by.set(n, cur);
+  }
+  return [...by.values()].filter((s) => s.topics.length > 0);
+}
+
+/** Minutes for a week review: 20 to read the note, 5 per topic to drill, capped. */
+export function reviewMinutes(topicCount: number): number {
+  return Math.min(60, 20 + topicCount * 5);
+}
+
+/** A short drill after a learn block, when the topic has questions to drill. */
+export const DRILL_MINUTES = 15;

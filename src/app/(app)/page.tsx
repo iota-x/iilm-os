@@ -10,6 +10,7 @@ import {
   getNotes,
   getExperiments,
   getActivityDays,
+  getStudySessions,
 } from "@/lib/queries";
 import { attendanceBySubject } from "@/lib/attendance";
 import { AttendanceToday } from "@/components/attendance-today";
@@ -21,8 +22,10 @@ import { Badge, Card, CardHead, Ring } from "@/components/ui";
 import { CountUp } from "@/components/count-up";
 import { Focus } from "@/components/focus";
 import { Tour } from "@/components/tour";
+import { AutoReplan } from "@/components/auto-replan";
 import { Flame } from "lucide-react";
 import { studyStreak } from "@/lib/streak";
+import { fmtDuration } from "@/lib/utils";
 import { FirstRun } from "@/components/first-run";
 import { getGoals, getInboxFiles } from "@/lib/queries";
 import {
@@ -118,8 +121,16 @@ export default async function Dashboard() {
   const gapSubjects = subjects.filter((s) => s.status !== "complete");
 
   // The first-run checklist: what this account has and hasn't done yet.
-  const [goals, inbox, activity] = await Promise.all([getGoals(), getInboxFiles(), getActivityDays()]);
+  // the last seven IST days, as a timestamp the sessions query can compare
+  const weekStart = new Date(new Date(today + "T00:00:00+05:30").getTime() - 6 * 86_400_000).toISOString();
+  const [goals, inbox, activity, sessions] = await Promise.all([
+    getGoals(),
+    getInboxFiles(),
+    getActivityDays(),
+    getStudySessions(weekStart),
+  ]);
   const streak = studyStreak(activity, today);
+  const weekMinutes = sessions.reduce((n, s) => n + (s.minutes ?? 0), 0);
 
   // the block to do now: first unfinished today, else the oldest carried over
   const todayQueue = todayTasks.filter((t) => t.status === "todo");
@@ -201,6 +212,11 @@ export default async function Dashboard() {
                   ? `${streak.days}-day streak — keep it alive today`
                   : `${streak.days}-day streak`}
             </span>
+            {weekMinutes ? (
+              <span className="text-[length:var(--text-micro)] text-subtle">
+                {fmtDuration(weekMinutes)} studied in the last 7 days
+              </span>
+            ) : null}
           </p>
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
@@ -208,6 +224,7 @@ export default async function Dashboard() {
 
       {/* new account = nothing touched yet; the tour shows itself once */}
       <Tour isNew={!topics.some((t) => t.status !== "not_started") && !classMarks.length} />
+      <AutoReplan today={today} />
       <FirstRun steps={firstRun} />
 
       {/* ── the four numbers worth glancing at ─────────────── */}

@@ -9,9 +9,11 @@ export const dynamic = "force-dynamic";
 export default async function PracticePage({
   searchParams,
 }: {
-  searchParams: Promise<{ subject?: string; scope?: string }>;
+  searchParams: Promise<{ subject?: string; scope?: string; topics?: string }>;
 }) {
-  const { subject: subjectSlug, scope } = await searchParams;
+  const { subject: subjectSlug, scope, topics: topicsParam } = await searchParams;
+  // a goal's week review links here with the week's topic codes
+  const onlyCodes = new Set((topicsParam ?? "").split(",").map((c) => c.trim()).filter(Boolean));
 
   const [subjects, topics, units, allQuestions] = await Promise.all([
     getSubjects(),
@@ -28,8 +30,10 @@ export default async function PracticePage({
 
   const midsemOnly = scope === "midsem";
 
+  const onlyIds = new Set(topics.filter((t) => onlyCodes.has(t.code)).map((t) => t.id));
   const pool = allQuestions.filter((q) => {
     if (active && q.subject_id !== active.id) return false;
+    if (onlyCodes.size && !(q.topic_id && onlyIds.has(q.topic_id))) return false;
     if (midsemOnly) {
       const t = q.topic_id ? topicById.get(q.topic_id) : null;
       if (!t?.in_midsem) return false;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUp, Check, FileText, Loader2, Paperclip, Square, Wrench } from "lucide-react";
 import { toast } from "sonner";
@@ -33,7 +33,16 @@ export function AskChat({
   const threadRef = useRef<string | null>(initialThreadId);
   const turnsRef = useRef<Turn[]>(initialTurns);
   turnsRef.current = turns;
-  const [draft, setDraft] = useState("");
+  // a link can prefill the composer (?q=) — read as an external store so
+  // the server render (empty) and the client agree after hydration
+  const prefill = useSyncExternalStore(
+    () => () => {},
+    () => new URLSearchParams(window.location.search).get("q") ?? "",
+    () => "",
+  );
+  const [typed, setTyped] = useState<string | null>(null);
+  const draft = typed ?? prefill;
+  const setDraft = (v: string) => setTyped(v);
   const [picked, setPicked] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -50,6 +59,10 @@ export function AskChat({
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [turns]);
+  // a prefilled prompt can be several lines
+  useEffect(() => {
+    fit(boxRef.current);
+  }, [prefill]);
 
   async function send(text: string) {
     const message = text.trim();

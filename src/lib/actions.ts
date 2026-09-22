@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { daysBetween, fit, minutesFor, remaining, type Level } from "@/lib/goals";
+import { DRILL_MINUTES, fitBy, minutesFor, remaining, reviewMinutes, sprintEnds, sprintOf, studyDays, type Level } from "@/lib/goals";
+import { istDay } from "@/lib/streak";
 import { istToday } from "@/lib/utils";
 import type { Topic, AskTurn } from "@/lib/db-types";
 import { encrypt } from "@/lib/secret";
@@ -43,8 +44,9 @@ export async function setExperiment(
 }
 
 /* ─── tasks ─────────────────────────────────────────────────── */
-export async function setTaskStatus(id: string, status: string) {
-  const { db } = await uid();
+export async function setTaskStatus(id: string, status: string, opts?: { measuredMinutes?: number }) {
+  const { db, userId } = await uid();
+  const { data: t } = await db.from("tasks").select("status, minutes, goal_id, subject_id, topic_id").eq("id", id).maybeSingle();
   await db
     .from("tasks")
     .update({
@@ -52,6 +54,21 @@ export async function setTaskStatus(id: string, status: string) {
       completed_at: status === "done" ? new Date().toISOString() : null,
     })
     .eq("id", id);
+  // time spent: the timer's measurement if it ran, else the block's estimate
+  if (status === "done" && t && t.status !== "done") {
+    const minutes = opts?.measuredMinutes ?? t.minutes ?? 0;
+    if (minutes > 0) {
+      await db.from("study_sessions").insert({
+        user_id: userId,
+        task_id: id,
+        goal_id: t.goal_id,
+        subject_id: t.subject_id,
+        topic_id: t.topic_id,
+        minutes: Math.min(600, Math.round(minutes)),
+        source: opts?.measuredMinutes ? "timer" : "tick",
+      });
+    }
+  }
   revalidatePath("/", "layout");
 }
 
@@ -684,46 +701,126 @@ async function planGoal(
     deadline: string;
     daily_minutes?: number | null;
     level?: number | null;
+    days_off?: string[] | null;
+    created_at?: string;
   },
 ) {
   const budget = goal.daily_minutes && goal.daily_minutes > 0 ? goal.daily_minutes : 90;
   const level = ([1, 2, 3].includes(goal.level ?? 2) ? goal.level ?? 2 : 2) as Level;
   const today = istToday();
   const start = today <= goal.deadline ? today : goal.deadline;
-  const days = daysBetween(start, goal.deadline);
+  const days = studyDays(start, goal.deadline, goal.days_off ?? []);
+  // sprints count from the goal's first day, so week numbers stay stable
+  // across replans
+  const firstDay = goal.created_at ? istDay(goal.created_at) : start;
 
   await db.from("tasks").delete().eq("goal_id", goal.id).neq("status", "done");
   const { data: units } = await db.from("units").select("id, number").eq("subject_id", goal.subject_id ?? "");
   const unitRank = new Map((units ?? []).map((u) => [u.id as string, u.number as number]));
   const topics = remaining(await goalTopics(db, goal), unitRank);
   // topics already ticked off as tasks under this goal don't come back
-  const { data: done } = await db.from("tasks").select("topic_id").eq("goal_id", goal.id).eq("status", "done");
+  const { data: done } = await db.from("tasks").select("topic_id").eq("goal_id", goal.id).eq("status", "done").eq("kind", "learn");
   const doneIds = new Set((done ?? []).map((t) => t.topic_id as string));
   const todo = topics.filter((t) => !doneIds.has(t.id));
 
+  // a topic with questions in the bank gets a short drill after its learn
+  // block; the drill's minutes count against the day's budget
+  const { data: qs } = await db.from("questions").select("topic_id").in("topic_id", todo.map((t) => t.id));
+  const hasQuestions = new Set((qs ?? []).map((q) => q.topic_id as string));
+  const withDrill = todo.map((t) => ({
+    ...t,
+    // fit() sizes by weight; fold the drill into the estimate by bumping it
+    _drill: hasQuestions.has(t.id),
+  }));
+
   // budget-aware: nothing lands past the deadline, and what doesn't fit is
   // reported back rather than silently dumped on the last day
-  const fitted = fit(todo, days, budget, level);
-  const rows = fitted.plan.flatMap((day, di) =>
-    day.topics.map((t, j) => ({
+  const est = (t: (typeof withDrill)[number]) => minutesFor(t, level) + (t._drill ? DRILL_MINUTES : 0);
+  const fitted = fitBy(withDrill, days, budget, est);
+
+  type Row = {
+    user_id: string;
+    goal_id: string;
+    subject_id: string | null;
+    topic_id: string | null;
+    title: string;
+    detail: string | null;
+    topic_codes: string[];
+    due_date: string;
+    minutes: number;
+    kind: string;
+    source: string;
+    sort_order: number;
+    sprint: number;
+  };
+  const rows: Row[] = fitted.plan.flatMap((day, di) =>
+    day.topics.flatMap((t, j) => {
+      const sprint = sprintOf(day.date, firstDay);
+      const learn: Row = {
+        user_id: userId,
+        goal_id: goal.id,
+        subject_id: t.subject_id,
+        topic_id: t.id,
+        title: t.title,
+        detail: t.outcome ?? null,
+        topic_codes: [t.code],
+        due_date: day.date,
+        minutes: minutesFor(t, level),
+        kind: t.status === "not_started" ? "learn" : "revise",
+        source: "goal",
+        sort_order: 50 + di * 20 + j * 2,
+        sprint,
+      };
+      if (!t._drill) return [learn];
+      const drill: Row = {
+        ...learn,
+        title: `Drill: ${t.title}`,
+        detail: "Five minutes of questions from the bank, right after the learn block — while it's fresh.",
+        minutes: DRILL_MINUTES,
+        kind: "drill",
+        sort_order: learn.sort_order + 1,
+      };
+      return [learn, drill];
+    }),
+  );
+
+  // week review on each sprint's last study day: drill the week's
+  // questions, then a revision note Ask writes from the week's topics
+  const subj = goal.subject_id ? await db.from("subjects").select("short_name").eq("id", goal.subject_id).maybeSingle() : null;
+  const short = subj?.data?.short_name ?? "";
+  for (const end of sprintEnds(fitted.plan, firstDay)) {
+    rows.push({
       user_id: userId,
       goal_id: goal.id,
-      subject_id: t.subject_id,
-      topic_id: t.id,
-      title: t.title,
-      detail: t.outcome ?? null,
-      topic_codes: [t.code],
-      due_date: day.date,
-      minutes: minutesFor(t, level),
-      kind: t.status === "not_started" ? "learn" : "revise",
+      subject_id: goal.subject_id,
+      topic_id: null,
+      title: `Week ${end.sprint} review${short ? ` — ${short}` : ""}`,
+      detail: [
+        `${end.topics.length} topic${end.topics.length === 1 ? "" : "s"} this week: ${end.topics.map((t) => t.title).join("; ")}`,
+        "Drill them in Practice (weakest first), then have Ask write the revision note.",
+      ].join("\n"),
+      topic_codes: end.topics.map((t) => t.code),
+      due_date: end.date,
+      minutes: reviewMinutes(end.topics.length),
+      kind: "revise",
       source: "goal",
-      sort_order: 50 + di * 20 + j,
-    })),
-  );
+      sort_order: 50 + days.indexOf(end.date) * 20 + 19,
+      sprint: end.sprint,
+    });
+  }
+
   if (rows.length) {
-    const { error } = await db.from("tasks").insert(rows);
+    let { error } = await db.from("tasks").insert(rows);
+    if (error && /sprint/.test(error.message)) {
+      // migration 011 not applied yet — plan without the week number
+      ({ error } = await db.from("tasks").insert(rows.map(({ sprint: _s, ...r }) => (void _s, r))));
+    }
     if (error) throw new Error(error.message);
   }
+  await db
+    .from("goals")
+    .update({ overflow: fitted.overflow.length, last_planned_on: today })
+    .eq("id", goal.id);
   return {
     topics: todo.length,
     days: days.length,
@@ -772,7 +869,7 @@ export async function createGoal(input: {
 /** Rebuild the remaining days from what's still not done — optionally with a new budget, level or deadline. */
 export async function replanGoal(
   id: string,
-  changes?: { daily_minutes?: number; level?: Level; deadline?: string },
+  changes?: { daily_minutes?: number; level?: Level; deadline?: string; days_off?: string[] },
 ) {
   const { db, userId } = await uid();
   if (changes && Object.keys(changes).length) {
@@ -780,6 +877,7 @@ export async function replanGoal(
     if (changes.daily_minutes) patch.daily_minutes = Math.min(480, Math.max(15, Math.round(changes.daily_minutes)));
     if (changes.level) patch.level = changes.level;
     if (changes.deadline && /^\d{4}-\d{2}-\d{2}$/.test(changes.deadline)) patch.deadline = changes.deadline;
+    if (changes.days_off) patch.days_off = changes.days_off.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d));
     const { error } = await db.from("goals").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
   }
@@ -898,4 +996,66 @@ export async function deleteAskThread(id: string) {
   const { error } = await db.from("ask_threads").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/ask");
+}
+
+/**
+ * The plan re-adjusts itself: once a day, any active goal with a block
+ * that slipped past its date gets its remaining topics laid out again
+ * across the days left. Called from Today on load.
+ */
+export async function autoReplan(): Promise<{ replanned: number }> {
+  const { db, userId } = await uid();
+  const today = istToday();
+  const { data: goals } = await db
+    .from("goals")
+    .select("*")
+    .eq("status", "active")
+    .gte("deadline", today);
+  let replanned = 0;
+  for (const g of goals ?? []) {
+    if (g.last_planned_on === today) continue;
+    const { count } = await db
+      .from("tasks")
+      .select("*", { count: "exact", head: true })
+      .eq("goal_id", g.id)
+      .eq("status", "todo")
+      .lt("due_date", today);
+    if (!count) {
+      await db.from("goals").update({ last_planned_on: today }).eq("id", g.id);
+      continue;
+    }
+    await planGoal(db, userId, g);
+    replanned++;
+  }
+  if (replanned) revalidatePath("/", "layout");
+  return { replanned };
+}
+
+/** Minutes really spent: the timer's measurement, or a block's estimate on a plain tick. */
+export async function logStudy(input: {
+  task_id?: string | null;
+  minutes: number;
+  source: "timer" | "tick";
+  started_at?: string;
+}) {
+  const { db, userId } = await uid();
+  const minutes = Math.round(input.minutes);
+  if (!(minutes > 0)) return;
+  let task: { goal_id: string | null; subject_id: string | null; topic_id: string | null } | null = null;
+  if (input.task_id) {
+    const { data } = await db.from("tasks").select("goal_id, subject_id, topic_id").eq("id", input.task_id).maybeSingle();
+    task = data;
+  }
+  const { error } = await db.from("study_sessions").insert({
+    user_id: userId,
+    task_id: input.task_id ?? null,
+    goal_id: task?.goal_id ?? null,
+    subject_id: task?.subject_id ?? null,
+    topic_id: task?.topic_id ?? null,
+    minutes: Math.min(600, minutes),
+    source: input.source,
+    started_at: input.started_at ?? new Date().toISOString(),
+  });
+  // before migration 011 there is no table; the tick itself still counts
+  if (error && !/study_sessions/.test(error.message)) throw new Error(error.message);
 }

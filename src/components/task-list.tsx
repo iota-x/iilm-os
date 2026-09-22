@@ -2,7 +2,7 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, Trash2, ChevronDown } from "lucide-react";
+import { Check, Trash2, ChevronDown, Dumbbell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { setTaskStatus, deleteTask } from "@/lib/actions";
 import type { Task } from "@/lib/db-types";
@@ -164,6 +164,35 @@ function TaskRow({
             <Badge tone={KIND_TONE[task.kind] ?? "neutral"}>{KIND_LABEL[task.kind]}</Badge>
             {showDate && task.due_date ? (
               <span className="text-[length:var(--text-micro)] text-subtle">{task.due_date}</span>
+            ) : null}
+            {task.sprint ? (
+              <span className="text-[length:var(--text-micro)] text-subtle">wk {task.sprint}</span>
+            ) : null}
+            {task.source === "goal" && task.kind === "drill" && task.topic_codes?.length ? (
+              <Link
+                href={`/practice?topics=${task.topic_codes.join(",")}`}
+                className="inline-flex items-center gap-1 rounded text-[length:var(--text-micro)] text-[var(--accent)] hover:underline focus-ring"
+              >
+                <Dumbbell size={11} /> Drill
+              </Link>
+            ) : null}
+            {task.source === "goal" && task.kind === "revise" && !task.topic_id && task.topic_codes?.length ? (
+              <>
+                <Link
+                  href={`/practice?topics=${task.topic_codes.join(",")}`}
+                  className="inline-flex items-center gap-1 rounded text-[length:var(--text-micro)] text-[var(--accent)] hover:underline focus-ring"
+                >
+                  <Dumbbell size={11} /> Drill the week
+                </Link>
+                <Link
+                  href={`/ask?q=${encodeURIComponent(
+                    `Write a revision note for this week's topics and save it as a note${subject ? ` on ${subject.short_name}` : ""}: ${task.detail?.split("\n")[0]?.replace(/^\d+ topics? this week: /, "") ?? task.title}. Keep it to the exam-relevant results, formulas and the one worked example per topic.`,
+                  )}`}
+                  className="inline-flex items-center gap-1 rounded text-[length:var(--text-micro)] text-[var(--accent)] hover:underline focus-ring"
+                >
+                  <Sparkles size={11} /> Write the note
+                </Link>
+              </>
             ) : null}
             {!done && status !== "skipped" ? (
               <button

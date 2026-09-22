@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysBetween, describeFit, distribute, fit, minutesFor, remaining, summarise } from "@/lib/goals";
+import { daysBetween, describeFit, distribute, fit, fitBy, minutesFor, remaining, reviewMinutes, sprintEnds, sprintOf, studyDays, summarise } from "@/lib/goals";
 import type { TopicStatus } from "@/lib/db-types";
 
 const topic = (over: Partial<{ status: TopicStatus; sort_order: number; unit_id: string; weight: number }> = {}) => ({
@@ -104,5 +104,39 @@ describe("fit", () => {
     const f = fit([], days, 60);
     expect(f.overflow).toEqual([]);
     expect(f.totalMinutes).toBe(0);
+  });
+});
+
+describe("sprints and days off", () => {
+  it("skips days off", () => {
+    expect(studyDays("2026-09-22", "2026-09-26", ["2026-09-24"])).toEqual([
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-25",
+      "2026-09-26",
+    ]);
+  });
+  it("numbers weeks from the first day", () => {
+    expect(sprintOf("2026-09-22", "2026-09-22")).toBe(1);
+    expect(sprintOf("2026-09-28", "2026-09-22")).toBe(1);
+    expect(sprintOf("2026-09-29", "2026-09-22")).toBe(2);
+    expect(sprintOf("2026-10-13", "2026-09-22")).toBe(4);
+  });
+  it("puts a review on each week's last study day with that week's topics", () => {
+    const days = studyDays("2026-09-22", "2026-10-05", ["2026-09-28"]); // 13 study days over 2 weeks
+    const f = fit(Array.from({ length: 13 }, (_, i) => topic({ sort_order: i })), days, 120);
+    const ends = sprintEnds(f.plan, "2026-09-22");
+    expect(ends.map((e) => e.sprint)).toEqual([1, 2]);
+    expect(ends[0].date).toBe("2026-09-27"); // 28th is off, so the week ends on the 27th
+    expect(ends[0].topics.length + ends[1].topics.length).toBe(13);
+  });
+  it("sizes the review by topic count", () => {
+    expect(reviewMinutes(1)).toBe(25);
+    expect(reviewMinutes(20)).toBe(60);
+  });
+  it("fitBy takes a custom estimate", () => {
+    const f = fitBy([{ w: 10 }, { w: 10 }, { w: 10 }], ["2026-09-22", "2026-09-23"], 10, (t) => t.w);
+    expect(f.plan.map((p) => p.topics.length)).toEqual([1, 1]);
+    expect(f.overflow.length).toBe(1);
   });
 });

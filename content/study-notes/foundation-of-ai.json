@@ -1,0 +1,117 @@
+{
+ "subject": "foundation-of-ai",
+ "notes": [
+  {
+   "topic": "ai-u1-defn",
+   "unit": null,
+   "title": "What AI is: definition, scope, characteristics",
+   "content": "### ⚡ In 30 seconds\n- AI = machines mimicking human intelligence.\n- Scope = subfields (ML, NLP, vision…). Applications = uses.\n- Components: technical (data, model…) and functional (learning, reasoning…).\n\n---\n\n*Deck 1 (Introduction), deck 6 (Components).*\n\n## Definition\n**AI** is the branch of computer science that aims to create intelligent machines capable of **mimicking human intelligence**: learning, reasoning, problem solving, perception and understanding language.\n\n## AI vs human intelligence (deck 1, slide 3)\n| | AI | Human |\n|---|---|---|\n| Processing | algorithms, objective, data-driven | emotion + logic |\n| Learning | needs large data, fast once trained | learns from few examples |\n| Speed and scale | very fast, never tires | slower, gets tired |\n| Creativity / common sense | limited | strong |\n\n## Scope vs applications\n**Scope** = the extent of the field and its subfields. **Applications** = where it's used in practice.\n- **Scope (subfields):** machine learning, NLP, computer vision, robotics, expert systems, neural networks / deep learning, speech recognition.\n- **Applications:** healthcare (diagnosis, drug discovery), finance (fraud, trading, credit scoring), retail (recommendations), transport (self-driving), education, entertainment.\n\n## Components (deck 6)\n- **Technical** (what you need to build it): data, algorithms, model, compute power, feedback mechanisms, evaluation metrics, user interface, ethics and governance.\n- **Functional** (what it does): learning, reasoning and decision making, problem solving, perception, language processing.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-turing",
+   "unit": null,
+   "title": "History of AI; the Turing Test; the Chinese Room",
+   "content": "### ⚡ In 30 seconds\n- Turing Test (1950): a judge chats with a human and a machine by text.\n- Can't tell them apart → the machine passes.\n- Chinese Room: following rules ≠ understanding.\n\n---\n\n*Deck 2 (Turing test).*\n\n## Milestones\n1950 Turing, \"Computing Machinery and Intelligence\" · **1956 Dartmouth conference** (McCarthy coins \"AI\") · 1960s–70s early programs (ELIZA), then the first **AI winter** · 1980s expert systems · 1997 Deep Blue beats Kasparov · 2012 deep-learning breakthrough (ImageNet) · 2016 AlphaGo · 2020s large language models.\n\n## Turing Test (1950): the \"imitation game\"\n- **Participants:** (A) a machine, (B) a human respondent, (C) a human judge (interrogator).\n- The judge chats **by text** with A and B without knowing which is which.\n- If the judge **can't reliably tell** the machine from the human, the machine passes and is considered intelligent.\n- It judges **behaviour**, not internal workings. Turing's answer to \"Can machines think?\"\n\n**Criticisms (slide 10):** it tests only conversation; a machine can pass with tricks and no understanding; it's language-centred; the judge can be fooled (deliberate delays and mistakes).\n\n## Chinese Room (John Searle, 1980)\nA person who knows no Chinese sits in a room with a rulebook and matches Chinese symbols to replies; to outsiders the replies look fluent. **Argument:** following rules (syntax) ≠ understanding (semantics). So passing the Turing Test doesn't prove a machine *understands*. This is **weak AI** (simulating intelligence) vs **strong AI** (actually having a mind).\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-domains",
+   "unit": null,
+   "title": "AI domains and applications",
+   "content": "### ⚡ In 30 seconds\n- ML, NLP, vision, robotics, expert systems, speech.\n- Give one real app for each.\n- Answer format: domain → meaning → example.\n\n---\n\n*Deck 1, slides 5–7; deck 4.*\n\n| Domain | What it does | Application |\n|---|---|---|\n| Machine learning | learns patterns from data | spam filter, Netflix recommendations |\n| NLP | understands and generates language | chatbots, Google Translate |\n| Computer vision | interprets images and video | face unlock, Google Lens |\n| Robotics | acts in the physical world | warehouse robots, surgery |\n| Expert systems | knowledge base + inference engine | medical diagnosis (MYCIN) |\n| Speech recognition | audio → text | voice assistants |\n| Planning and search | sequences of actions | Google Maps routing, game AI |\n\nFor a 5-marker, give domain → definition → one real application, for five domains.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-representation",
+   "unit": null,
+   "title": "Problem representation, formulation and reduction",
+   "content": "### ⚡ In 30 seconds\n- Define: initial state, goal, operators, constraints, cost.\n- Schemes: logic, knowledge, attributes, graph, constraints.\n- Reduction: split into sub-problems (AND–OR graph).\n\n---\n\n*Deck 3 (Problem representation), deck 7.*\n\n**Problem representation:** how a problem is described and structured so an AI system can process it. It decides the **efficiency** of the search, the **comprehensiveness** of the model and how well the system generalises.\n\n## Formulating a problem (state space)\n| Component | Google Maps | 8-puzzle |\n|---|---|---|\n| Initial state | home | the start arrangement |\n| Goal state / goal test | the university | the goal arrangement |\n| Operators (actions) | take road A/B/C | move the blank up, down, left, right |\n| Constraints | traffic, one-ways | can't move off the board |\n| Path cost | distance or time | number of moves |\n\n## Representation schemes (deck 3)\n- **Logical:** propositional or first-order logic (fever ∧ cough → flu).\n- **Knowledge:** semantic networks, frames, ontologies (expert systems).\n- **Attribute-based:** objects as feature vectors (ML classification).\n- **Graphical:** nodes and edges (cities and roads).\n- **Constraint:** variables, domains, constraints (Sudoku).\n\n## Problem reduction\nBreak a problem into **sub-problems** whose solutions combine into the whole solution. Drawn as an **AND–OR graph**: AND arcs = all sub-problems must be solved; OR = any one alternative suffices. This is what AO* searches.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-statespace",
+   "unit": null,
+   "title": "State space representation",
+   "content": "### ⚡ In 30 seconds\n- State space = all reachable states (a graph).\n- Water jug: (x, y) litres, fill/empty/pour.\n- Problem: states can explode in number.\n\n---\n\n*Deck 5 (State space search).*\n\n**State space** = the set of all states reachable from the initial state by applying operators. Drawn as a graph: nodes are states, edges are operators.\n\n## Key terms\nState · initial state · goal state · operators · **search tree** (the exploration of the space) · path · **goal test** · cost function.\n\n## Example: water jug (4 L and 3 L, get exactly 2 L)\nState $(x,y)$ = litres in the 4 L and 3 L jugs. Start $(0,0)$; goal $x=2$.\nOperators: fill a jug, empty a jug, pour one into the other until it's full or empty.\nOne solution: (0,0) → (0,3) → (3,0) → (3,3) → (4,2) → (0,2) → (2,0).\n\n## Other classics\n- **8-puzzle:** state = the tile arrangement; move the blank.\n- **Missionaries and cannibals:** state (M, C, boat side); constraint: cannibals never outnumber missionaries on either bank.\n- **Tic-tac-toe:** empty board → three in a row.\n\n**Challenges (slide 10):** combinatorial explosion, efficiency, memory. **Applications:** path finding, games, planning, robotics.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-problemsolving",
+   "unit": null,
+   "title": "Problem solving in AI and characteristics of AI problems",
+   "content": "### ⚡ In 30 seconds\n- Steps: define → represent → choose strategy → search → evaluate.\n- Problems: ignorable, recoverable, irrecoverable.\n- AI problems: complex, uncertain, need heuristics.\n\n---\n\n*Deck 7 (Problem solving), deck 4 (Characteristics).*\n\n## Steps in designing a problem-solving system (deck 7)\n1. **Define the problem**: initial state, goal, constraints, actions.\n2. **Choose a representation**: graph, search tree, logic.\n3. **Choose a strategy**: uninformed, heuristic, CSP, ML.\n4. **Implement and search** for the solution.\n5. **Evaluate and refine**.\n\n## Types of problems by recoverability\n- **Ignorable:** steps can be ignored (proving a theorem: a useless lemma costs nothing).\n- **Recoverable:** steps can be undone (8-puzzle; missing data can be filled in).\n- **Irrecoverable:** steps can't be undone (chess moves; corrupted training data).\n\n## Characteristics of AI problems (deck 4)\nComplexity · uncertainty · search and optimisation · knowledge representation · learning and adaptation · autonomy · real-time decisions · goal-oriented · natural language · perception · heuristic approach · non-deterministic outputs.\n\n## Techniques (deck 7)\nSearch (uninformed / informed), heuristics, constraint satisfaction (backtracking, propagation), machine learning (supervised, unsupervised, reinforcement).\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u1-search",
+   "unit": null,
+   "title": "The search process: uninformed vs informed",
+   "content": "### ⚡ In 30 seconds\n- Uninformed = no hints (BFS, DFS).\n- Informed = uses heuristic h(n) (greedy, A*).\n- Judge by completeness, optimality, time, space.\n\n---\n\n*Deck 8 (AI and search process).*\n\n**Search:** finding a path or solution among many possibilities by exploring the state space.\n\n## Families (slide 55 map)\n| Uninformed (blind) | Informed (heuristic) | Local | Adversarial |\n|---|---|---|---|\n| BFS, DFS, UCS, DLS, IDS, bidirectional | Greedy best-first, A*, beam | hill climbing, simulated annealing | minimax, alpha-beta, MCTS |\n\n- **Uninformed:** uses only the problem definition, no idea of how close a state is to the goal.\n- **Informed:** uses a **heuristic** $h(n)$ = the estimated cost from n to the goal.\n\n## Evaluating a strategy\n- **Completeness:** does it always find a solution if one exists?\n- **Optimality:** does it find the cheapest one?\n- **Time complexity** and **space complexity**, in terms of b (branching factor) and d (depth of the shallowest goal).\n\n| | BFS | DFS | UCS | IDS |\n|---|---|---|---|---|\n| Complete | yes | no (infinite paths) | yes | yes |\n| Optimal | yes, if costs are equal | no | yes | yes, if costs are equal |\n| Time | $O(b^d)$ | $O(b^m)$ | — | $O(b^d)$ |\n| Space | $O(b^d)$ | $O(bm)$ | — | $O(bd)$ |\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-agents",
+   "unit": null,
+   "title": "Intelligent agents and environments",
+   "content": "### ⚡ In 30 seconds\n- Agent: sensors in, actuators out.\n- PEAS: performance, environment, actuators, sensors.\n- Types: reflex → model → goal → utility → learning.\n\n---\n\n**Agent:** perceives its environment through **sensors** and acts through **actuators**. Agent = architecture + program. A **rational agent** chooses the action that maximises its expected performance measure.\n\n**PEAS** (task description), e.g. a self-driving car: **P**erformance (safe, fast, legal), **E**nvironment (roads, traffic), **A**ctuators (steering, brake), **S**ensors (camera, lidar, GPS).\n\n## Environment properties\n| Property | vs |\n|---|---|\n| Fully observable | partially observable |\n| Deterministic | stochastic |\n| Episodic | sequential |\n| Static | dynamic |\n| Discrete | continuous |\n| Single-agent | multi-agent |\n| Known | unknown |\ne.g. chess: fully observable, deterministic, sequential, static, discrete, multi-agent. Taxi driving: partially observable, stochastic, sequential, dynamic, continuous, multi-agent.\n\n## Agent types (simplest → most capable)\n1. **Simple reflex:** condition–action rules on the current percept (thermostat).\n2. **Model-based reflex:** keeps an internal state for partially observable worlds.\n3. **Goal-based:** plans actions to reach a goal (uses search).\n4. **Utility-based:** chooses by how *good* an outcome is (utility function).\n5. **Learning agent:** learning element + critic + performance element + problem generator.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-brute",
+   "unit": null,
+   "title": "Problem-solving agents and brute-force search",
+   "content": "### ⚡ In 30 seconds\n- Try every possibility.\n- Always works, but bᵈ states explode.\n- Too big → use heuristics.\n\n---\n\n**Problem-solving agent:** a goal-based agent that **formulates** a goal and a problem, **searches** for a sequence of actions, then **executes** it.\n\n**Brute force (exhaustive / uninformed) search:** systematically try every possibility until the goal is found (BFS, DFS).\n- ✅ simple, guaranteed to find a solution (if complete), needs no domain knowledge.\n- ❌ **combinatorial explosion**: with branching factor b and depth d it's $b^d$ nodes. The 8-puzzle has 9!/2 = 181,440 states; chess has about $10^{120}$ games. That's where brute force stops being viable and heuristics take over.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-bfsdfs",
+   "unit": null,
+   "title": "Breadth-first and depth-first search",
+   "content": "### ⚡ In 30 seconds\n- BFS: level by level, queue, shortest steps.\n- DFS: go deep first, stack, low memory.\n- BFS complete; DFS may get stuck.\n\n---\n\n*Deck 8, slides 10–21.*\n\n| | BFS | DFS |\n|---|---|---|\n| Explores | level by level | as deep as possible, then backtracks |\n| Data structure | **queue (FIFO)** | **stack (LIFO)** or recursion |\n| Complete | yes (finite b) | no: can loop down an infinite path |\n| Optimal | yes, if all step costs are equal | no |\n| Time | $O(b^d)$ | $O(b^m)$ |\n| Memory | high: $O(b^d)$ | low: $O(bm)$ |\n| Good for | shortest path in steps | deep solutions, low memory |\n\n## Trace on the tree A → (B, C), B → (D, E), C → (F, G), goal G\n- **BFS:** A, B, C, D, E, F, **G** (queue: [A] → [B, C] → [C, D, E] → [D, E, F, G] …)\n- **DFS (left first):** A, B, D, E, C, F, **G**\n\n## Variants (deck 8)\n- **UCS:** expand the lowest path cost $g(n)$ (priority queue); optimal with unequal costs.\n- **DLS:** DFS with a depth limit (stops infinite descent; incomplete if the limit < d).\n- **IDS:** DLS with limits 0, 1, 2 …: BFS's completeness with DFS's memory.\n- **Bidirectional:** search from both ends until they meet: $2b^{d/2}\\ll b^d$.\n\n**Exam habit:** show the queue/stack contents at each step, not just the final order.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-hill",
+   "unit": null,
+   "title": "Heuristics and hill climbing",
+   "content": "### ⚡ In 30 seconds\n- Heuristic = a smart guess of distance to the goal.\n- Hill climbing: move to the best neighbour.\n- Stuck at: local maximum, plateau, ridge.\n\n---\n\n*Deck 8, slides 45–49.*\n\n**Heuristic** $h(n)$: a rule of thumb estimating the cost from n to the goal (straight-line distance; 8-puzzle: misplaced tiles or Manhattan distance). It trades guaranteed optimality for speed.\n\n## Hill climbing (local search)\nKeep one current state; move to the **best neighbour** if it's better; stop when no neighbour is better.\n\"Climbing a mountain in fog: you only see the steps around you.\"\n\n**Algorithm:** current ← initial; loop: neighbour ← best successor; if value(neighbour) ≤ value(current), return current; else current ← neighbour.\n\n## Where it gets stuck\n1. **Local maximum:** better than its neighbours, worse than the global best.\n2. **Plateau:** a flat area, all neighbours equal, no direction.\n3. **Ridge:** the path upward needs a move that looks worse in every single step.\n\n**Fixes:** random restarts, sideways moves, **simulated annealing** (sometimes accept a worse move, with probability falling over time), beam search.\n\n**Deck example:** improving a university timetable by small swaps. Keep a change if the timetable improves.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-bestfirst",
+   "unit": null,
+   "title": "Best-first (greedy) search",
+   "content": "### ⚡ In 30 seconds\n- Expand the node with the smallest h(n).\n- Fast but not optimal.\n- Unlike hill climbing, it keeps the whole frontier.\n\n---\n\n*Deck 8, slides 29–33.*\n\n**Greedy best-first:** always expand the node that **looks closest to the goal**: $f(n)=h(n)$, using a priority queue.\n\n**Deck trace:** from S, choose between A (h = 9) and D (h = 5) → **D**; from D, B (4) or E (3) → **E**; from E → **G** (0). Path S → D → E → G.\n\n| | Hill climbing | Best-first |\n|---|---|---|\n| Keeps | only the current state | the whole frontier (open list) |\n| Backtracking | none | yes: can jump to another frontier node |\n| Stuck at local optima | yes | less so |\n| Memory | minimal | more |\n\n**Properties:** not optimal (ignores the cost so far), and can be incomplete (loops) without a visited list; fast when h is good.\n**Deck analogy:** lost in a city, you walk toward a visible landmark, which isn't always the shortest route.\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-astar",
+   "unit": null,
+   "title": "A* and AO*",
+   "content": "### ⚡ In 30 seconds\n- f(n) = g(n) + h(n).\n- Optimal if h never overestimates (admissible).\n- AO* solves AND–OR graphs (problem reduction).\n\n---\n\n*Deck 8, slides 34–44. AO* isn't in the decks; it's below.*\n\n## A*\n\n$$f(n)=g(n)+h(n)$$\n\n$g$ = the actual cost so far, $h$ = the estimated cost to the goal. Always expand the lowest $f$ (open list); keep a closed list in graph search.\n\n**Optimal if $h$ is admissible** — it never overestimates: $h(n)\\le h^*(n)$. For graph search it also needs **consistency**: $h(n)\\le c(n,n')+h(n')$.\n\n**Deck example:** $g(B)=4, h(B)=5\\Rightarrow f=9$; $g(C)=2, h(C)=8\\Rightarrow f=10$ → expand B first.\n**Why not greedy (slide 44):** path A has travelled 100 with 5 left (f = 105); path B has 10 with 20 left (f = 30). Greedy picks A; A* picks B.\n\n**Exam method:** a table with columns node | g | h | f | open list | closed list, one row per expansion.\n\n## AO* (AND–OR graphs)\nFor **problem reduction**, where a node may need *all* its children solved (an AND arc) or *any one* (OR).\n1. Expand the most promising unexpanded node of the current best partial solution graph.\n2. Compute the costs of its successors (an AND arc = sum of its children + arc costs).\n3. **Propagate revised costs upward** and mark the best (cheapest) arc at each node.\n4. A node is **SOLVED** when it's terminal, or all AND-children (or the best OR child) are solved.\n5. Stop when the start node is solved.\n\n| A* | AO* |\n|---|---|\n| OR graph, finds a path | AND–OR graph, finds a solution graph |\n| $f=g+h$ | costs propagated bottom-up |\n| explores all alternatives | stops exploring once a node is solved |\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u2-knowledge",
+   "unit": null,
+   "title": "Knowledge representation",
+   "content": "### ⚡ In 30 seconds\n- KR = storing facts so AI can reason.\n- Types: logic, semantic net, frames, rules, ontology.\n- Example: IF fever AND cough THEN flu.\n\n---\n\n*Deck 3, slides 9–14.*\n\n**Knowledge representation (KR):** encoding facts about the world so an AI can reason with them. A good KR needs representational adequacy, inferential adequacy, inferential efficiency and acquisitional efficiency.\n\n## Techniques\n| Technique | Idea | Example |\n|---|---|---|\n| **Logical** | propositional / first-order logic, inference rules | ∀x Man(x) → Mortal(x) |\n| **Semantic network** | a graph of concepts with IS-A / HAS links | Tweety IS-A Bird; Bird HAS Wings |\n| **Frames** | slot–filler structures with defaults and inheritance | Frame *Car*: wheels = 4, owner = ? |\n| **Production rules** | IF condition THEN action | IF fever AND cough THEN flu |\n| **Ontologies** | formal vocabularies of classes and relations | medical ontologies |\n\n**Kinds of knowledge:** declarative (facts), procedural (how-to), meta (knowledge about knowledge), heuristic (rules of thumb), structural (relationships).\n\n**Deck demos:** WolframAlpha and ConceptNet (\"Fever → IsA → Symptom\", \"Fever → Causes → Fatigue\") are semantic networks in practice.\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 1,
+   "title": "AI Unit 1 — one-page revision sheet",
+   "content": "| Topic | Must know | Deck |\n|---|---|---|\n| Definition | mimicking human intelligence; AI vs human table | 1 |\n| Scope vs applications | subfields vs uses; 5 examples each | 1 |\n| Turing Test | A machine, B human, C judge; text only; criticisms | 2 |\n| Chinese Room | Searle: syntax ≠ semantics; weak vs strong AI | — |\n| Components | technical (data, algorithm, model, compute …) vs functional (learning, reasoning …) | 6 |\n| Representation | initial, goal, operators, constraints, cost; 5 schemes | 3 |\n| State space | water jug, 8-puzzle, missionaries and cannibals | 5 |\n| Problem types | ignorable, recoverable, irrecoverable | 7 |\n| Characteristics | complexity, uncertainty, autonomy, real-time, heuristics … | 4 |\n| Search | uninformed vs informed; completeness, optimality, time, space | 8 |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 2,
+   "title": "AI Unit 2 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Agents | PEAS; 7 environment properties; 5 agent types |\n| Brute force | $b^d$ explosion |\n| BFS / DFS | queue vs stack; comparison table; trace with the frontier shown |\n| UCS, DLS, IDS, bidirectional | one line each |\n| Hill climbing | best neighbour; local maximum, plateau, ridge; fixes |\n| Best-first | $f=h$; the S → D → E → G trace |\n| A* | $f=g+h$; admissible ⇒ optimal; the table method |\n| AO* | AND–OR graphs; cost propagation; SOLVED labels |\n| KR | logic, semantic nets, frames, rules, ontologies |\n",
+   "pinned": true
+  }
+ ]
+}

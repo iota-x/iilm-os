@@ -1,0 +1,152 @@
+{
+ "subject": "programming-in-c",
+ "notes": [
+  {
+   "topic": "c-u1-anatomy",
+   "unit": null,
+   "title": "Computer basics, memory hierarchy, OS, CPU cycle",
+   "content": "### ⚡ In 30 seconds\n- CPU = ALU + control unit + registers.\n- Memory hierarchy: registers → cache → RAM → disk.\n- Cycle: fetch → decode → execute.\n\n---\n\n## Anatomy of a computer (Von Neumann)\nInput → **CPU** (ALU + Control Unit + registers) ↔ **Memory** → Output, connected by buses (address, data, control).\n\n## Classification\nBy size: micro, mini, mainframe, supercomputer. By data: analog, digital, hybrid. By purpose: general, special.\n\n## Memory hierarchy (fast/small/costly at the top)\nRegisters → Cache (L1/L2/L3) → Main memory (RAM) → Secondary (SSD/HDD) → Tertiary (tape, optical).\nGoing down: **speed ↓, capacity ↑, cost per bit ↓**. Primary memory is volatile (RAM) or non-volatile (ROM).\n\n## Operating system\nSoftware that manages hardware and provides services to programs: process management, memory management, file system, device (I/O) management, security, user interface. Types: batch, multiprogramming, time-sharing, real-time, distributed.\n\n## CPU operation: the instruction cycle\n**Fetch** (PC → MAR, memory → MDR → IR, PC + 1) → **Decode** (the control unit interprets the opcode) → **Execute** (the ALU operates, the result goes to a register or memory) → repeat.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u1-langs",
+   "unit": null,
+   "title": "Programming languages; compile, link, load",
+   "content": "### ⚡ In 30 seconds\n- 1GL machine, 2GL assembly, 3GL high-level (C).\n- Compiler: whole program at once. Interpreter: line by line.\n- Pipeline: preprocess → compile → assemble → link → load.\n\n---\n\n## Generations\n| Gen | Language | Note |\n|---|---|---|\n| 1GL | Machine (binary) | fast, hardware-specific |\n| 2GL | Assembly (mnemonics) | needs an assembler |\n| 3GL | High-level: C, Java | portable, needs a compiler or interpreter |\n| 4GL | SQL, MATLAB | closer to the problem |\n| 5GL | Prolog | declarative, AI |\n\nClassification: low-level vs high-level; procedural (C), object-oriented (Java), functional, logic.\n\n## Compiler vs interpreter\n| Compiler | Interpreter |\n|---|---|\n| translates the whole program at once | line by line |\n| produces an object/executable file | no separate file |\n| faster execution | slower execution |\n| errors listed after compiling | stops at the first error |\n| C, C++ | Python, BASIC |\n\n## From source to running program\n`prog.c` → **preprocessor** (`#include`, `#define`) → **compiler** → assembly → **assembler** → `prog.o` (object code) → **linker** (adds library code like `printf`, resolves references) → executable → **loader** (copies it into memory, sets the start address) → runs.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u1-algorithms",
+   "unit": null,
+   "title": "Algorithms, pseudocode, flowcharts",
+   "content": "### ⚡ In 30 seconds\n- Algorithm = finite, clear steps with input and output.\n- Three forms: steps, pseudocode, flowchart.\n- Symbols: oval start/stop, parallelogram I/O, rectangle process, diamond decision.\n\n---\n\n## Algorithm\nA finite, ordered set of unambiguous steps that solves a problem. **Properties:** input, output, definiteness, finiteness, effectiveness.\n\n## Three ways to state it (sum of two numbers)\n**Step form:** 1. Start 2. Read a, b 3. sum ← a + b 4. Print sum 5. Stop\n**Pseudocode:** `BEGIN  READ a, b  SET sum = a + b  PRINT sum  END`\n**Flowchart:** oval (Start) → parallelogram (Read a, b) → rectangle (sum = a + b) → parallelogram (Print sum) → oval (Stop)\n\n## Flowchart symbols\n| Symbol | Meaning |\n|---|---|\n| Oval (terminal) | start / stop |\n| Parallelogram | input / output |\n| Rectangle | process |\n| Diamond | decision (yes/no) |\n| Arrow | flow |\n| Circle | connector |\n\n## Program development steps\nProblem definition → analysis → algorithm/flowchart → coding → testing and debugging → documentation → maintenance.\n\n**Exam favourites:** the largest of three numbers, whether n is prime, factorial, sum of digits — have each as an algorithm *and* a flowchart.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u1-structured",
+   "unit": null,
+   "title": "Structured programming",
+   "content": "### ⚡ In 30 seconds\n- Only 3 structures: sequence, selection, iteration.\n- Avoid goto: spaghetti code.\n- Design top-down: split into sub-problems.\n\n---\n\n**Structured programming:** programs built from three control structures only, with single entry and single exit.\n1. **Sequence**: statements one after another\n2. **Selection**: if / if-else / switch\n3. **Iteration**: while / do-while / for\n\n(Böhm–Jacopini theorem: any algorithm can be written with these three.)\n\n## Why `goto` is discouraged\nIt creates arbitrary jumps (\"spaghetti code\"), so you can't tell how a line is reached, and debugging and proving correctness get harder. Every use can be replaced by loops, `break` or functions.\n\n## Algorithm design strategies\nTop-down (stepwise refinement: split into sub-problems), bottom-up, divide and conquer, modular design (functions).\n\n**Advantages of structured programming:** readable, easier to debug and test, maintainable, reusable modules.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u2-overview",
+   "unit": null,
+   "title": "Structure of a C program",
+   "content": "### ⚡ In 30 seconds\n- Sections: docs, #include, #define, globals, main(), functions.\n- Execution starts at main().\n- return 0 means success.\n\n---\n\n```c\n/* documentation: name, purpose */     // 1. Documentation\n#include <stdio.h>                     // 2. Link (preprocessor)\n#define PI 3.14                        // 3. Definition\nint count = 0;                         // 4. Global declarations\nint area(int r);                       //    function prototypes\nint main(void) {                       // 5. main()\n    int r = 2;                         //    declaration part\n    printf(\"%d\\n\", area(r));           //    executable part\n    return 0;                          //    0 = success, to the OS\n}\nint area(int r) { return PI * r * r; } // 6. Sub-programs\n```\n- Execution **always starts at `main()`**.\n- Statements end with `;`. Blocks go in `{ }`.\n- Comments: `/* multi-line */` and `// single line`. They're ignored by the compiler.\n- `return 0;` from main reports successful termination.\n- **Writing → running:** edit (`.c`) → compile (`gcc prog.c -o prog`) → run (`./prog`).\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u2-tokens",
+   "unit": null,
+   "title": "C tokens, keywords, identifiers",
+   "content": "### ⚡ In 30 seconds\n- 6 tokens: keywords, identifiers, constants, strings, operators, symbols.\n- Identifiers: letters, digits, _; can't start with a digit.\n- C has 32 keywords; C is case-sensitive.\n\n---\n\n**Token** = the smallest unit of a program. Six types:\n| Token | Examples |\n|---|---|\n| Keywords | `int`, `return`, `while` (32 in C89) |\n| Identifiers | `sum`, `_count`, `total2` |\n| Constants | `10`, `3.14`, `'A'` |\n| Strings | `\"hello\"` |\n| Operators | `+ = == && ++` |\n| Special symbols | `{ } ( ) [ ] ; , #` |\n\n## Identifier rules\n- Letters, digits, underscore only.\n- Must **not start with a digit**.\n- No keywords; no spaces or special characters.\n- Case-sensitive (`Sum` ≠ `sum`).\nValid: `_temp`, `roll_no`, `x1`. Invalid: `2x`, `int`, `roll-no`, `my var`.\n\n## The 32 keywords\nauto break case char const continue default do double else enum extern float for goto if int long register return short signed sizeof static struct switch typedef union unsigned void volatile while\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u2-datatypes",
+   "unit": null,
+   "title": "Data types, variables, constants, operators",
+   "content": "### ⚡ In 30 seconds\n- int 4 B %d, char 1 B %c, float 4 B %f, double 8 B %lf.\n- % works only on integers.\n- 5/2 = 2 (integer division).\n\n---\n\n## Basic types (typical 32/64-bit gcc)\n| Type | Size | Range / precision | Format |\n|---|---|---|---|\n| `char` | 1 B | −128 to 127 | `%c` |\n| `int` | 4 B | −2³¹ to 2³¹−1 (≈ ±2.1×10⁹) | `%d` |\n| `short` | 2 B | −32768 to 32767 | `%hd` |\n| `long` | 8 B (4 on Windows) | | `%ld` |\n| `float` | 4 B | ~6–7 digits | `%f` |\n| `double` | 8 B | ~15 digits | `%lf` |\nModifiers: `signed`, `unsigned`, `short`, `long`. `void` = no value.\n\n## Constants\nInteger (`10`, `012` octal, `0xA` hex), real (`3.14`, `1e-3`), character (`'A'`), string (`\"A\"` — two bytes, including `'\\0'`), `const int x = 5;`, `#define N 10`.\n\n## Operators\n| Category | Operators |\n|---|---|\n| Arithmetic | `+ - * / %` (`%` is integers only) |\n| Relational | `< > <= >= == !=` (give 1 or 0) |\n| Logical | `&& || !` (short-circuit) |\n| Assignment | `= += -= *= /= %=` |\n| Increment/decrement | `++ --` (prefix changes then uses; postfix uses then changes) |\n| Bitwise | `& | ^ ~ << >>` |\n| Conditional | `?:` |\n| Special | `sizeof`, `,`, `&` (address), `*` |\n\n**Traps:** `5/2 = 2` (integer division); `-7 % 3 = -1` (the sign follows the dividend); `'A' + 1 = 66`.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u2-precedence",
+   "unit": null,
+   "title": "Precedence, associativity, type conversion",
+   "content": "### ⚡ In 30 seconds\n- * / % before + −, then relational, ==, &&, ||, ?:, =.\n- Unary, ?: and = go right to left.\n- Mixed types promote up: int → float → double.\n\n---\n\n## Precedence (high → low)\n| Level | Operators | Associativity |\n|---|---|---|\n| 1 | `() [] -> .` postfix `++ --` | L → R |\n| 2 | unary `+ - ! ~` prefix `++ --` `(type)` `*` `&` `sizeof` | **R → L** |\n| 3 | `* / %` | L → R |\n| 4 | `+ -` | L → R |\n| 5 | `<< >>` | L → R |\n| 6 | `< <= > >=` | L → R |\n| 7 | `== !=` | L → R |\n| 8–10 | `&` then `^` then `|` | L → R |\n| 11–12 | `&&` then `||` | L → R |\n| 13 | `?:` | **R → L** |\n| 14 | `= += -=` … | **R → L** |\n| 15 | `,` | L → R |\n\n## Type conversion\n- **Implicit (promotion):** char/short → int; in mixed expressions the lower type converts to the higher: int → long → float → double.\n- **Explicit (cast):** `(float)a / b`.\n- Assigning a float to an int **truncates**: `int x = 3.9;` gives 3.\n\n## Worked\n`int a = 5, b = 2; float c = a / b;` → **2.000000** (integer division happens first). `(float)a / b` → 2.5.\n`x = 10 + 3 * 2 - 8 / 4 % 3;` → `10 + 6 - (2 % 3)` = `16 - 2` = **14**.\n\n**Trap:** `i++ + ++i` modifies `i` twice without a sequence point: **undefined behaviour**. Say so in the answer if it's asked.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-io",
+   "unit": null,
+   "title": "Input/output functions and escape sequences",
+   "content": "### ⚡ In 30 seconds\n- scanf needs & before variables.\n- %.2f = 2 decimals, %5d = width 5.\n- Use \" %c\" to skip the leftover newline.\n\n---\n\n## Formatted I/O\n`printf(\"format\", args)`, `scanf(\"format\", &vars)` — scanf needs the **address** `&` (except for strings/arrays).\nSpecifiers: `%d %i %u %ld %f %lf %e %c %s %x %o %p %%`\nWidth and precision: `%5d` (right-aligned in 5), `%-5d` (left), `%.2f` (2 decimals), `%8.3f`, `%05d` (zero-padded).\n\n## Unformatted I/O\n`getchar()` / `putchar(c)` — one character. `gets()` (unsafe, removed in C11) / `puts(s)` (adds a newline). Use `fgets(s, n, stdin)`.\n\n## The scanf newline trap\n`scanf(\"%d\", &n); scanf(\"%c\", &ch);` → `ch` receives the leftover `'\\n'`. Fix: `scanf(\" %c\", &ch);` — the leading space skips whitespace.\n\n## Escape sequences\n| Seq | Meaning |\n|---|---|\n| `\\n` | newline |\n| `\\t` | tab |\n| `\\\\` | backslash |\n| `\\\"` | double quote |\n| `\\'` | single quote |\n| `\\0` | null character |\n| `\\a` | bell |\n| `\\b` | backspace |\n| `\\r` | carriage return |\n\n`printf` returns the number of characters printed: `printf(\"%d\", printf(\"hi\"));` prints `hi2`.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-if",
+   "unit": null,
+   "title": "if and if-else",
+   "content": "### ⚡ In 30 seconds\n- Non-zero = true, 0 = false.\n- = assigns, == compares (classic bug).\n- A ; right after if() ends the if.\n\n---\n\n```c\nif (condition) { ... }\nif (condition) { ... } else { ... }\nif (c1) {...} else if (c2) {...} else {...}   // else-if ladder\n```\n- Any non-zero value is true; 0 is false.\n- Without braces, only **one statement** belongs to the if.\n\n## Classic traps\n- `if (x = 5)` **assigns** 5, so it's always true. Use `==`. (Writing `5 == x` makes the compiler catch the mistake.)\n- `if (x > 0);` — the stray semicolon makes the body empty.\n- Comparing floats with `==`: use `fabs(a - b) < 1e-9`.\n\n## Standard programs\nEven/odd (`n % 2 == 0`), largest of two or three, leap year (`(y % 4 == 0 && y % 100 != 0) || y % 400 == 0`), grade from marks (else-if ladder), positive/negative/zero.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-nested",
+   "unit": null,
+   "title": "Nested if and the conditional operator",
+   "content": "### ⚡ In 30 seconds\n- else pairs with the nearest if.\n- Use braces to avoid dangling else.\n- max = a > b ? a : b;\n\n---\n\n## Nested if-else\n```c\nif (a > b) {\n    if (a > c) max = a; else max = c;\n} else {\n    if (b > c) max = b; else max = c;\n}\n```\n## Dangling else\n**An `else` pairs with the nearest unmatched `if`.**\n```c\nif (a > 0)\n    if (b > 0) printf(\"both\");\nelse printf(\"a not positive?\");   // actually belongs to if (b > 0)!\n```\nUse braces to force the pairing you mean.\n\n## Conditional (ternary) operator\n`result = condition ? expr1 : expr2;`\n- `max = (a > b) ? a : b;`\n- Largest of three: `max = a > b ? (a > c ? a : c) : (b > c ? b : c);`\n- Right-to-left associative; it's an expression, so it can sit inside `printf`.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-switch",
+   "unit": null,
+   "title": "switch and the comma operator",
+   "content": "### ⚡ In 30 seconds\n- switch works on int/char only.\n- No break → falls into the next case.\n- default runs when no case matches.\n\n---\n\n```c\nswitch (expr) {           // expr: int or char only (no float, no strings)\n  case 1:  ...; break;\n  case 2:  ...; break;\n  default: ...;           // optional; any position\n}\n```\n- Case labels must be **constant** and **unique** integers or characters.\n- **Fall-through:** without `break`, execution continues into the next case. It can be used on purpose to group cases: `case 'a': case 'e': ... vowel`.\n- `default` runs when nothing matches.\n\n**switch vs else-if ladder:** switch tests only equality on an integer or char, and is cleaner for menus. if-else handles ranges, floats and complex conditions.\n\n## Comma operator\nEvaluates left to right; the value is the **last** expression. `x = (a = 2, a + 3);` → x = 5. Common in `for (i = 0, j = n; i < j; i++, j--)`.\n\n**Output trap:** `int x = 2; switch (x) { case 1: printf(\"1\"); case 2: printf(\"2\"); case 3: printf(\"3\"); }` → prints **23** (fall-through).\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-while",
+   "unit": null,
+   "title": "while and do-while",
+   "content": "### ⚡ In 30 seconds\n- while checks first (may run 0 times).\n- do-while checks last (runs at least once).\n- do-while ends with ;\n\n---\n\n```c\nwhile (cond) { body; }            // entry-controlled: may run 0 times\ndo { body; } while (cond);        // exit-controlled: runs at least once — note the ;\n```\n**The one real difference:** do-while checks **after** the body, so it always runs at least once (useful for menus and input validation).\n\n## Standard programs\n- Sum of digits / reverse a number: `while (n > 0) { d = n % 10; sum += d; rev = rev * 10 + d; n /= 10; }`\n- Palindrome number, Armstrong number (sum of the cubes of the digits = n for 3 digits), GCD (Euclid: `while (b) { t = b; b = a % b; a = t; }`).\n\n## Traps\n- Forgetting to update the loop variable → infinite loop.\n- `while (x < 10);` — the stray semicolon makes an empty body loop forever.\n- `int i = 5; do { printf(\"%d\", i); } while (i < 3);` → prints **5** once.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u3-for",
+   "unit": null,
+   "title": "for loop, break, continue, goto, return, exit",
+   "content": "### ⚡ In 30 seconds\n- for(init; test; update).\n- break leaves the loop; continue skips to the next round.\n- exit() ends the program; return ends the function.\n\n---\n\n```c\nfor (init; condition; update) { body; }\n```\nAny part can be empty; `for (;;)` is an infinite loop. Order: init → test → body → update → test …\n\n## Jump statements\n| Statement | Effect |\n|---|---|\n| `break` | leaves the **innermost** loop or switch |\n| `continue` | skips to the next iteration (in a `for`, the update still runs) |\n| `goto label;` | jumps to a label in the same function (avoid) |\n| `return` | leaves the current function (with a value) |\n| `exit(n)` | ends the whole program (`<stdlib.h>`); 0 = success |\n\n## Nested-loop patterns\n```c\nfor (i = 1; i <= n; i++) { for (j = 1; j <= i; j++) printf(\"*\"); printf(\"\\n\"); }\n```\nThe outer loop is rows, the inner loop is what's printed per row.\n\n## Output traps\n- `for (i = 0; i < 5; i++); printf(\"%d\", i);` → **5** (empty body).\n- `for (i = 0; i < 3; i++) { if (i == 1) continue; printf(\"%d\", i); }` → **02**.\n- `for (i = 0; i < 10; i++) { if (i == 3) break; printf(\"%d\", i); }` → **012**.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u4-intro",
+   "unit": null,
+   "title": "Functions: types and parameter passing",
+   "content": "### ⚡ In 30 seconds\n- Prototype, definition, call.\n- 4 types by args/return.\n- Call by value copies: a swap won't work without pointers.\n\n---\n\n```c\nint add(int a, int b);                  // declaration (prototype)\nint main(void) { int s = add(2, 3); }   // call: 2, 3 are the actual arguments\nint add(int a, int b) { return a + b; } // definition: a, b are the formal parameters\n```\n**Why functions:** modularity, reuse, easier debugging, less repetition.\n\n## Four types by arguments and return value\n| Type | Example |\n|---|---|\n| No args, no return | `void greet(void)` |\n| Args, no return | `void show(int n)` |\n| No args, return | `int readNum(void)` |\n| Args and return | `int add(int a, int b)` |\n\nLibrary functions (`printf`, `sqrt`) vs user-defined functions.\n\n## Parameter passing\n- **Call by value** (C's default): a *copy* is passed, so changes inside don't affect the caller.\n- **Call by reference** (using pointers): pass the address, `swap(&a, &b)` with `void swap(int *x, int *y) { int t = *x; *x = *y; *y = t; }`, so the caller's variables change.\n\n**Trap:** a swap written with call by value leaves the originals unchanged. That's the classic viva question.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u4-recursion",
+   "unit": null,
+   "title": "Recursion and call by value",
+   "content": "### ⚡ In 30 seconds\n- A function calling itself.\n- Needs a base case to stop.\n- fact(n) = n × fact(n−1); Hanoi takes 2ⁿ−1 moves.\n\n---\n\n**Recursion:** a function that calls itself. It needs (1) a **base case** that stops and (2) a **recursive case** that moves toward the base.\n\n```c\nint fact(int n) { if (n <= 1) return 1; return n * fact(n - 1); }\nint fib(int n)  { if (n <= 1) return n; return fib(n - 1) + fib(n - 2); }\nvoid hanoi(int n, char s, char d, char a) {\n    if (n == 0) return;\n    hanoi(n - 1, s, a, d); printf(\"%c->%c\\n\", s, d); hanoi(n - 1, a, d, s);\n}   // 2^n - 1 moves\n```\n## Stack trace: fact(3)\nfact(3) → 3 × fact(2) → 2 × fact(1) → returns 1 → 2 × 1 = 2 → 3 × 2 = **6**. Each call gets its own stack frame with its own copy of `n` (call by value).\n\n| Recursion | Iteration |\n|---|---|\n| elegant for trees, Hanoi | usually faster |\n| uses stack memory, can overflow | constant memory |\n| base case essential | loop condition essential |\n\n**Trap:** no base case (or one that's never reached) → infinite recursion → stack overflow.\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u4-storage",
+   "unit": null,
+   "title": "Storage classes",
+   "content": "### ⚡ In 30 seconds\n- auto: default, garbage, block scope.\n- static: keeps its value between calls, default 0.\n- extern: declared here, defined elsewhere. register: no &.\n\n---\n\n| Class | Storage | Default value | Scope | Lifetime |\n|---|---|---|---|---|\n| `auto` | stack (memory) | garbage | block | until the block ends |\n| `register` | CPU register (a request) | garbage | block | until the block ends |\n| `static` (local) | data segment | **0** | block | **whole program** |\n| `static` (global) | data segment | 0 | this file only | whole program |\n| `extern` | data segment | 0 | global, across files | whole program |\n\n- `auto` is the default for local variables.\n- You **can't take `&`** of a `register` variable.\n- A `static` local keeps its value between calls:\n```c\nvoid f(void) { static int c = 0; c++; printf(\"%d \", c); }   // f(); f(); f(); → 1 2 3\n```\n- `extern int x;` **declares** without allocating; the definition is in another file.\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 1,
+   "title": "C Unit 1 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Computer anatomy | Input, CPU (ALU, CU, registers), memory, output; buses |\n| Memory hierarchy | registers → cache → RAM → secondary; speed ↓, size ↑, cost ↓ |\n| OS | process, memory, file, device management |\n| Instruction cycle | fetch (PC→MAR→MDR→IR), decode, execute |\n| Language generations | 1GL machine … 5GL; compiler vs interpreter table |\n| Build pipeline | preprocess → compile → assemble → link → load |\n| Algorithms | properties; step form, pseudocode, flowchart; the symbols |\n| Structured programming | sequence, selection, iteration; why no goto |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 2,
+   "title": "C Unit 2 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Program structure | 6 sections; execution starts at main; return 0 |\n| Tokens | 6 types; identifier rules; 32 keywords |\n| Data types | sizes, ranges, format specifiers |\n| Operators | categories; `%` integers only; pre vs post increment |\n| Precedence | unary R→L, `*/%` > `+-` > relational > `==` > `&&` > `||` > `?:` > `=` |\n| Conversion | implicit promotion; cast; `5/2 = 2` |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 3,
+   "title": "C Unit 3 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| I/O | specifiers, width/precision, `&` in scanf, the `\" %c\"` fix |\n| if / else | `=` vs `==`, stray `;`, dangling else pairs with the nearest if |\n| Ternary | `a > b ? a : b`; largest of three |\n| switch | int/char, constant labels, fall-through without break |\n| Loops | while (entry) vs do-while (exit, at least once) vs for |\n| Jumps | break (innermost), continue (skip; for still updates), goto, return, exit |\n\n**Output questions:** trace variables in a table, one row per iteration.\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 4,
+   "title": "C Unit 4 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Functions | prototype, definition, call; formal vs actual parameters; 4 types |\n| Call by value | copies; swap fails. Call by reference: pointers; swap works |\n| Recursion | base case + recursive case; stack trace; factorial, fibonacci, Hanoi ($2^n-1$ moves) |\n| Storage classes | the 5-row table: storage, default, scope, lifetime; static keeps its value |\n\n**Class Test 1 covers Units 3 and 4.**\n",
+   "pinned": true
+  }
+ ]
+}

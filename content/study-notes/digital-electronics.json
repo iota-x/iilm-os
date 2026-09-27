@@ -1,0 +1,201 @@
+{
+ "subject": "digital-electronics",
+ "notes": [
+  {
+   "topic": "deco-u1-number-systems",
+   "unit": null,
+   "title": "Number systems",
+   "content": "### ⚡ In 30 seconds\n- Bases: binary 2, octal 8, decimal 10, hex 16.\n- Value = digit × base^position.\n- MSB is the leftmost bit, LSB the rightmost.\n\n---\n\n*DENotes pp. 1–3.*\n\n- **Analog** = continuous values (sine wave; resistors, capacitors). **Digital** = discrete 0/1 (square wave; transistors, gates, ICs). ADC and DAC convert between them.\n- **Base (radix)** = number of symbols: binary 2 (0–1), octal 8 (0–7), decimal 10, hexadecimal 16 (0–9, A=10 … F=15).\n- **Positional value:** digit × base^position; positions left of the point are 0, 1, 2…, right of it −1, −2…\n  e.g. $(10101.01)_2=16+4+1+0.25=21.25$; $(525.5)_8=320+16+5+0.625=341.625$.\n- **Bit** = one binary digit; **nibble** = 4 bits; **byte** = 8 bits. **MSB** = leftmost bit, **LSB** = rightmost.\n\n| Bin | Oct | Dec | Hex |\n|---|---|---|---|\n| 1000 | 10 | 8 | 8 |\n| 1010 | 12 | 10 | A |\n| 1111 | 17 | 15 | F |\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-conversion",
+   "unit": null,
+   "title": "Conversions between bases",
+   "content": "### ⚡ In 30 seconds\n- To decimal: multiply by powers of the base and add.\n- From decimal: divide for the integer part, multiply for the fraction.\n- Binary ↔ octal/hex: group 3 or 4 bits.\n\n---\n\n*DENotes pp. 5–7.*\n\n| From → To | Method |\n|---|---|\n| Any base → decimal | Sum digit × base^position |\n| Decimal integer → base $b$ | Repeated division by $b$; read remainders **bottom-up** |\n| Decimal fraction → base $b$ | Repeated multiplication by $b$; read integer parts **top-down** |\n| Binary → octal / hex | Group 3 / 4 bits from the point outward (pad with 0s) |\n| Octal ↔ hex | Go through binary |\n\n**Worked (p. 6):** $(555.44)_{10}\\to$ octal. Integer: $555=8\\cdot69+3$, $69=8\\cdot8+5$, $8=8\\cdot1+0$, $1$ → $1053$. Fraction: $0.44\\times8=3.52$ → 3, $0.52\\times8=4.16$ → 4, $0.16\\times8=1.28$ → 1 → $(1053.341\\ldots)_8$.\n\n**Worked (p. 7):** $(101010.10)_2 = (222.2)_4 = (52.4)_8 = (2A.8)_{16}$.\n\n**Trap:** grouping for the fraction part goes **rightward** from the point, padding zeros on the right.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-arithmetic",
+   "unit": null,
+   "title": "Binary arithmetic and signed numbers",
+   "content": "### ⚡ In 30 seconds\n- 2's complement = flip all bits, then add 1.\n- A − B = A + 2's complement of B; drop the end carry.\n- Overflow: two same-sign numbers give an opposite-sign answer.\n\n---\n\n*DENotes pp. 3–4, 8–10. Overflow isn't in the notes; it's below.*\n\n## Rules\nAdd: $1+1=0$ carry 1. Subtract: $0-1=1$ borrow 1. Multiply and divide as in decimal.\n\n## Complements\n- **1's complement:** flip every bit.\n- **2's complement:** 1's complement + 1. Shortcut: from the LSB, copy bits up to and including the first 1, then flip the rest.\n\n## Signed representations (n bits)\n| Form | Range | Zeros |\n|---|---|---|\n| Unsigned | $0$ to $2^n-1$ | — |\n| Sign-magnitude | $-(2^{n-1}-1)$ to $+(2^{n-1}-1)$ | two (+0, −0) |\n| 1's complement | same as sign-magnitude | two |\n| 2's complement | $-2^{n-1}$ to $2^{n-1}-1$ | one |\n\nReading a 2's-complement number: the MSB has weight $-2^{n-1}$. e.g. $10110=-16+4+2=-10$.\n\n## Subtraction by 2's complement\n$A-B=A+(\\text{2's complement of }B)$. Discard the end carry if there is one. If there's no carry (and the MSB is 1), the result is negative, in 2's complement form.\n**Worked (p. 10):** $10-11$: $01010+10101=11111=-1$.\n\n## Overflow (not in DENotes)\nOverflow happens when adding two numbers **of the same sign** gives a result of the **opposite sign**, i.e. the true result doesn't fit in n bits. Rule: overflow = carry into the MSB ⊕ carry out of the MSB. Two numbers of opposite sign can never overflow.\ne.g. 4-bit: $0110+0101=1011$ (6 + 5 gives −5) → overflow.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-codes",
+   "unit": null,
+   "title": "Codes: BCD, Excess-3, Gray, parity",
+   "content": "### ⚡ In 30 seconds\n- BCD: each decimal digit as 4 bits.\n- Excess-3 = BCD + 3. Gray: neighbours differ by one bit.\n- Parity bit makes the count of 1s even/odd; detects 1-bit errors, can't fix them.\n\n---\n\n*DENotes pp. 10–12. Parity isn't in the notes; it's below.*\n\n## Weighted codes\n- **BCD 8421:** each decimal digit is written as 4 bits; 1010–1111 are invalid. $(59)_{10}=0101\\ 1001$.\n- **2421:** weights 2, 4, 2, 1 (self-complementing).\n\n## Non-weighted codes\n- **Excess-3:** BCD + 0011. Self-complementing: the 9's complement is the bitwise flip.\n- **Gray code:** successive values differ in **one bit** (used in K-maps and shaft encoders).\n  - Binary → Gray: MSB same, then $g_i=b_i\\oplus b_{i+1}$ (XOR adjacent bits). $1001\\to1101$.\n  - Gray → binary: MSB same, then $b_i=b_{i+1}\\oplus g_i$ (XOR with the previous *binary* bit). $1001\\to1110$.\n\n## Parity and error detection (not in DENotes)\n- A **parity bit** is added so the total number of 1s is **even (even parity)** or **odd (odd parity)**.\n  e.g. data 1011001 (four 1s): even parity bit = 0 → 10110010; odd parity bit = 1.\n- The receiver counts the 1s. If the parity is wrong, a **single-bit error** is detected.\n- **Limits:** detects any odd number of errors; **misses** even numbers of errors; **cannot correct**, because it doesn't say which bit flipped. Correction needs e.g. a Hamming code.\n- Parity generator/checker = an XOR tree.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-boolean",
+   "unit": null,
+   "title": "Boolean algebra",
+   "content": "### ⚡ In 30 seconds\n- De Morgan: (AB)' = A' + B', (A+B)' = A'B'.\n- Absorption: A + AB = A. Consensus: AB + A'C + BC = AB + A'C.\n- Dual: swap AND↔OR and 0↔1.\n\n---\n\n*DENotes pp. 12–13, 23–25. Absorption and consensus aren't in the notes; they're below.*\n\n| Law | AND form | OR form |\n|---|---|---|\n| Identity | $x\\cdot1=x$ | $x+0=x$ |\n| Null | $x\\cdot0=0$ | $x+1=1$ |\n| Idempotent | $x\\cdot x=x$ | $x+x=x$ |\n| Complement | $x\\cdot\\bar x=0$ | $x+\\bar x=1$ |\n| Involution | $\\bar{\\bar x}=x$ | |\n| Commutative | $xy=yx$ | $x+y=y+x$ |\n| Associative | $x(yz)=(xy)z$ | $x+(y+z)=(x+y)+z$ |\n| Distributive | $x(y+z)=xy+xz$ | $x+yz=(x+y)(x+z)$ |\n| **De Morgan** | $\\overline{xy}=\\bar x+\\bar y$ | $\\overline{x+y}=\\bar x\\,\\bar y$ |\n| **Absorption** | $x(x+y)=x$ | $x+xy=x$ |\n| Also useful | $x+\\bar xy=x+y$ | $x(\\bar x+y)=xy$ |\n| **Consensus** | $xy+\\bar xz+yz=xy+\\bar xz$ | $(x+y)(\\bar x+z)(y+z)=(x+y)(\\bar x+z)$ |\n\n- **Duality:** swap $\\cdot\\leftrightarrow+$ and $0\\leftrightarrow1$, keep the variables. Every theorem's dual is also a theorem.\n- **Complement of a function:** apply the dual and complement each literal. $\\overline{\\bar x+y+z}=x\\bar y\\bar z$.\n- **Self-dual:** $f^D=f$, e.g. $AB+BC+CA$. There are $2^{2^{n-1}}$ self-dual functions of $n$ variables, out of $2^{2^n}$ functions in total.\n\n**Consensus proof trick:** $yz=yz(x+\\bar x)$, then absorb each part.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-implementation",
+   "unit": null,
+   "title": "Expressions ↔ gate circuits",
+   "content": "### ⚡ In 30 seconds\n- SOP → AND gates feeding one OR.\n- POS → OR gates feeding one AND.\n- SOP → NAND-NAND, POS → NOR-NOR.\n\n---\n\n*DENotes p. 19, p. 31. The notes have little practice, so here is the method.*\n\n## Expression → circuit\n1. Each product term → an AND gate; each complemented literal → a NOT (or a bubble).\n2. OR the product terms together (SOP gives a two-level AND–OR circuit).\n3. POS is the reverse: OR gates feeding one AND.\ne.g. $R=AC+B$ (p. 31): AND(A, C) → OR with B.\n\n## Circuit → expression\nLabel the output of every gate, working from the inputs to the output, then simplify.\n\n## NAND-only / NOR-only\n- SOP → **NAND–NAND**: replace both levels of AND–OR with NAND (double bubbles cancel).\n- POS → **NOR–NOR**.\n- Count the gates: examiners ask for \"minimum number of gates\".\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-gates",
+   "unit": null,
+   "title": "Logic gates and universal gates",
+   "content": "### ⚡ In 30 seconds\n- 7 gates; learn the truth table of each.\n- NAND and NOR are universal.\n- XOR = 1 when inputs differ.\n\n---\n\n*DENotes pp. 14–18.*\n\n| Gate | Expression | Output is 1 when | IC |\n|---|---|---|---|\n| AND | $xy$ | all inputs 1 | 7408 |\n| OR | $x+y$ | any input 1 | 7432 |\n| NOT | $\\bar x$ | input 0 | 7404 |\n| NAND | $\\overline{xy}$ | not all 1 | 7400 |\n| NOR | $\\overline{x+y}$ | all inputs 0 | 7402 |\n| XOR | $x\\bar y+\\bar xy$ | inputs differ | 7486 |\n| XNOR | $xy+\\bar x\\bar y$ | inputs equal | 74266 |\n\n## Universal gates (NAND and NOR can build any gate)\n| Build | From NAND | From NOR |\n|---|---|---|\n| NOT | tie inputs: 1 gate | tie inputs: 1 |\n| AND | NAND → NOT: 2 | NOT each input → NOR: 3 |\n| OR | NOT each input → NAND: 3 | NOR → NOT: 2 |\n| XOR | 4 NANDs | 5 NORs |\n\n**Why \"universal\":** {NAND} alone is functionally complete, because NOT and AND can be made from it and {AND, NOT} is complete.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u2-intro",
+   "unit": null,
+   "title": "Combinational circuits — design procedure",
+   "content": "### ⚡ In 30 seconds\n- Output depends only on the current inputs (no memory).\n- Steps: truth table → expression → K-map → circuit.\n- Example in notes: R = AC + B.\n\n---\n\n*DENotes pp. 30–31.*\n\n**Combinational circuit:** the output depends only on the **current inputs**; there is no memory. $n$ inputs → $m$ outputs, $O=F(I)$.\n\n## Design procedure\n1. Read the specification and name the inputs and outputs.\n2. Write the **truth table**.\n3. Get the output expressions (Σm / ΠM).\n4. **Simplify** (K-map).\n5. Draw the circuit.\n\n**Worked (pp. 30–31):** a result is 1 if (5ME AND Guide) OR GD → K-map gives $R=AC+B$ → AND + OR circuit.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-canonical",
+   "unit": null,
+   "title": "SOP, POS, minterms, maxterms",
+   "content": "### ⚡ In 30 seconds\n- Minterm = the 1s → SOP (Σm).\n- Maxterm = the 0s → POS (ΠM).\n- Σm and ΠM use complementary numbers.\n\n---\n\n*DENotes pp. 19–22, 24.*\n\n- **Minterm** $m_i$: a product with every variable, 1 in exactly one row. Variable = 1 → $x$, variable = 0 → $\\bar x$.\n- **Maxterm** $M_i$: a sum with every variable, 0 in exactly one row. Variable = 0 → $x$, variable = 1 → $\\bar x$.\n- **Canonical SOP** = OR of the minterms where $f=1$: $f=\\Sigma m(1,3,6,7)$.\n- **Canonical POS** = AND of the maxterms where $f=0$: $f=\\Pi M(0,2,4,5)$ — the **complementary** index list.\n- $M_i=\\overline{m_i}$.\n\n## Expanding to canonical form\nMultiply a missing variable in as $(y+\\bar y)$ for SOP. For POS, add $z\\bar z$ and use $x+yz=(x+y)(x+z)$.\ne.g. $xy+\\bar xy\\bar z = xy\\bar z+xyz+\\bar xy\\bar z$.\n\n**Counts:** $n$ variables → $2^n$ rows → $2^{2^n}$ possible functions (16 for $n=2$, 256 for $n=3$).\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-kmap",
+   "unit": null,
+   "title": "Karnaugh maps (2, 3, 4 variables)",
+   "content": "### ⚡ In 30 seconds\n- Label rows and columns 00, 01, 11, 10 (Gray order).\n- Group 1s in 1, 2, 4, 8; edges wrap, corners join.\n- Keep variables that don't change inside a group.\n\n---\n\n*DENotes pp. 26–27.*\n\n## Layout\nRows and columns in **Gray-code order: 00, 01, 11, 10**. Cell numbers for 4 variables (rows AB, columns CD):\n|  | 00 | 01 | 11 | 10 |\n|---|---|---|---|---|\n| **00** | 0 | 1 | 3 | 2 |\n| **01** | 4 | 5 | 7 | 6 |\n| **11** | 12 | 13 | 15 | 14 |\n| **10** | 8 | 9 | 11 | 10 |\n\n## Grouping rules\n- Groups of 1, 2, 4, 8, 16 — rectangles only, as large as possible, as few as possible.\n- Edges wrap around; the **four corners** form one group.\n- Overlapping is allowed.\n- In a group, variables that **don't change** stay; those that change drop out. A group of $2^k$ removes $k$ variables.\n\n**Worked (p. 27):** $\\Sigma m(0,2,5,7,8,10,13,15)$ → corners $\\bar B\\bar D$ + centre $BD$ → $F=BD+\\bar B\\bar D$.\n\n**Class Test Q1 shape:** $F=\\Sigma m(0,1,2,5,6,7,8,9,10,14)$ → plot, group, minimal SOP, then draw it with gates. Show the map with Gray labels — marks are for the method.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-kmap-pos",
+   "unit": null,
+   "title": "POS with K-maps",
+   "content": "### ⚡ In 30 seconds\n- Group the 0s instead of the 1s.\n- Each group gives a sum term (0 → x, 1 → x').\n- AND the sum terms together.\n\n---\n\n*DENotes p. 29.*\n\n1. Plot the **0s**, i.e. the maxterms: the cells where $f=0$.\n2. Group the 0s with the same rules as for 1s.\n3. Each group gives a **sum** term: variable = 0 → $x$, variable = 1 → $\\bar x$.\n4. AND the sum terms.\n\n**Worked (p. 29):** 0s at 5, 7, 13, 15 → $(\\bar B+\\bar D)$; 0s at 8, 9 → $(\\bar A+B+C)$ → $f=(\\bar A+B+C)(\\bar B+\\bar D)$.\n\n**Shortcut:** group the 0s as if for SOP to get $\\bar f$, then apply De Morgan.\n**When POS wins:** when there are fewer 0s than 1s, or the 0s form bigger groups.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-kmap-dontcare",
+   "unit": null,
+   "title": "Don't-care conditions",
+   "content": "### ⚡ In 30 seconds\n- X = input that never happens.\n- Use an X as 1 only if it makes a group bigger.\n- Never make a group of only X's.\n\n---\n\n*DENotes p. 27 (one line). A worked example is below.*\n\n**Don't care (X or d):** input combinations that never occur, or whose output doesn't matter (e.g. BCD 1010–1111). Written $f=\\Sigma m(\\ldots)+d(\\ldots)$.\n\n## Rule\nTreat an X as 1 **only if** it makes a group larger. Never make a group of X's alone; leftover X's are 0.\n\n## Worked example\n$f(A,B,C,D)=\\Sigma m(1,3,7,11,15)+d(0,2,5)$\n- Column CD = 11 (cells 3, 7, 15, 11) → a quad → $CD$.\n- Cell 1: group with 3 and the don't-cares 0, 2 → quad $\\bar A\\bar B$ (cells 0, 1, 2, 3).\n- $f=CD+\\bar A\\bar B$. Cell 5 (X) was left unused because it didn't help.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-implicants",
+   "unit": null,
+   "title": "Prime and essential prime implicants",
+   "content": "### ⚡ In 30 seconds\n- Prime implicant = a group that can't grow.\n- Essential = the only group covering some 1.\n- Take the essentials first, then the fewest extra groups.\n\n---\n\n*DENotes pp. 28–29.*\n\n- **Implicant:** any valid group of 1s.\n- **Prime implicant (PI):** a group that can't be made any larger.\n- **Essential prime implicant (EPI):** a PI that covers at least one 1 that **no other PI** covers.\n- **Redundant PI:** every one of its 1s is already covered by EPIs.\n\n## Minimisation order\n1. List all PIs.\n2. Take every EPI (check each 1: is it covered by only one PI?).\n3. Cover the remaining 1s with the fewest extra PIs.\n\n**Worked (p. 29):** the notes' map has 4 PIs ($B\\bar CD$, $ABD$, $ACD$, $ABC$), of which 3 are essential ($B\\bar CD$, $ACD$, $ABC$); $ABD$ is redundant because its 1s are already covered.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u1-kmap5",
+   "unit": null,
+   "title": "5-variable K-maps",
+   "content": "### ⚡ In 30 seconds\n- Two 4-variable maps: A = 0 and A = 1.\n- Same cell in both maps = adjacent.\n- A group across both maps drops A.\n\n---\n\n*DENotes p. 28.*\n\nTwo 4-variable maps: one for $A=0$, one for $A=1$ (cells 0–15 and 16–31), with BC on the rows and DE on the columns.\n- Groups work inside each map as usual.\n- Cells in the **same position in both maps** are adjacent; such a group drops $A$.\n- Worked (p. 28): matching groups in both maps give $\\bar BE$ terms without $A$.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u2-adders",
+   "unit": null,
+   "title": "Adders and subtractors",
+   "content": "### ⚡ In 30 seconds\n- Half adder: S = A⊕B, C = AB.\n- Full adder: S = A⊕B⊕Cin, Cout = AB + Cin(A⊕B).\n- Look-ahead: Cᵢ₊₁ = Gᵢ + PᵢCᵢ, faster than ripple.\n\n---\n\n*DENotes pp. 31–38.*\n\n| Circuit | Outputs |\n|---|---|\n| Half adder (2 bits) | $S=A\\oplus B$, $C=AB$ |\n| Full adder (3 bits) | $S=A\\oplus B\\oplus C_{in}$, $C_{out}=AB+AC_{in}+BC_{in}=AB+C_{in}(A\\oplus B)$ |\n| Half subtractor | $D=A\\oplus B$, $B_o=\\bar AB$ |\n| Full subtractor | $D=A\\oplus B\\oplus B_{in}$, $B_{out}=\\bar AB+\\bar AB_{in}+BB_{in}=\\bar AB+B_{in}\\overline{(A\\oplus B)}$ |\n\n- **Full adder from 2 half adders** + one OR gate (p. 34).\n- **Ripple-carry adder:** n full adders chained, carry $C_i\\to C_{i+1}$. Slow: each stage waits for the previous carry (delay ∝ n).\n- **Carry look-ahead (pp. 37–38):** $P_i=A_i\\oplus B_i$, $G_i=A_iB_i$, $C_{i+1}=G_i+P_iC_i$. Expanded, e.g. $C_2=G_1+P_1G_0+P_1P_0C_0$: every carry comes straight from $C_0$ in two gate levels.\n- **Subtraction in practice:** $A+\\bar B+1$ (2's complement) using an adder with XORs on B.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u2-mux",
+   "unit": null,
+   "title": "Multiplexers and demultiplexers",
+   "content": "### ⚡ In 30 seconds\n- MUX: many inputs → 1 output, chosen by select lines.\n- Function on 8:1 MUX: Iₖ = 1 if minterm k is in the list.\n- DEMUX: 1 input → many outputs (a decoder with enable).\n\n---\n\n*DENotes pp. 39–45.*\n\n## MUX ($2^n$:1)\n$2^n$ data inputs, $n$ select lines, 1 output: a data selector.\n- 2:1: $Y=\\bar SI_0+SI_1$\n- 4:1: $Y=\\bar S_1\\bar S_0I_0+\\bar S_1S_0I_1+S_1\\bar S_0I_2+S_1S_0I_3$\n- 8:1 = two 4:1 plus a 2:1 (a MUX tree)\n\n## Implementing a function (Class Test Q2)\n**On an 8:1 MUX with A, B, C as select lines:** $I_k=1$ if $m_k$ is in the list, else 0.\n$F=\\Sigma m(1,3,5,6)$ → $I_1=I_3=I_5=I_6=1$, all others 0.\n\n**On a 4:1 MUX (3 variables):** B, C on the selects; for each input pair ($m_k$ with A=0, $m_{k+4}$ with A=1): both absent → 0, both present → 1, only the A=0 one → $\\bar A$, only the A=1 one → $A$.\n\n## DEMUX (1:$2^n$)\nOne input routed to one of $2^n$ outputs by the select lines: a data distributor. 1:2: $Y_0=\\bar S\\,I$, $Y_1=S\\,I$.\n**A DEMUX is a decoder with an enable:** the data input acts as the enable.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u2-codec",
+   "unit": null,
+   "title": "Decoders and encoders",
+   "content": "### ⚡ In 30 seconds\n- Decoder: n inputs → 2ⁿ outputs, each a minterm.\n- Function = decoder + OR of its minterms.\n- Encoder: the reverse; priority encoder picks the highest input.\n\n---\n\n*DENotes pp. 46–48.*\n\n## Decoder ($n\\times2^n$)\nActivates exactly one of $2^n$ outputs; each output is one **minterm**. It has an enable line.\n- 2:4: $Y_0=\\bar A\\bar B,\\ Y_1=\\bar AB,\\ Y_2=A\\bar B,\\ Y_3=AB$\n- **Function with a decoder + OR:** OR the minterm outputs. A full adder from a 3:8 decoder: $S=\\Sigma(1,2,4,7)$, $C=\\Sigma(3,5,6,7)$ (p. 47).\n- 74138 (3:8) has active-low outputs. 7442 = BCD to decimal (4:10).\n\n## Encoder ($2^n\\times n$)\nThe reverse: one active input → its binary code. 8:3 (octal to binary), 4:2.\n- Plain encoders misbehave if two inputs are active at once.\n- **Priority encoder:** the highest-numbered active input wins, plus a valid bit. For 4:2: $Y_1=I_3+I_2$, $Y_0=I_3+\\bar I_2I_1$.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u2-comparators",
+   "unit": null,
+   "title": "Magnitude comparators",
+   "content": "### ⚡ In 30 seconds\n- A>B = AB', A=B = XNOR, A<B = A'B.\n- For 2 bits, compare the MSBs first.\n- Lower bits matter only when the higher bits are equal.\n\n---\n\n*Not in DENotes. Learn it from this note, or Mano §4.8.*\n\n## 1-bit comparator\n| A | B | A>B | A=B | A<B |\n|---|---|---|---|---|\n| 0 | 0 | 0 | 1 | 0 |\n| 0 | 1 | 0 | 0 | 1 |\n| 1 | 0 | 1 | 0 | 0 |\n| 1 | 1 | 0 | 1 | 0 |\n\n$G=A\\bar B$, $E=\\overline{A\\oplus B}=AB+\\bar A\\bar B$ (XNOR), $L=\\bar AB$.\n\n## 2-bit comparator ($A_1A_0$ vs $B_1B_0$)\nLet $x_i=A_iB_i+\\bar A_i\\bar B_i$ (bit $i$ equal).\n- $A=B$: $x_1x_0$\n- $A>B$: $A_1\\bar B_1+x_1A_0\\bar B_0$\n- $A<B$: $\\bar A_1B_1+x_1\\bar A_0B_0$\n\n**Logic:** compare from the MSB down; a lower bit decides only when all higher bits are equal. The 4-bit version (7485) extends the same pattern: $A>B = A_3\\bar B_3+x_3A_2\\bar B_2+x_3x_2A_1\\bar B_1+x_3x_2x_1A_0\\bar B_0$.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-latches",
+   "unit": null,
+   "title": "Sequential circuits and the SR latch",
+   "content": "### ⚡ In 30 seconds\n- Sequential = combinational + memory.\n- SR latch: 00 hold, 01 reset, 10 set, 11 invalid.\n- S = R = 1 is invalid: Q and Q' both 0, then a race.\n\n---\n\n*DENotes pp. 49–50.*\n\n**Sequential circuit** = combinational logic + **memory**; the output depends on the inputs **and the past state**: $Y_i=F(X_i,Y_{i-1})$.\n\n## SR latch (two cross-coupled NOR gates)\n| S | R | $Q_{n+1}$ |\n|---|---|---|\n| 0 | 0 | $Q_n$ (hold) |\n| 0 | 1 | 0 (reset) |\n| 1 | 0 | 1 (set) |\n| 1 | 1 | **invalid** |\n\n**Why S = R = 1 is forbidden (Class Test Q3):** both outputs are forced to 0, so $Q=\\bar Q$, which breaks the complement relation. When both inputs return to 0 together, the final state depends on which gate is faster (a race), so it's unpredictable.\n\n**NAND latch ($\\bar S\\bar R$):** active-low inputs. $S=R=0$ is invalid, and 1,1 holds (p. 50).\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-flipflops",
+   "unit": null,
+   "title": "Flip-flops: SR, JK, D, T",
+   "content": "### ⚡ In 30 seconds\n- JK: Q⁺ = JQ' + K'Q (11 toggles).\n- D: Q⁺ = D.  T: Q⁺ = T⊕Q.\n- Learn the excitation table; counter design needs it.\n\n---\n\n*DENotes pp. 51–55, 59–60.*\n\n| FF | Characteristic equation | Behaviour |\n|---|---|---|\n| SR | $Q_{n+1}=S+\\bar RQ_n$ ($SR=0$) | hold, reset, set, invalid |\n| JK | $Q_{n+1}=J\\bar Q_n+\\bar KQ_n$ | hold, reset, set, **toggle** (J=K=1) |\n| D | $Q_{n+1}=D$ | copies D on the clock |\n| T | $Q_{n+1}=T\\oplus Q_n$ | T=1 toggles |\n\n## Excitation tables (needed for counter design)\n| $Q_n\\to Q_{n+1}$ | S R | J K | D | T |\n|---|---|---|---|---|\n| 0 → 0 | 0 X | 0 X | 0 | 0 |\n| 0 → 1 | 1 0 | 1 X | 1 | 1 |\n| 1 → 0 | 0 1 | X 1 | 0 | 1 |\n| 1 → 1 | X 0 | X 0 | 1 | 0 |\n\n**Clocked SR** = an SR latch with two AND/NAND gates gating S and R with CLK (pp. 51–52).\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-master-slave",
+   "unit": null,
+   "title": "Triggering, race-around, master–slave, latch vs FF",
+   "content": "### ⚡ In 30 seconds\n- Race-around: J = K = 1 and a clock pulse longer than the delay.\n- Fix: master–slave JK (master on CLK, slave on CLK').\n- Latch = level, transparent. Flip-flop = edge only.\n\n---\n\n*DENotes pp. 56–58. The latch vs flip-flop comparison isn't drawn in the notes; it's below.*\n\n## Triggering\n- **Level-triggered:** responds the whole time CLK is high (or low).\n- **Edge-triggered:** responds only at the rising (↑) or falling (↓) edge; ▷ on the symbol, a bubble for negative edge.\n\n## Race-around condition (Class Test Q4)\nA **level-triggered JK** with **J = K = 1**: the output toggles, the new output feeds back, and it toggles again, **repeatedly while CLK is high**, because the pulse width $t_w$ > the propagation delay $t_{pd}$. The final state is unpredictable.\n**Fixes:** $t_w<t_{pd}$ (impractical), edge triggering, or a **master–slave JK**.\n\n## Master–slave JK\nTwo latches in series: the **master** is enabled on CLK = 1 and captures J, K; the **slave** is enabled on $\\overline{CLK}$ and copies the master when CLK falls. The slave's output feeds back to the master's J/K gates. The output changes **once per clock**, on the falling edge, and the feedback can't race because the slave is frozen while the master is open.\n\n## Latch vs edge-triggered flip-flop (Class Test Q5)\n| | Latch | Edge-triggered flip-flop |\n|---|---|---|\n| Triggered by | level (enable high) | a clock edge |\n| Transparent? | yes: output follows the input while enabled | no: samples only at the edge |\n| Output changes | any time during the enable | only at the edge |\n| Timing control | poor, glitches pass through | precise, synchronous |\n| Use | simple storage | registers, counters |\n\n**Timing diagram:** draw CLK, D, a latch Q (tracks D whenever CLK is high) and a flip-flop Q (changes only at ↑). The difference shows when D changes mid-pulse.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-sync-fundamentals",
+   "unit": null,
+   "title": "Synchronous sequential circuits: Moore, Mealy, state diagrams",
+   "content": "### ⚡ In 30 seconds\n- Synchronous = all flip-flops share one clock.\n- Moore: output from state. Mealy: state + input.\n- State table: present state, input, next state, output.\n\n---\n\n*Not in DENotes beyond the block diagram on p. 49. Learn it from this note, or Mano §5.5.*\n\n**Synchronous:** every flip-flop shares one clock; the state changes only on clock edges. Model: combinational logic (next-state and output logic) + flip-flops (state memory) + feedback.\n\n## Moore vs Mealy\n| | Moore | Mealy |\n|---|---|---|\n| Output depends on | present state only | present state **and** inputs |\n| Diagram label | output written **in the state** (S1/0) | output on the **arrow** (1/0 = input/output) |\n| Output changes | only on the clock | as soon as the input changes |\n| States needed | usually more | usually fewer |\n\n## State table columns\nPresent state | Input | Next state | Output (+ flip-flop inputs, when designing).\n\n## State diagram\nCircles = states, arrows = transitions labelled with input (/output for Mealy). Each state has one outgoing arrow per input value.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-clocked",
+   "unit": null,
+   "title": "Clocked sequential circuits: analysis and design",
+   "content": "### ⚡ In 30 seconds\n- Analysis: circuit → equations → state table → diagram.\n- Design: diagram → table → excitation → K-maps → circuit.\n- Conversions use the same steps (SR→JK: S = JQ', R = KQ).\n\n---\n\n*DENotes pp. 61–67 (flip-flop conversions) and 71–72 (design steps). Analysis isn't in the notes; it's below.*\n\n## Analysis (given circuit → behaviour)\n1. Write the flip-flop input equations from the circuit (e.g. $D_A=Ax+Bx$).\n2. Write the output equation.\n3. Make the state table: for every present state and input, the next state from the characteristic equation.\n4. Draw the state diagram and describe what it does.\n\n## Design (specification → circuit)\n1. State diagram → state table.\n2. Number of flip-flops $k$: $2^k\\ge$ number of states.\n3. Using the **excitation table**, add flip-flop input columns.\n4. K-map each flip-flop input (and the output).\n5. Draw the circuit.\n\n## Flip-flop conversion (pp. 61–67) is the same procedure\nThe target flip-flop's characteristic table gives the rows; the available flip-flop's excitation table gives its inputs; then K-map. Results to remember:\n| Conversion | Result |\n|---|---|\n| SR → D | $S=D$, $R=\\bar D$ |\n| JK → D | $J=D$, $K=\\bar D$ |\n| JK → T | $J=K=T$ |\n| SR → JK | $S=J\\bar Q$, $R=KQ$ |\n| JK → SR | $J=S$, $K=R$ |\n| T → JK | $T=J\\bar Q+KQ$ |\n| SR → T | $S=T\\bar Q$, $R=TQ$ |\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-counters",
+   "unit": null,
+   "title": "Counters",
+   "content": "### ⚡ In 30 seconds\n- n flip-flops → up to 2ⁿ states.\n- Synchronous = common clock (fast); ripple = chained (slow).\n- 3-bit JK up counter: J=K=1, Q₀, Q₀Q₁.\n\n---\n\n*DENotes pp. 68–72. The 3-bit JK design and clear-on-count aren't in the notes; they're below.*\n\n- **n flip-flops → up to $2^n$ states.** A MOD-N counter needs the smallest $k$ with $2^k\\ge N$ (MOD-6 → 3).\n- State after $m$ pulses in a MOD-N counter starting at 0 = $m \\bmod N$.\n\n| Synchronous | Asynchronous (ripple) |\n|---|---|\n| common clock, parallel | each flip-flop is clocked by the previous one's Q |\n| faster, delay independent of n | slower, delays add up |\n| any sequence possible | simple up/down only |\n| more complex, costly | simple, cheap |\n\n**Up/down ripple (p. 71):**\n| Next stage clocked from | ↑-edge flip-flops | ↓-edge flip-flops |\n|---|---|---|\n| $Q$ | down | up |\n| $\\bar Q$ | up | down |\n\n## 3-bit synchronous up counter with JK (lab experiment 10)\nThe excitation table + K-maps give: $J_0=K_0=1$; $J_1=K_1=Q_0$; $J_2=K_2=Q_0Q_1$. (Rule: a bit toggles when all lower bits are 1.)\n\n## MOD-N by clearing\nCount normally; when the count reaches **N**, a NAND of the 1-bits drives CLEAR, resetting to 0. MOD-6 on a 3-bit counter: NAND($Q_2$, $Q_1$) → CLR (6 = 110). State 110 appears only for a glitch-length moment.\n\n**Design steps (p. 71):** sequence → number of flip-flops → excitation table → K-maps → circuit.\n",
+   "pinned": false
+  },
+  {
+   "topic": "deco-u3-registers",
+   "unit": null,
+   "title": "Shift registers, ring and Johnson counters",
+   "content": "### ⚡ In 30 seconds\n- SISO 2n−1 clocks, SIPO n, PISO n, PIPO 1.\n- Ring counter: n states.\n- Johnson counter: 2n states.\n\n---\n\n*DENotes pp. 73–76.*\n\nA register = a group of D flip-flops sharing a clock; each stores one bit.\n\n| Mode | Clocks to write | Clocks to read | Total (n bits) |\n|---|---|---|---|\n| SISO | n | n−1 | 2n−1 |\n| SIPO | n | 0 | n |\n| PISO | 1 | n−1 | n |\n| PIPO | 1 | 0 | 1 |\n\n## Ring counter\nShift register with $Q_{last}\\to D_{first}$; preset to 100… → **n states** (1 hot bit circulating); $2^n-n$ unused states.\n\n## Johnson (twisted-ring) counter\n$\\overline{Q_{last}}\\to D_{first}$ → **2n states**. 3 bits: 000 → 100 → 110 → 111 → 011 → 001 → 000 (6 states).\n\n**Summary:** for n bits — binary counter $2^n$, ring $n$, Johnson $2n$.\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 1,
+   "title": "DE+CO Unit I — one-page revision sheet",
+   "content": "| Topic | Must know | DENotes |\n|---|---|---|\n| Number systems | bases, positional weights | 1–3 |\n| Conversions | ÷ for integers, × for fractions, group 3/4 bits | 5–7 |\n| Complements | 1's = flip; 2's = +1 or the shortcut; ranges | 3–4, 8–10 |\n| Overflow | same-sign inputs → opposite-sign result | (this note) |\n| Codes | BCD, 2421, Excess-3, Gray ↔ binary; **parity** | 10–12 |\n| Boolean laws | table + De Morgan, **absorption, consensus**, duality, self-dual | 12–13, 23–25 |\n| Gates | truth tables, NAND/NOR universal, gate counts | 14–18 |\n\n**Quiz 1 is Unit I.** Quick marks: a 2's-complement subtraction, a Gray conversion, a De Morgan simplification.\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 2,
+   "title": "DE+CO Unit II — one-page revision sheet",
+   "content": "| Topic | Must know | DENotes |\n|---|---|---|\n| SOP/POS | minterm ↔ 1s, maxterm ↔ 0s, Σm ↔ ΠM | 19–22 |\n| K-map | Gray order, cell numbers, grouping rules | 26–27 |\n| POS map | group the 0s | 29 |\n| Don't-cares | X only if it enlarges a group | (this note) |\n| PIs / EPIs | EPIs first, then the fewest extra | 28–29 |\n| Adders | HA, FA, from 2 HAs, subtractors, ripple, look-ahead | 31–38 |\n| MUX | $I_k=1$ if $m_k$ is present; 4:1 implementation table | 39–42 |\n| DEMUX/decoder/encoder | decoder = minterm generator; priority encoder | 43–48 |\n| **Comparator** | $G=A\\bar B$, $E$=XNOR, $L=\\bar AB$; 2-bit cascade | (this note) |\n\n**Class Test 1 (Unit II + half of III):** a K-map with a circuit, a function on an 8:1 MUX, the SR latch forbidden state, race-around, latch vs flip-flop.\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 3,
+   "title": "DE+CO Unit III — one-page revision sheet",
+   "content": "| Topic | Must know | DENotes |\n|---|---|---|\n| SR latch | table; why S=R=1 is invalid | 49–50 |\n| Flip-flops | 4 characteristic equations + the excitation table | 51–55, 59–60 |\n| Triggering & race-around | $t_w>t_{pd}$ with J=K=1; master–slave fix | 56–58 |\n| **Latch vs flip-flop** | level/transparent vs edge/sampled + timing diagram | (this note) |\n| **Moore vs Mealy** | output from state vs state + input | (this note) |\n| Analysis & design | equations → state table → diagram; excitation → K-map | 61–67, 71–72 |\n| Counters | sync vs ripple; MOD-N; 3-bit JK: $J=K$ = product of lower Qs | 68–72 |\n| Registers | SISO/SIPO/PISO/PIPO clocks; ring n, Johnson 2n | 73–76 |\n",
+   "pinned": true
+  }
+ ]
+}

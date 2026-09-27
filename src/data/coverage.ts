@@ -42,6 +42,8 @@ const L_CMDS = "linux basic commands.docx";
 const L_LAB1 = "Lab 1.docx";
 const L_VM = "Installing Linux Using a Virtual Machine.pdf";
 const L_FMT = "Lab File format.docx";
+const CDT1 = "Unit1-Computational Design Thinking.pdf";
+const CDT2 = "Unit2CreativeThinkingandDesignIdeation.pdf";
 
 const MANO = "Mano & Ciletti, Digital Design";
 const NESO = "the Neso Academy playlist under Resources";
@@ -289,10 +291,34 @@ export const coverage: Record<string, Coverage> = {
     status: "covered",
     sources: [{ file: L_FMT, where: "all", what: "title page, index, formatting, screenshot rules, SOPs" }],
   },
+  /* ── CDT · Unit 1 ───────────────────────────────────────── */
+  "cdt-u1-intro": { status: "covered", sources: [{ file: CDT1, where: "slides 4–6", what: "definition, focus, where it's used, why it matters" }] },
+  "cdt-u1-elements": { status: "covered", sources: [{ file: CDT1, where: "slide 7", what: "decomposition, pattern recognition, abstraction, algorithm design" }] },
+  "cdt-u1-lenses": { status: "covered", sources: [{ file: CDT1, where: "slide 8", what: "design-thinking vs computational-thinking questions" }] },
+  "cdt-u1-problems": { status: "covered", sources: [{ file: CDT1, where: "slides 9–14", what: "what a problem is, well- vs ill-structured, the comparison table" }] },
+  "cdt-u1-solver": { status: "covered", sources: [{ file: CDT1, where: "slides 15–21", what: "twelve traits in three mindset groups" }] },
+  "cdt-u1-models": { status: "covered", sources: [{ file: CDT1, where: "slides 22–34", what: "why models help, IDEAL step by step, Polya step by step" }] },
+  "cdt-u1-process": { status: "covered", sources: [{ file: CDT1, where: "slides 35–42", what: "understand → plan → solve → verify → reflect, campus-app example" }] },
+  "cdt-u1-hcd": { status: "covered", sources: [{ file: CDT1, where: "slides 43–56", what: "HCD, its principles, clinic case, empathy map, user interviews" }] },
+  "cdt-u1-requirements": { status: "covered", sources: [{ file: CDT1, where: "slides 57–63", what: "problem statements, functional vs technical requirements, POV, How Might We" }] },
+
+  /* ── CDT · Unit 2 ───────────────────────────────────────── */
+  "cdt-u2-creative": { status: "covered", sources: [{ file: CDT2, where: "slides 1–3", what: "roadmap, creativity = novel + useful + implementable" }] },
+  "cdt-u2-divergent": { status: "covered", sources: [{ file: CDT2, where: "slides 4–8", what: "two modes, comparison table, double diamond, 30-uses drill" }] },
+  "cdt-u2-brainstorm": { status: "covered", sources: [{ file: CDT2, where: "slides 9–13", what: "Osborn's rules, why groups underperform, 6-3-5, which to use" }] },
+  "cdt-u2-scamper": { status: "covered", sources: [{ file: CDT2, where: "slides 14–17", what: "the seven prompts on the attendance register, pair activity" }] },
+  "cdt-u2-mindmap": { status: "covered", sources: [{ file: CDT2, where: "slides 18–19", what: "rules, good/weak for, worked campus-app map" }] },
+  "cdt-u2-lateral": { status: "covered", sources: [{ file: CDT2, where: "slides 20–22", what: "vertical vs lateral, four tools, random word + reversal" }] },
+  "cdt-u2-dt-process": { status: "covered", sources: [{ file: CDT2, where: "slides 23–27", what: "five stages; empathize, define (POV + HMW), ideate" }] },
+  "cdt-u2-selecting": { status: "covered", sources: [{ file: CDT2, where: "slides 28–35", what: "shortlisting, dot voting, NUF, impact–effort, weighted matrix, wrap-up, quick check" }] },
 };
 
 /** Units the notes don't reach at all. Shown once on the subject page. */
 export const unitGaps: Record<string, { units: number[]; note: string }> = {
+  "computational-design-thinking": {
+    units: [3, 4, 5],
+    note: "Only the Unit 1 and Unit 2 decks have been shared. Units 3–5 (algorithms, critical thinking, applications) have no deck yet. They aren't in the mid-sem.",
+  },
   "digital-electronics": {
     units: [4, 5],
     note: "DENotes.pdf stops at Unit III. There is nothing for Units IV–V (structure of computers, processor and memory). They aren't in the mid-sem, but you'll need another source before the end-term.",

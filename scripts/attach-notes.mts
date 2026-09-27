@@ -37,6 +37,18 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
     label: "Unit 2 deck, slide",
     takenAt: "2026-09-25T12:00:00+05:30",
   },
+  "Unit1-Computational Design Thinking.pdf": {
+    dir: "computational_design_thinking/slides",
+    image: (n) => `CDT1-s${String(n).padStart(2, "0")}.jpg`,
+    label: "CDT Unit 1 deck, slide",
+    takenAt: "2026-09-14T12:00:00+05:30",
+  },
+  "Unit2CreativeThinkingandDesignIdeation.pdf": {
+    dir: "computational_design_thinking/slides",
+    image: (n) => `CDT2-s${String(n).padStart(2, "0")}.jpg`,
+    label: "CDT Unit 2 deck, slide",
+    takenAt: "2026-09-27T12:00:00+05:30",
+  },
 };
 
 /** "p. 19", "pp. 26–29", "slide 79", "slides 4–16" → page numbers */

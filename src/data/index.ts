@@ -139,7 +139,7 @@ export const exams: SeedExam[] = [
     window: "5–11 Oct 2026",
     maxMarks: 20,
     weightage: 20,
-    scope: "Not confirmed — expect Units 1–3.",
+    scope: "Units 1–2 — foundations and problem solving; creative thinking and design ideation. CO1, CO2.",
   },
   {
     key: "mse-ai",

@@ -1,0 +1,75 @@
+{
+ "subject": "linux-administration",
+ "notes": [
+  {
+   "topic": "linux-u1-os",
+   "unit": null,
+   "title": "Operating system concept",
+   "content": "### ⚡ In 30 seconds\n- OS = a resource manager.\n- Layers: hardware → kernel → syscalls → utilities → shell → user.\n- Kernel: interrupts, memory, CPU sharing.\n\n---\n\n*Linux_History_BasicCommands.ppt — \"Operating System Concept\".*\n\n**OS = a resource manager.** It lets programs use the CPU, memory, disks and devices safely.\n\n## The layers (bottom → top)\nHardware → **Kernel** → System call library → System utilities / applications → **Shell or GUI** → Users\n\n## What the kernel does\n- Handles interrupts from devices\n- Gives memory to programs\n- Shares the CPU between programs\n- Offers **system calls** to the layers above\n\nOSes differ in their system calls, utilities, user interface and scheduling.\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-history",
+   "unit": null,
+   "title": "History of UNIX and Linux",
+   "content": "### ⚡ In 30 seconds\n- MULTICS → UNIX (Thompson, Ritchie) → C in 1973.\n- Linux: Linus Torvalds, 1991, free and open source.\n- GNU = GNU's Not Unix.\n\n---\n\n*History deck; LinuxArchitecture_Distributions.pptx slides 1–3; Lab 1 Q1.*\n\n## Timeline\n| Year | Event |\n|---|---|\n| late 1960s | **MULTICS** (GE + MIT + Bell Labs) |\n| ~1969 | Ken Thompson writes **UNICS → UNIX** |\n| 1973 | UNIX kernel rewritten in **C** (Thompson + Dennis Ritchie) |\n| 1978 | UNIX splits into **System V** and **BSD** |\n| **1991** | **Linus Torvalds** releases the Linux kernel |\n\nLinux follows **POSIX** and is a mix of SysV and BSD.\n**GNU = \"GNU's Not Unix\"**.\n\n## UNIX vs Linux\n| UNIX | Linux |\n|---|---|\n| proprietary, needs a licence | free, open source |\n| Bourne shell (sh) | bash by default |\n| servers, mainframes | everything: phones to supercomputers |\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-distros",
+   "unit": null,
+   "title": "Linux distributions",
+   "content": "### ⚡ In 30 seconds\n- Distro = kernel + utilities + GUI + apps.\n- Ubuntu, Debian, Fedora, Mint, openSUSE.\n- GUIs: GNOME, KDE.\n\n---\n\n*LinuxArchitecture_Distributions.pptx slides 4–5.*\n\n**Distribution (distro) = Linux kernel + system utilities + GUI + applications.**\n\n- 600+ distros exist.\n- Examples: **Ubuntu, Debian, Fedora, Linux Mint, openSUSE**, Manjaro, MX Linux, elementary, Solus, Deepin.\n- GUIs: **GNOME, KDE**.\n- Apps: Firefox, LibreOffice, vim, gcc.\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-architecture",
+   "unit": null,
+   "title": "Linux architecture",
+   "content": "### ⚡ In 30 seconds\n- 4 layers: hardware, kernel, shell, applications.\n- Kernel = the core (memory, process, devices, syscalls).\n- Shell = command interpreter (bash).\n\n---\n\n*LinuxArchitecture_Distributions.pptx slides 6–11; history deck \"Architecture of Linux\". This answers Lab 1 Q2.*\n\n## Draw this (4 layers)\n```\n   Users\n ┌──────────────────────┐\n │ Applications / utils │  ls, grep, Firefox, LibreOffice\n ├──────────────────────┤\n │ Shell                │  bash, sh, ksh, csh, zsh\n ├──────────────────────┤\n │ Kernel               │  memory, process, device, syscalls\n ├──────────────────────┤\n │ Hardware             │  CPU, RAM, disk, I/O\n └──────────────────────┘\n```\n\n| Layer | Job |\n|---|---|\n| **Hardware** | physical parts; drivers talk to it |\n| **Kernel** | the core: memory management, process management, device drivers, system calls and security. Lives at `/boot/vmlinuz` |\n| **Shell** | takes your commands and passes them to the kernel |\n| **Applications** | programs users run |\n\n**Kernel types:** monolithic (Linux), micro, hybrid, exo.\n**Shells:** bash (**B**ourne **A**gain **SH**ell), sh, ksh, csh/tcsh, zsh.\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-filesystem",
+   "unit": null,
+   "title": "Principles, file types, directories",
+   "content": "### ⚡ In 30 seconds\n- Everything is a file; case-sensitive.\n- 4 file types: ordinary, directory, device, link.\n- /etc config, /home users, /bin commands, /tmp temp.\n\n---\n\n*History deck: \"Basic Principals\" to \"Summary: Directory Structure\".*\n\n## Basic principles\n- **Everything is a file**\n- Small programs that do one job well, chained with pipes\n- Settings are stored in text files\n- **Case-sensitive**\n\n## 4 file types\nOrdinary · Directory · Device · Link (**hard** = another name for the same file; **soft** = a shortcut that breaks if the target is deleted)\n\n## Directories (root is `/`)\n| Dir | Holds |\n|---|---|\n| `/bin` | user commands (ls, cp) |\n| `/sbin` | admin (root) commands |\n| `/boot` | boot files, the kernel |\n| `/dev` | device files |\n| `/etc` | **configuration files** |\n| `/home` | users' home folders |\n| `/root` | root user's home |\n| `/lib` | shared libraries |\n| `/mnt`, `/media` | mount points |\n| `/proc` | live system info (virtual) |\n| `/tmp` | temporary files (anyone can write) |\n| `/usr` | user programs and libraries |\n| `/var` | logs and changing data |\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-paths",
+   "unit": null,
+   "title": "Paths, internal/external commands, metacharacters",
+   "content": "### ⚡ In 30 seconds\n- Absolute starts with /, relative doesn't.\n- Internal = built into the shell (cd); external = a program (ls).\n- * any, ? one, > overwrite, >> append, | pipe.\n\n---\n\n*History deck \"Absolute & Relative Paths\"; Lab 1 Q4–Q6.*\n\n## Login\nText login (virtual console) or graphical login. Username + password. Every user gets a home directory.\n\n## Paths\n| Absolute | Relative |\n|---|---|\n| starts with `/` | no `/` at the start |\n| full path from root | from where you are now |\n| `/home/user/Btech` | `Btech/FirstYear`, `../notes` |\n\n## Internal vs external commands\n| Internal (built-in) | External |\n|---|---|\n| part of the shell | separate program on disk |\n| `cd`, `echo`, `alias`, `pwd` | `ls`, `grep`, `cp` |\n| `type cd` → \"shell builtin\" | `type ls` → `/bin/ls` |\n\n## Metacharacters\n| Char | Meaning | Example |\n|---|---|---|\n| `*` | any characters | `*.txt` |\n| `?` | exactly one character | `file?.txt` |\n| `[ ]` | one from a set | `file[1-3]` |\n| `>` / `>>` | write / append output to a file | `ls > a.txt` |\n| `<` | input from a file | `sort < a.txt` |\n| `|` | pipe output into the next command | `ls | wc -l` |\n| `;` | run one after another | `cd /; ls` |\n| `&` | run in the background | `sleep 10 &` |\n\n## Linux vs Windows (not in any handout)\n| Linux | Windows |\n|---|---|\n| free, open source | paid, closed |\n| case-sensitive files | not case-sensitive |\n| `/` single tree | drive letters C:, D: |\n| strong CLI (bash) | GUI first |\n| fewer viruses, more secure | more malware targets |\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-commands",
+   "unit": null,
+   "title": "Basic commands",
+   "content": "### ⚡ In 30 seconds\n- ls, cd, pwd, mkdir, rmdir, touch, cat, cp, mv, rm.\n- ls -l details, -a hidden, -h readable sizes.\n- ps, top, free, df, du, uname, whoami for system info.\n\n---\n\n*linux basic commands.docx; history deck \"Basic Linux Commands\".*\n\n| Command | Does | Useful options |\n|---|---|---|\n| `ls` | list files | `-l` details, `-a` hidden, `-h` sizes, `-t` newest first, `-R` recursive, `-d` the dir itself |\n| `pwd` | show the current folder | |\n| `cd` | change folder | `cd ..` up, `cd -` back, `cd ~` home |\n| `mkdir` | make a folder | |\n| `rmdir` | remove an **empty** folder | |\n| `touch` | make an empty file / update its time | |\n| `cat` | show or join files | |\n| `cp` | copy | `-r` for folders |\n| `mv` | move or rename | |\n| `rm` | delete | `-i` ask, `-r` folders, `-f` force |\n| `man` | the manual page | `man ls` |\n| `echo` | print text | `echo $HOSTNAME` |\n| `whoami` / `id` | the current user / user and group ids | |\n| `ps` / `top` | running processes / live view | `ps aux` |\n| `free -m` | memory use | |\n| `df -h` / `du -sh` | disk space / folder size | |\n| `uname -a` | system info | |\n| `cal`, `date`, `clear`, `sort` | calendar, date, clear screen, sort lines | |\n\n**cp/mv rule:** if the destination is a folder, the file goes inside it. If it's a file, it's overwritten. If it doesn't exist, the copy gets that new name.\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-install",
+   "unit": null,
+   "title": "Installing Linux in a VM",
+   "content": "### ⚡ In 30 seconds\n- VirtualBox (UTM on Mac) + Ubuntu ISO.\n- Half the RAM, 20 GB+ disk.\n- VM = safe, isolated, easy to test and back up.\n\n---\n\n*Installing Linux Using a Virtual Machine.pdf.*\n\n## Steps (VirtualBox + Ubuntu)\n1. Install **VirtualBox** (or VMware, Hyper-V; **UTM** on an Apple-silicon Mac).\n2. Download the **Ubuntu LTS ISO**.\n3. **New VM** → name → pick the ISO.\n4. Set a username, password and hostname.\n5. Give it **half your RAM** (8 GB of 16) and CPUs.\n6. Disk: **at least 20 GB**.\n7. Finish → it installs → set a password.\n8. Optional: **Guest Additions** for full screen:\n   `sudo apt update` → `sudo apt install -y build-essential linux-headers-$(uname -r)` → Devices → Insert Guest Additions → `sudo ./VBoxLinuxAdditions.run` → reboot.\n\n## Why use a VM (benefits)\nBetter hardware use · safe and isolated · easy to scale · cheaper · good for testing · easy backup/recovery · easy to move.\n",
+   "pinned": false
+  },
+  {
+   "topic": "linux-u1-labfile",
+   "unit": null,
+   "title": "Lab record format",
+   "content": "### ⚡ In 30 seconds\n- A4, Times New Roman 12, left margin 1.5\".\n- Footer: URN + CSE2107 on every page.\n- Live, full-window screenshots with your URN visible.\n\n---\n\n*Lab File format.docx.*\n\n- **A4**, portrait. Margins: left **1.5\"**, others 1\".\n- **Times New Roman.** Heading 14 pt bold, sections 12 pt bold, body 12 pt, justified, 1.15 spacing.\n- Code in **Consolas / Courier New**, 10–11 pt.\n- Each experiment starts on a **new page**: title (with COs), numbered steps/commands, output.\n- **Footer on every page** (except the title page): your URN + course code **CSE2107**.\n\n## Screenshot rules\n1. **Live** screenshots from the lab only (no typed, copied or AI output).\n2. Your **name or URN must be visible** in every screenshot.\n3. **Full window**: the command and its result.\n\n## SOPs\nBring the hard copy of the last experiment to the next lab for signing. Upload a scanned copy to **DigiiCampus** before the end-sem practical. Minimum **5 quizzes + 5 vivas**.\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 1,
+   "title": "Linux — one-page revision sheet (quizzes and viva)",
+   "content": "| Topic | Remember |\n|---|---|\n| Who made Linux | **Linus Torvalds, 1991** |\n| UNIX | Thompson + Ritchie, Bell Labs; rewritten in C in 1973 |\n| GNU | GNU's Not Unix |\n| Kernel | the core: hardware ↔ software interface |\n| Shell | command interpreter; bash = Bourne Again SHell |\n| Layers | hardware → kernel → shell → applications |\n| Distro | kernel + utilities + GUI + apps (Ubuntu, Fedora…) |\n| Config files | **/etc** |\n| Everything is | a file |\n| Absolute path | starts with `/` |\n| Internal commands | cd, echo (built into the shell) |\n| `>` vs `>>` | overwrite vs append |\n| rmdir | only removes empty folders |\n| Screenshot rule | URN visible, full window, live |\n",
+   "pinned": true
+  }
+ ]
+}

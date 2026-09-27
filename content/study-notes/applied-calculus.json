@@ -1,0 +1,131 @@
+{
+ "subject": "applied-calculus",
+ "notes": [
+  {
+   "topic": "calc-u1-limits",
+   "unit": null,
+   "title": "Limits, continuity, differentiability (one variable)",
+   "content": "### ⚡ In 30 seconds\n- Limit exists only if left limit = right limit.\n- Continuous = f(a) exists and equals the limit.\n- Differentiable ⇒ continuous, not the other way round (|x| at 0).\n\n---\n\n## Definitions\n- **Limit:** $\\lim_{x\\to a} f(x) = L$ exists iff LHL $=$ RHL $= L$, where LHL $=\\lim_{h\\to0^+} f(a-h)$ and RHL $=\\lim_{h\\to0^+} f(a+h)$.\n- **Continuity at $a$:** $f(a)$ is defined, the limit exists, and $\\lim_{x\\to a} f(x) = f(a)$.\n- **Differentiability at $a$:** $f'(a)=\\lim_{h\\to0}\\dfrac{f(a+h)-f(a)}{h}$ exists, i.e. LHD $=$ RHD.\n\n## Standard limits\n$\\lim_{x\\to0}\\dfrac{\\sin x}{x}=1$ · $\\lim_{x\\to0}\\dfrac{e^x-1}{x}=1$ · $\\lim_{x\\to0}\\dfrac{\\ln(1+x)}{x}=1$ · $\\lim_{x\\to0}(1+x)^{1/x}=e$ · $\\lim_{x\\to a}\\dfrac{x^n-a^n}{x-a}=na^{n-1}$\n\n## Types of discontinuity\n| Type | What happens | Example |\n|---|---|---|\n| Removable | Limit exists but $\\ne f(a)$ or $f(a)$ undefined | $\\frac{x^2-1}{x-1}$ at $1$ |\n| Jump (1st kind) | LHL, RHL finite but unequal | $\\lfloor x\\rfloor$ at integers |\n| Infinite / oscillatory (2nd kind) | A one-sided limit doesn't exist | $1/x$ at $0$; $\\sin(1/x)$ at $0$ |\n\n## Key fact\nDifferentiable ⇒ continuous, **not** conversely. Counterexample: $f(x)=|x|$ at $0$ — continuous, but LHD $=-1$, RHD $=+1$.\n\n## Method: piecewise / modulus function at a point\n1. Compute LHL, RHL and $f(a)$ → decide continuity.\n2. Compute LHD $=\\lim_{h\\to0^+}\\frac{f(a-h)-f(a)}{-h}$ and RHD $=\\lim_{h\\to0^+}\\frac{f(a+h)-f(a)}{h}$.\n3. Equal and finite → differentiable. Write the conclusion sentence — it carries a mark.\n\n## Traps\n- Checking only one side.\n- Using the derivative formula at a point where the piece changes — use the definition there.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u1-successive",
+   "unit": null,
+   "title": "Successive differentiation and Leibnitz's theorem",
+   "content": "### ⚡ In 30 seconds\n- Learn the nth-derivative table (sin, cos, 1/(ax+b), eˣ).\n- Rational function? Split into partial fractions first.\n- Leibnitz: (uv)ₙ = Σ ⁿCᵣ uₙ₋ᵣ vᵣ, take v = the polynomial.\n\n---\n\n## Standard $n$th derivatives\n| $y$ | $y_n$ |\n|---|---|\n| $(ax+b)^m$ | $\\dfrac{m!}{(m-n)!}a^n(ax+b)^{m-n}$ |\n| $\\dfrac{1}{ax+b}$ | $\\dfrac{(-1)^n n!\\,a^n}{(ax+b)^{n+1}}$ |\n| $\\ln(ax+b)$ | $\\dfrac{(-1)^{n-1}(n-1)!\\,a^n}{(ax+b)^n}$ |\n| $e^{ax}$ | $a^n e^{ax}$ |\n| $a^{mx}$ | $m^n(\\ln a)^n a^{mx}$ |\n| $\\sin(ax+b)$ | $a^n\\sin\\!\\left(ax+b+\\frac{n\\pi}{2}\\right)$ |\n| $\\cos(ax+b)$ | $a^n\\cos\\!\\left(ax+b+\\frac{n\\pi}{2}\\right)$ |\n| $e^{ax}\\sin(bx+c)$ | $r^n e^{ax}\\sin(bx+c+n\\theta)$, $r=\\sqrt{a^2+b^2}$, $\\theta=\\tan^{-1}\\frac{b}{a}$ |\n\n## Leibnitz's theorem\n\n$$(uv)_n = \\sum_{r=0}^{n}\\binom{n}{r}u_{n-r}v_r = u_nv + \\binom{n}{1}u_{n-1}v_1 + \\binom{n}{2}u_{n-2}v_2+\\dots+uv_n$$\n\n**Choose $v$ = the polynomial** so its derivatives vanish quickly.\n\n**Example:** $y=x^2e^x$: $y_n = x^2e^x + 2nx\\,e^x + n(n-1)e^x = e^x\\,(x^2+2nx+n(n-1))$.\n\n## Method for rational functions\nSplit into partial fractions first, then use the $\\frac{1}{ax+b}$ row on each term.\n\n## Typical 10-marker\n\"If $y=\\sin^{-1}x$, show $(1-x^2)y_{n+2}-(2n+1)xy_{n+1}-n^2y_n=0$\": differentiate once, square/clear denominators to get a relation $(1-x^2)y_2 - xy_1=0$, then apply Leibnitz $n$ times to each product.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u1-rolle",
+   "unit": null,
+   "title": "Rolle's theorem",
+   "content": "### ⚡ In 30 seconds\n- 3 conditions: continuous [a,b], differentiable (a,b), f(a) = f(b).\n- Then f'(c) = 0 for some c inside (a,b).\n- Always check that c lies inside the interval.\n\n---\n\n## Statement\nIf $f$ is (i) **continuous on $[a,b]$**, (ii) **differentiable on $(a,b)$**, and (iii) **$f(a)=f(b)$**, then there is at least one $c\\in(a,b)$ with $f'(c)=0$.\n\n**Geometric meaning:** somewhere between two equal heights the tangent is horizontal.\n\n## Method (verify and find $c$)\n1. Continuity on the closed interval (polynomials, sin, cos, eˣ are continuous everywhere; watch denominators, logs, $|x|$).\n2. Differentiability on the open interval.\n3. Compute $f(a)$ and $f(b)$ — must be equal.\n4. Solve $f'(c)=0$ and **keep only the $c$ inside $(a,b)$**.\n\n**Example:** $f(x)=x^2-5x+6$ on $[2,3]$: $f(2)=f(3)=0$, $f'(c)=2c-5=0\\Rightarrow c=2.5\\in(2,3)$ ✓.\n\n## Counterexamples to learn (each breaks one hypothesis)\n| Function | Hypothesis broken |\n|---|---|\n| $|x|$ on $[-1,1]$ | not differentiable at 0 — no $c$ with $f'(c)=0$ |\n| $\\tan x$ on $[0,\\pi]$ | not continuous at $\\pi/2$ |\n| $x$ on $[0,1]$ | $f(0)\\ne f(1)$ |\n\n## Trap\nConditions are **sufficient, not necessary**: a function can fail a hypothesis and still have $f'(c)=0$ somewhere.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u1-lmvt",
+   "unit": null,
+   "title": "Lagrange's mean value theorem",
+   "content": "### ⚡ In 30 seconds\n- f'(c) = (f(b) − f(a)) / (b − a).\n- Tangent parallel to the chord. Rolle is the case f(a) = f(b).\n- Used to prove inequalities like x/(1+x) < ln(1+x) < x.\n\n---\n\n## Statement\nIf $f$ is continuous on $[a,b]$ and differentiable on $(a,b)$, then there is $c\\in(a,b)$ with\n\n$$f'(c)=\\frac{f(b)-f(a)}{b-a}.$$\n\n**Geometric meaning:** some tangent is parallel to the chord joining the endpoints. Rolle's theorem is the special case $f(a)=f(b)$.\n\n**Alternative form:** $f(a+h)=f(a)+h\\,f'(a+\\theta h)$, $0<\\theta<1$.\n\n## Method\nCheck the two hypotheses → compute the chord slope → solve $f'(c)=$ slope → keep $c\\in(a,b)$.\n\n**Example:** $f(x)=x^3$ on $[1,2]$: slope $=\\frac{8-1}{1}=7$; $3c^2=7\\Rightarrow c=\\sqrt{7/3}\\approx1.53\\in(1,2)$ ✓.\n\n## Proving inequalities (common 5-marker)\nShow $\\dfrac{x}{1+x}<\\ln(1+x)<x$ for $x>0$: apply LMVT to $\\ln t$ on $[1,1+x]$: $\\ln(1+x)=\\dfrac{x}{c}$ with $1<c<1+x$, so $\\dfrac{x}{1+x}<\\dfrac{x}{c}<x$.\n\nPattern: pick $f$, apply LMVT on the interval, then bound $f'(c)$ using $a<c<b$.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u1-taylor1",
+   "unit": null,
+   "title": "Taylor's and Maclaurin's theorem (one variable)",
+   "content": "### ⚡ In 30 seconds\n- f(a+h) = f(a) + h f'(a) + h²/2! f''(a) + … + remainder.\n- Maclaurin = Taylor about 0.\n- Memorise the eˣ, sin, cos, ln(1+x), (1+x)ᵐ series.\n\n---\n\n## Taylor's theorem with Lagrange remainder\n\n$$f(a+h)=f(a)+hf'(a)+\\frac{h^2}{2!}f''(a)+\\dots+\\frac{h^{n-1}}{(n-1)!}f^{(n-1)}(a)+R_n,\\quad R_n=\\frac{h^n}{n!}f^{(n)}(a+\\theta h),\\ 0<\\theta<1$$\n\nIn terms of $x$: $f(x)=\\sum \\frac{(x-a)^k}{k!}f^{(k)}(a)$.\n\n**Maclaurin** = Taylor about $a=0$.\n\n## Standard Maclaurin series\n| Function | Series | Valid |\n|---|---|---|\n| $e^x$ | $1+x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\dots$ | all $x$ |\n| $\\sin x$ | $x-\\frac{x^3}{3!}+\\frac{x^5}{5!}-\\dots$ | all $x$ |\n| $\\cos x$ | $1-\\frac{x^2}{2!}+\\frac{x^4}{4!}-\\dots$ | all $x$ |\n| $\\ln(1+x)$ | $x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\dots$ | $-1<x\\le1$ |\n| $(1+x)^m$ | $1+mx+\\frac{m(m-1)}{2!}x^2+\\dots$ | $|x|<1$ |\n| $\\tan x$ | $x+\\frac{x^3}{3}+\\frac{2x^5}{15}+\\dots$ | $|x|<\\pi/2$ |\n\n## Method\n1. Write $f(a), f'(a), f''(a), \\dots$ in a table.\n2. Substitute into the formula.\n3. State the remainder term if asked.\n\n**Example:** $\\ln x$ about $x=1$: $f=0, f'=1, f''=-1, f'''=2$ → $(x-1)-\\frac{(x-1)^2}{2}+\\frac{(x-1)^3}{3}-\\dots$\n\n## Trap\nA question asking \"expand up to $x^3$\" wants every term up to $x^3$ — don't stop at the third non-zero term.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u2-limits2",
+   "unit": null,
+   "title": "Two-variable limits, continuity, differentiability",
+   "content": "### ⚡ In 30 seconds\n- Two paths with different answers ⇒ limit does NOT exist.\n- To prove a limit, bound |f| by something in r that goes to 0.\n- Partials existing does NOT mean continuous or differentiable.\n\n---\n\n*Unit 2 deck slides 4–19, 25, 28–36.*\n\n## Definitions\n- **Limit:** $\\lim_{(x,y)\\to(a,b)}f=L$ if for every $\\varepsilon>0$ there's a $\\delta>0$ with $0<\\sqrt{(x-a)^2+(y-b)^2}<\\delta\\Rightarrow|f-L|<\\varepsilon$. One $\\delta$ for **all** nearby points; $f(a,b)$ need not exist.\n- **Continuity:** $f(a,b)$ exists, the limit exists, they're equal.\n- **Differentiability:** $f(a+h,b+k)-f(a,b)=Ah+Bk+R(h,k)$ with $\\dfrac{R}{\\sqrt{h^2+k^2}}\\to0$; then $A=f_x(a,b)$, $B=f_y(a,b)$.\n\n## Decision procedure (slide 14)\n1. Try direct substitution (polynomials, rationals with non-zero denominator).\n2. Indeterminate? Simplify or bound.\n3. **Disprove:** two paths with different limits — axes, $y=mx$, then the curve the powers suggest ($y=x^2$, $x=y^2$).\n4. **Prove:** a bound that depends only on $r$ and tends to 0. Tools: $|x|,|y|\\le r$; $2|xy|\\le x^2+y^2$; polar $x=r\\cos\\theta$, $y=r\\sin\\theta$.\n\n## The three counterexamples\n| Function (0 at origin) | Continuous? | Partials exist? | Differentiable? |\n|---|---|---|---|\n| $\\dfrac{xy}{x^2+y^2}$ | ✗ ($y=x$ gives ½) | ✓ both 0 | ✗ |\n| $\\dfrac{xy}{\\sqrt{x^2+y^2}}$ | ✓ ($\\le r/2$) | ✓ both 0 | ✗ (along $k=h$ the ratio is ½) |\n| $\\sqrt{x^2+y^2}$ | ✓ | ✗ ($|h|/h$) | ✗ |\n\n## Implications\nDifferentiable ⇒ continuous and partials exist. Continuous partials near the point ⇒ differentiable (sufficient, not necessary). None of the converses hold.\n\n## Differentiability check at the origin (method)\n1. Find $f_x(0,0), f_y(0,0)$ by the definition.\n2. Form $\\dfrac{f(h,k)-f(0,0)-hf_x-kf_y}{\\sqrt{h^2+k^2}}$.\n3. Show it → 0 (bound it) or find a path ($k=h$) where it doesn't.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u2-partial",
+   "unit": null,
+   "title": "Partial derivatives",
+   "content": "### ⚡ In 30 seconds\n- fₓ: treat y as a constant and differentiate.\n- Mixed partials are equal (fₓᵧ = fᵧₓ) when continuous.\n- At a piecewise point (like the origin), use the limit definition.\n\n---\n\n*Unit 2 deck slides 20–27.*\n\n## Definition\n$f_x(a,b)=\\lim_{h\\to0}\\dfrac{f(a+h,b)-f(a,b)}{h}$, $f_y(a,b)=\\lim_{k\\to0}\\dfrac{f(a,b+k)-f(a,b)}{k}$. $f_x$ is the slope along the $x$-direction with $y$ held fixed.\n\n## Working rules\n1. Pick the variable. 2. Treat the other as a constant. 3. Use the usual product, quotient and chain rules. 4. Substitute the point **after** differentiating — except at a piecewise point, where you use the definition.\n\n**Example:** $f=x^3y^2+4xy-7y$ → $f_x=3x^2y^2+4y$, $f_y=2x^3y+4x-7$.\n\n## Higher order\n$f_{xx}, f_{yy}$, and mixed $f_{xy}=\\frac{\\partial}{\\partial y}(f_x)$, $f_{yx}=\\frac{\\partial}{\\partial x}(f_y)$.\n**Clairaut/Schwarz:** if both mixed partials are continuous near the point, $f_{xy}=f_{yx}$.\n\n## Common exam asks\n- Verify $f_{xy}=f_{yx}$ for a given $f$.\n- Show $u_{xx}+u_{yy}=0$ (Laplace), e.g. $u=\\log(x^2+y^2)$.\n- If $u=f(r)$ with $r^2=x^2+y^2$: $r_x=\\frac{x}{r}$, $r_y=\\frac{y}{r}$.\n\n## Trap\nBoth partials existing at a point says nothing about continuity there — see $\\frac{xy}{x^2+y^2}$.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u2-total",
+   "unit": null,
+   "title": "Total derivative, chain rule, approximations",
+   "content": "### ⚡ In 30 seconds\n- dz = fₓ dx + fᵧ dy.\n- Tangent plane: z = f + fₓ(x−a) + fᵧ(y−b).\n- Chain rule: dz/dt = fₓ x' + fᵧ y'.\n\n---\n\n*Unit 2 deck slides 37–44, formula sheet slide 79.*\n\n## Core formulas\n| Idea | Formula |\n|---|---|\n| Total differential | $dz=f_x\\,dx+f_y\\,dy$ |\n| Gradient | $\\nabla f=(f_x,f_y)$ |\n| Tangent plane at $(a,b)$ | $z=f(a,b)+f_x(a,b)(x-a)+f_y(a,b)(y-b)$ |\n| Along a path $x(t),y(t)$ | $\\dfrac{dz}{dt}=f_x\\dfrac{dx}{dt}+f_y\\dfrac{dy}{dt}$ |\n| New variables $x(u,v),y(u,v)$ | $z_u=f_xx_u+f_yy_u$, $z_v=f_xx_v+f_yy_v$ |\n| Implicit $f(x,y)=0$ | $\\dfrac{dy}{dx}=-\\dfrac{f_x}{f_y}$ |\n| Error | $\\Delta f\\approx f_x\\,dx+f_y\\,dy$; for $A=xy$: $\\dfrac{dA}{A}=\\dfrac{dx}{x}+\\dfrac{dy}{y}$ |\n\n## Approximation method\nPick a nearby \"nice\" point → compute $f, f_x, f_y$ there → $f(\\text{near})\\approx f+f_x\\,dx+f_y\\,dy$.\n**Example:** $\\sqrt{4.04+8.97}$ with $f=\\sqrt{x+y}$ at $(4,9)$: $f_x=f_y=\\frac{1}{2\\sqrt{13}}$, $dx=0.04$, $dy=-0.03$ → $\\approx3.60694$.\n\n## Percentage error\n$\\text{rel. error}=\\dfrac{df}{f}$; for products and powers take logs first: $f=x^ay^b\\Rightarrow\\dfrac{df}{f}=a\\dfrac{dx}{x}+b\\dfrac{dy}{y}$.\n\n## Check habit\nWhere possible, substitute directly and differentiate to confirm the chain-rule answer (the deck does this every time).\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u2-euler",
+   "unit": null,
+   "title": "Euler's theorem for homogeneous functions",
+   "content": "### ⚡ In 30 seconds\n- Homogeneous degree n: f(tx,ty) = tⁿ f.\n- Euler: x fₓ + y fᵧ = n f.\n- Second order: x²fₓₓ + 2xy fₓᵧ + y²fᵧᵧ = n(n−1) f.\n\n---\n\n*Unit 2 deck slides 45–54.*\n\n## Homogeneous of degree $n$\n$f(tx,ty)=t^nf(x,y)$ for $t>0$. Equivalently $f=x^n\\phi(y/x)$.\nDegrees: $x^ay^b\\to a+b$; sums need equal degrees; products add; quotients subtract; a power $p$ multiplies.\nExamples: $x^2+xy+y^2\\to2$; $\\sqrt{x^2+y^2}\\to1$; $x/y\\to0$; $1/(x^2+y^2)\\to-2$. Non-example: $x^2+y+1$.\n\n## Euler's theorem\n\n$$xf_x+yf_y=nf$$\n\n**Proof (5 marks):** fix $(x,y)$, let $g(t)=f(tx,ty)=t^nf(x,y)$. Then $g'(t)=nt^{n-1}f$, and by the chain rule $g'(t)=xf_x(tx,ty)+yf_y(tx,ty)$. Put $t=1$.\n\n## Second order\n\n$$x^2f_{xx}+2xyf_{xy}+y^2f_{yy}=n(n-1)f$$\n\n## Two composite forms\n- **$v=\\phi(u)$ with $u$ homogeneous of degree $n$** (deck slide 52): $xv_x+yv_y=\\phi'(u)(xu_x+yu_y)=n\\,u\\,\\phi'(u)$. So $v=\\log u$ gives $n$; $v=e^u$ gives $nue^u$.\n- **$u$ not homogeneous, but $F(u)$ is** (degree $n$): $xu_x+yu_y=n\\dfrac{F(u)}{F'(u)}$.\n\n**Classic:** $u=\\sin^{-1}\\dfrac{x^2+y^2}{x+y}$: $\\sin u$ is homogeneous of degree 1, so $xu_x+yu_y=\\dfrac{\\sin u}{\\cos u}=\\tan u$.\n\n## Trap\nCheck homogeneity **first** — $\\log u$, $e^u$, $\\sin^{-1}u$ are not homogeneous; apply Euler to the inner function.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u2-taylor2",
+   "unit": null,
+   "title": "Taylor and Maclaurin in two variables",
+   "content": "### ⚡ In 30 seconds\n- h = x−a, k = y−b; all derivatives at (a,b).\n- T₂ = f + h fₓ + k fᵧ + ½(h²fₓₓ + 2hk fₓᵧ + k²fᵧᵧ).\n- Shortcut: substitute into eˣ, sin, log series.\n\n---\n\n*Unit 2 deck slides 55–73, formula sheet slide 80.*\n\nWith $h=x-a$, $k=y-b$, all derivatives at $(a,b)$:\n\n$$T_1=f+hf_x+kf_y$$\n\n\n\n$$T_2=T_1+\\tfrac12\\left(h^2f_{xx}+2hkf_{xy}+k^2f_{yy}\\right)$$\n\n\n\n$$T_3=T_2+\\tfrac16\\left(h^3f_{xxx}+3h^2kf_{xxy}+3hk^2f_{xyy}+k^3f_{yyy}\\right)$$\n\n**Maclaurin:** $a=b=0$, so $h=x$, $k=y$.\n\n## Six-step working rule (slide 61)\nCentre and degree → $h,k$ → compute derivatives → evaluate at the centre → substitute → label as an approximation or give the remainder.\n\n**Example:** $x^2y$ about $(1,2)$: $T_2=2+4h+k+2h^2+2hk$; at $(1.02,1.97)$ gives $2.0496$ (exact $2.049588$).\n\n## Shortcut: substitute into one-variable series\n- $e^{x+y}$: use $e^s$, $s=x+y$.\n- $e^x\\cos y$: multiply the two series, keep total degree $\\le3$: $1+x+\\frac{x^2-y^2}{2}+\\frac{x^3}{6}-\\frac{xy^2}{2}$.\n- $\\sin(xy)=xy-\\frac{x^3y^3}{6}+\\dots$ → $T_2=T_3=T_4=T_5=xy$.\n\n## Traps (slide 78)\n- Forgetting the mixed term: its coefficient in $T_2$ is $hk\\,f_{xy}$ (the 2 cancels the ½).\n- Keeping $x^2y^2$ in a degree-3 answer (its total degree is 4).\n- Calling the polynomial equal to $f$ — include the remainder or say \"≈\".\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u3-maxmin",
+   "unit": null,
+   "title": "Maxima and minima of two variables",
+   "content": "### ⚡ In 30 seconds\n- Solve fₓ = 0, fᵧ = 0.\n- r = fₓₓ, s = fₓᵧ, t = fᵧᵧ; rt − s² > 0 → max (r<0) or min (r>0).\n- rt − s² < 0 → saddle point.\n\n---\n\n## Method\n1. Solve $f_x=0$, $f_y=0$ → stationary points.\n2. At each: $r=f_{xx}$, $s=f_{xy}$, $t=f_{yy}$.\n3. Classify:\n\n| Condition | Result |\n|---|---|\n| $rt-s^2>0$, $r<0$ | **maximum** |\n| $rt-s^2>0$, $r>0$ | **minimum** |\n| $rt-s^2<0$ | **saddle point** |\n| $rt-s^2=0$ | test fails — investigate further |\n\n4. Give the max/min **value** $f$ at the point.\n\n## Example\n$f=x^3+y^3-3xy$: $f_x=3x^2-3y=0$, $f_y=3y^2-3x=0$ → $(0,0)$, $(1,1)$.\n$r=6x$, $s=-3$, $t=6y$. At $(0,0)$: $rt-s^2=-9<0$ → saddle. At $(1,1)$: $36-9=27>0$, $r=6>0$ → minimum, $f=-1$.\n\n## Traps\n- Missing stationary points: solve the system fully (factor, don't divide by a variable that could be 0).\n- Writing only \"minimum\" without the value.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u3-lagrange",
+   "unit": null,
+   "title": "Lagrange's method of multipliers",
+   "content": "### ⚡ In 30 seconds\n- F = f + λφ.\n- Solve Fₓ = Fᵧ = F_z = 0 together with φ = 0.\n- Trick: write λ from each equation and set them equal.\n\n---\n\n## Setup\nExtremise $f(x,y,z)$ subject to $\\phi(x,y,z)=0$:\n\n$$F=f+\\lambda\\phi,\\qquad F_x=0,\\ F_y=0,\\ F_z=0,\\ \\phi=0$$\n\nSolve the four equations for $x,y,z,\\lambda$.\n\n## Solving trick\nWrite each equation as $\\lambda=\\dots$ and equate them, or multiply by $x,y,z$ and add to use the constraint.\n\n## Example\nMax $xyz$ with $x+y+z=a$: $yz+\\lambda=0$, $xz+\\lambda=0$, $xy+\\lambda=0$ → $x=y=z=a/3$ → max value $a^3/27$.\n\n## Meaning of $\\lambda$\nThe rate at which the optimum value changes as the constraint is relaxed.\n\n## Exam notes\n- Nature (max or min) is usually decided from the context of the problem.\n- Classic questions: rectangular box of given volume with least surface area ($x=y=z$, a cube); shortest distance from a point to a plane or surface (minimise the squared distance).\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u3-hessian",
+   "unit": null,
+   "title": "Gradient vector and Hessian",
+   "content": "### ⚡ In 30 seconds\n- ∇f points to the steepest increase.\n- Hessian H = matrix of second partials.\n- H positive definite → min, negative definite → max, indefinite → saddle.\n\n---\n\n## Gradient\n$\\nabla f=\\begin{pmatrix}f_x\\\\f_y\\end{pmatrix}$: points in the direction of steepest increase; $|\\nabla f|$ is the maximum rate. Directional derivative along unit $\\hat u$: $D_{\\hat u}f=\\nabla f\\cdot\\hat u$.\n\n## Hessian\n\n$$H=\\begin{pmatrix}f_{xx}&f_{xy}\\\\f_{yx}&f_{yy}\\end{pmatrix}$$\n\nAt a critical point ($\\nabla f=0$):\n| Hessian | Point |\n|---|---|\n| Positive definite (all eigenvalues $>0$; $f_{xx}>0$, $\\det H>0$) | local minimum |\n| Negative definite (all eigenvalues $<0$; $f_{xx}<0$, $\\det H>0$) | local maximum |\n| Indefinite (eigenvalues of both signs; $\\det H<0$) | saddle |\n| Singular ($\\det H=0$) | inconclusive |\n\n$\\det H=rt-s^2$, so this is the same test as the maxima–minima note, written as a matrix.\n\n**Leading minors (3 variables):** $D_1=f_{xx}$, $D_2$, $D_3=\\det H$. All $>0$ → minimum; alternating $-,+,-$ → maximum.\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u3-gd",
+   "unit": null,
+   "title": "Gradient descent and Newton's method",
+   "content": "### ⚡ In 30 seconds\n- Gradient descent: x ← x − α∇f.\n- α too big overshoots, too small is slow.\n- Newton: x ← x − H⁻¹∇f; faster but needs the Hessian.\n\n---\n\n## Gradient descent\n\n$$\\mathbf{x}_{k+1}=\\mathbf{x}_k-\\alpha\\,\\nabla f(\\mathbf{x}_k)$$\n\nStep against the gradient. $\\alpha$ = learning rate: too small → slow; too large → overshoots or diverges. Stop when $|\\nabla f|$ or the change in $f$ is below a tolerance.\n\n**Hand iteration:** $f=x^2+y^2$, start $(1,1)$, $\\alpha=0.25$: $\\nabla f=(2,2)$ → $(0.5,0.5)$ → $\\nabla f=(1,1)$ → $(0.25,0.25)$: halves each step toward $(0,0)$.\n\n## Newton's method (optimisation)\n\n$$\\mathbf{x}_{k+1}=\\mathbf{x}_k-H^{-1}\\nabla f(\\mathbf{x}_k)\\qquad(\\text{1-D: }x_{k+1}=x_k-f'(x_k)/f''(x_k))$$\n\nUses curvature, so it converges much faster (quadratically) near the optimum, but needs the Hessian and its inverse, and can head to a maximum or saddle if $H$ isn't positive definite. On a quadratic it reaches the minimum in one step.\n\n| | Gradient descent | Newton |\n|---|---|---|\n| Uses | $\\nabla f$ | $\\nabla f$ and $H$ |\n| Cost per step | cheap | expensive |\n| Convergence | linear, depends on $\\alpha$ | quadratic near the optimum |\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u3-regression",
+   "unit": null,
+   "title": "Linear regression as optimisation",
+   "content": "### ⚡ In 30 seconds\n- Minimise Σ(y − a − bx)².\n- Normal equations: Σy = na + bΣx, Σxy = aΣx + bΣx².\n- Multiple: β = (XᵀX)⁻¹Xᵀy.\n\n---\n\n## Simple linear regression\nFit $\\hat y=a+bx$ by minimising $S(a,b)=\\sum(y_i-a-bx_i)^2$.\n$S_a=0$ and $S_b=0$ give the **normal equations**:\n\n$$\\sum y=na+b\\sum x,\\qquad \\sum xy=a\\sum x+b\\sum x^2$$\n\nSo $b=\\dfrac{n\\sum xy-\\sum x\\sum y}{n\\sum x^2-(\\sum x)^2}$ and $a=\\bar y-b\\bar x$.\n\n## Multiple regression\n$\\hat{\\mathbf y}=X\\boldsymbol\\beta$, minimise $\\|\\mathbf y-X\\boldsymbol\\beta\\|^2$ → $X^TX\\boldsymbol\\beta=X^T\\mathbf y$ → $\\boldsymbol\\beta=(X^TX)^{-1}X^T\\mathbf y$.\n\n## Link to gradient descent\n$\\nabla S=-2X^T(\\mathbf y-X\\boldsymbol\\beta)$, so the update is $\\boldsymbol\\beta\\leftarrow\\boldsymbol\\beta+2\\alpha X^T(\\mathbf y-X\\boldsymbol\\beta)$ — used when $X^TX$ is too big to invert.\n\n## Exam method\nMake a table with columns $x, y, x^2, xy$ and a totals row; substitute into the normal equations; solve for $a, b$.\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 1,
+   "title": "Calculus Unit 1 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Limits | LHL = RHL; standard limits; discontinuity types |\n| Differentiability | LHD = RHD; differentiable ⇒ continuous; $|x|$ counterexample |\n| $n$th derivatives | the table; partial fractions first; Leibnitz with $v$ = polynomial |\n| Rolle | 3 hypotheses → $f'(c)=0$, $c\\in(a,b)$; counterexamples $|x|$, $\\tan x$ |\n| LMVT | $f'(c)=\\frac{f(b)-f(a)}{b-a}$; inequalities like $\\frac{x}{1+x}<\\ln(1+x)<x$ |\n| Taylor/Maclaurin | formula + Lagrange remainder; series for $e^x,\\sin,\\cos,\\ln(1+x),(1+x)^m$ |\n\n**Answer habit:** state hypotheses, verify each with one line, then compute, then a conclusion sentence.\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 2,
+   "title": "Calculus Unit 2 — one-page revision sheet",
+   "content": "*All from the Unit 2 deck (82 slides); formula sheets on slides 79–80.*\n\n| Topic | Must know |\n|---|---|\n| Limits | two paths disprove; a bound in $r$ proves; polar |\n| Continuity | limit $=f(a,b)$; choosing $c$ |\n| Differentiability | $R/\\sqrt{h^2+k^2}\\to0$; continuous partials sufficient; 3 counterexamples |\n| Partials | hold the other constant; Clairaut; definition at piecewise points |\n| Total derivative | $dz$, tangent plane, $dz/dt$, $z_u,z_v$, error propagation |\n| Euler | $xf_x+yf_y=nf$; proof; $n(n-1)f$; composite forms |\n| Taylor | $T_1,T_2,T_3$; mixed term $hk f_{xy}$; substitute into 1-D series |\n\n**Common mistakes (slide 78):** checking only axes · substituting into a formula undefined at the origin · assuming partials ⇒ differentiable · forgetting $hk f_{xy}$ · polynomial ≠ function · Euler on a non-homogeneous $f$.\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 3,
+   "title": "Calculus Unit 3 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Max/min | $f_x=f_y=0$; $rt-s^2$ and sign of $r$; give the value |\n| Lagrange | $F=f+\\lambda\\phi$; equate the $\\lambda$ expressions |\n| Gradient/Hessian | steepest ascent; definiteness ↔ min/max/saddle |\n| Gradient descent | $x\\leftarrow x-\\alpha\\nabla f$; learning rate trade-off |\n| Newton | $x\\leftarrow x-H^{-1}\\nabla f$; one step on a quadratic |\n| Regression | normal equations; $(X^TX)^{-1}X^Ty$ |\n",
+   "pinned": true
+  }
+ ]
+}

@@ -468,7 +468,7 @@ export const designThinking: SeedSubject = {
       marks: 20,
       weightage: 20,
       scope: "Units 1–2",
-      timing: "5–11 Oct",
+      timing: "expected 5–11 Oct (not announced)",
       co: "CO1, CO2",
       track: "theory",
     },

@@ -987,7 +987,7 @@ export const programmingC: SeedSubject = {
       marks: 20,
       weightage: 20,
       scope: "Units 1, 2, 3 & 4",
-      timing: "After Unit 4 — 5–11 Oct",
+      timing: "After Unit 4 — expected 5–11 Oct (not announced)",
       co: "CO1, CO2",
       track: "theory",
     },

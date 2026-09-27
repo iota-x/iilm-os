@@ -671,7 +671,7 @@ export const digitalElectronics: SeedSubject = {
       marks: 20,
       weightage: 20,
       scope: "Units I, II & III — conceptual, analytical and application-based",
-      timing: "After Unit III — 5–11 Oct",
+      timing: "After Unit III — expected 5–11 Oct (not announced)",
       co: "CO1, CO2, CO3",
       track: "theory",
     },

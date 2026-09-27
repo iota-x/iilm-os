@@ -34,8 +34,8 @@ export function examCountdown(): {
       phase: "before",
       days: toMid,
       headline: `Mid-sems in ${toMid} day${toMid === 1 ? "" : "s"}.`,
-      chip: { n: String(toMid), label: `day${toMid === 1 ? "" : "s"} to mid-sems` },
-      note: "5–11 Oct, unconfirmed",
+      chip: { n: String(toMid), label: `day${toMid === 1 ? "" : "s"} to mid-sems (est.)` },
+      note: "5–11 Oct expected — dates not announced yet",
     };
   }
   if (toMid === 0) {

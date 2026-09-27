@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, ExternalLink, NotebookPen } from "lucide-react";
 import { CoverageCard } from "@/components/subject/coverage-card";
 import { FindMore } from "@/components/subject/find-more";
+import { ReaderGallery } from "@/components/reader/reader-gallery";
 import {
   AddResourceForm,
   NewNoteButton,
@@ -198,27 +199,16 @@ export default async function TopicPage({
             Pages from your notes
             <span className="ml-1.5 tabular-nums text-subtle">{notePages.length}</span>
           </SectionTitle>
-          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {notePages.map((f) => (
-              <li
-                key={f.id}
-                className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
-              >
-                <a href={`/api/vault/${f.storage_path}`} target="_blank" rel="noopener noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/api/vault/${f.storage_path}`}
-                    alt={f.caption ?? "notes page"}
-                    loading="lazy"
-                    className="w-full bg-white"
-                  />
-                </a>
-                {f.caption ? (
-                  <p className="px-2.5 py-2 text-[length:var(--text-micro)] leading-snug text-muted">{f.caption}</p>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          <ReaderGallery
+            variant="pages"
+            title={`${subject.short_name} · ${topic.title}`}
+            boardsKey={topic.code}
+            items={notePages.map((f) => ({
+              key: (f.filename ?? f.storage_path.split("/").pop() ?? f.id).replace(/\.[a-z]+$/i, ""),
+              storagePath: f.storage_path,
+              caption: f.caption ?? "",
+            }))}
+          />
         </section>
       ) : null}
 
@@ -229,34 +219,22 @@ export default async function TopicPage({
             From class
             <span className="ml-1.5 tabular-nums text-subtle">{photos.length}</span>
           </SectionTitle>
-          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {photos.map((f) => (
-              <li
-                key={f.id}
-                className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
-              >
-                <a href={`/api/vault/${f.storage_path}`} target="_blank" rel="noopener noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/api/vault/${f.storage_path}`}
-                    alt={f.caption ?? "board"}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full bg-surface-2 object-cover"
-                  />
-                </a>
-                <p className="px-2.5 py-2 text-[length:var(--text-micro)] leading-snug text-muted">
-                  {f.taken_at
-                    ? new Date(f.taken_at).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        timeZone: "Asia/Kolkata",
-                      })
-                    : null}
-                  {f.caption ? <span className="text-fg"> — {f.caption}</span> : null}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <ReaderGallery
+            variant="photos"
+            title={`${subject.short_name} · ${topic.title} — board photos`}
+            items={photos.map((f) => ({
+              key: f.id,
+              storagePath: f.storage_path,
+              caption: [
+                f.taken_at
+                  ? new Date(f.taken_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })
+                  : null,
+                f.caption,
+              ]
+                .filter(Boolean)
+                .join(" — "),
+            }))}
+          />
         </section>
       ) : null}
 

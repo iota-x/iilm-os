@@ -29,6 +29,7 @@ import { coverage, notesGapOf, unitGaps } from "@/data/coverage";
 import { ExperimentRow } from "@/components/subject/experiment-row";
 import { MarksTable } from "@/components/subject/marks-table";
 import { PhotoWall } from "@/components/subject/photo-wall";
+import { DeckShelf } from "@/components/reader/reader-gallery";
 import { Camera } from "lucide-react";
 import { FindMore } from "@/components/subject/find-more";
 import { ResourceList } from "@/components/resource-list";
@@ -69,6 +70,7 @@ export default async function SubjectPage({
     slots,
     profile,
     photos,
+    placedFiles,
   ] = await Promise.all([
     getSubjects(),
     getUnits(subject.id),
@@ -83,7 +85,30 @@ export default async function SubjectPage({
     getSlots(),
     getProfile(),
     getInboxFiles(subject.id),
+    getInboxFiles(subject.id, { withNotePages: true }),
   ]);
+
+  // Whole decks, rebuilt from the page images placed on topics: one copy of
+  // each page (a page can sit on several topics), in page order, grouped by
+  // the deck named at the start of its caption ("DENotes p. 26 — …").
+  const deckMap = new Map<string, Map<string, (typeof placedFiles)[number]>>();
+  for (const f of placedFiles) {
+    if (!f.storage_path.includes("/notes/")) continue;
+    const file = f.storage_path.split("/").pop()!;
+    const name = (f.caption ?? "Notes").split(/ p\. |, slide /)[0];
+    if (!deckMap.has(name)) deckMap.set(name, new Map());
+    if (!deckMap.get(name)!.has(file)) deckMap.get(name)!.set(file, f);
+  }
+  const decks = [...deckMap.entries()].map(([name, files]) => ({
+    name,
+    items: [...files.entries()]
+      .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(([file, f]) => ({
+        key: file.replace(/\.[a-z]+$/i, ""),
+        storagePath: f.storage_path,
+        caption: (f.caption ?? "").replace(/ — .*$/, ""),
+      })),
+  }));
 
   const hasLab = subject.has_lab && experiments.length > 0;
   // A pure lab course has no syllabus to sit, so open it on the lab list —
@@ -211,6 +236,16 @@ export default async function SubjectPage({
             </div>
           </div>
         </Card>
+      ) : null}
+
+      {/* ── read whole decks in the app ──────────────────── */}
+      {decks.length ? (
+        <div className="space-y-1.5">
+          <p className="text-[length:var(--text-micro)] font-medium uppercase tracking-wide text-subtle">
+            Your class notes — read and write on them
+          </p>
+          <DeckShelf decks={decks} />
+        </div>
       ) : null}
 
       {/* ── what the class notes leave out ─────────────────── */}

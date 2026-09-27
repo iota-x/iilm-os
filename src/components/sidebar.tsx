@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -94,6 +94,22 @@ export function Sidebar({
 
   const isOpen = (slug: string) => openMap[slug] ?? slug === activeSlug;
 
+  // which unit and topic the page is on: /subjects/<slug>/unit-<n>/<topic>
+  const { activeUnit, activeTopic } = useMemo(() => {
+    const m = pathname.match(/^\/subjects\/[^/]+\/unit-(\d+)(?:\/([^/?#]+))?/);
+    return { activeUnit: m ? Number(m[1]) : null, activeTopic: m?.[2] ? decodeURIComponent(m[2]) : null };
+  }, [pathname]);
+  // units toggled by hand this session; others open only when you're in them
+  const [unitOverride, setUnitOverride] = useState<Record<string, boolean>>({});
+  const unitOpen = (subjectSlug: string, unitId: string, n: number) =>
+    unitOverride[unitId] ?? (subjectSlug === activeSlug && n === activeUnit);
+
+  // keep the current topic visible in the sidebar as you move around
+  const navRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    navRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "nearest" });
+  }, [pathname]);
+
   async function signOut() {
     await createClient().auth.signOut();
     router.push("/login");
@@ -172,7 +188,7 @@ export function Sidebar({
         <SearchTrigger className="w-full justify-start" />
       </div>
 
-      <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
+      <nav ref={navRef} className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
         {GROUPS.map((g) => (
           <div key={g.label ?? "top"} className={g.label ? "mt-3" : ""}>
             {g.label ? (
@@ -318,36 +334,103 @@ export function Sidebar({
                         const n = unit.topics.length;
                         const solid = unit.topics.filter((t) => t.status === "mastered").length;
                         const touched = unit.topics.filter((t) => t.status !== "not_started").length;
+                        const hereUnit = isActive && unit.number === activeUnit;
+                        const uOpen = unitOpen(subject.slug, unit.id, unit.number);
                         return (
                           <li key={unit.id}>
-                            <Link
-                              href={`/subjects/${subject.slug}/unit-${unit.number}`}
-                              className="group/unit flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-surface-2 focus-ring"
-                              title={`Unit ${unit.number} — ${unit.title} · ${touched} of ${n} started, ${solid} solid`}
+                            <div
+                              className={cn(
+                                "group/unit flex items-center rounded-md transition-colors",
+                                hereUnit ? "bg-surface-2" : "hover:bg-surface-2",
+                              )}
                             >
-                              <span className="w-4 shrink-0 text-[length:var(--text-micro)] font-semibold tabular-nums text-subtle">
-                                {unit.number}
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-[length:var(--text-micro)] text-muted group-hover/unit:text-fg">
-                                  {unit.title}
+                              <button
+                                onClick={() => setUnitOverride((m) => ({ ...m, [unit.id]: !uOpen }))}
+                                aria-expanded={uOpen}
+                                aria-label={uOpen ? `Hide topics of unit ${unit.number}` : `Show topics of unit ${unit.number}`}
+                                className="grid h-7 w-5 shrink-0 place-items-center rounded-l-md text-subtle hover:text-fg focus-ring"
+                              >
+                                <ChevronRight size={11} className={cn("transition-transform", uOpen && "rotate-90")} />
+                              </button>
+                              <Link
+                                href={`/subjects/${subject.slug}/unit-${unit.number}`}
+                                aria-current={hereUnit && !activeTopic ? "page" : undefined}
+                                className="flex min-w-0 flex-1 items-center gap-2 rounded-r-md py-1.5 pr-2 focus-ring"
+                                title={`Unit ${unit.number} — ${unit.title} · ${touched} of ${n} started, ${solid} solid`}
+                              >
+                                <span className="w-3 shrink-0 text-[length:var(--text-micro)] font-semibold tabular-nums text-subtle">
+                                  {unit.number}
                                 </span>
-                                {/* faint = started, solid = mastered */}
-                                <span className="relative mt-1 block h-[3px] w-full overflow-hidden rounded-full bg-surface-3">
+                                <span className="min-w-0 flex-1">
                                   <span
-                                    className="absolute inset-y-0 left-0 rounded-full opacity-35"
-                                    style={{ width: `${n ? Math.round((touched / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
-                                  />
-                                  <span
-                                    className="absolute inset-y-0 left-0 rounded-full"
-                                    style={{ width: `${n ? Math.round((solid / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
-                                  />
+                                    className={cn(
+                                      "block truncate text-[length:var(--text-micro)] group-hover/unit:text-fg",
+                                      hereUnit ? "font-medium text-fg" : "text-muted",
+                                    )}
+                                  >
+                                    {unit.title}
+                                  </span>
+                                  {/* faint = started, solid = mastered */}
+                                  <span className="relative mt-1 block h-[3px] w-full overflow-hidden rounded-full bg-surface-3">
+                                    <span
+                                      className="absolute inset-y-0 left-0 rounded-full opacity-35"
+                                      style={{ width: `${n ? Math.round((touched / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
+                                    />
+                                    <span
+                                      className="absolute inset-y-0 left-0 rounded-full"
+                                      style={{ width: `${n ? Math.round((solid / n) * 100) : 0}%`, background: `var(--c-${subject.color})` }}
+                                    />
+                                  </span>
                                 </span>
-                              </span>
-                              <span className="shrink-0 text-[10px] tabular-nums text-subtle">
-                                {solid}/{n}
-                              </span>
-                            </Link>
+                                <span className="shrink-0 text-[10px] tabular-nums text-subtle">
+                                  {solid}/{n}
+                                </span>
+                              </Link>
+                            </div>
+                            {uOpen && n ? (
+                              <ul className="ml-[9px] mt-0.5 space-y-px border-l border-line pl-1.5">
+                                {unit.topics.map((t) => {
+                                  const here = isActive && hereUnit && t.code === activeTopic;
+                                  return (
+                                    <li key={t.id}>
+                                      <Link
+                                        href={`/subjects/${subject.slug}/unit-${unit.number}/${t.code}`}
+                                        aria-current={here ? "page" : undefined}
+                                        title={t.title}
+                                        className={cn(
+                                          "relative flex items-start gap-1.5 rounded-md py-1 pl-2 pr-1.5 transition-colors focus-ring",
+                                          here ? "bg-[var(--accent-soft)] text-fg" : "text-muted hover:bg-surface-2 hover:text-fg",
+                                        )}
+                                      >
+                                        {here ? (
+                                          <span className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-[var(--accent)]" aria-hidden />
+                                        ) : null}
+                                        <span
+                                          className={cn(
+                                            "mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full",
+                                            t.status === "mastered" && "bg-[var(--good)]",
+                                            t.status === "revising" && "bg-sc",
+                                            t.status === "learning" && "bg-[var(--warn)]",
+                                            t.status === "not_started" && "border border-[var(--border-strong)]",
+                                          )}
+                                          style={t.status === "revising" ? { background: `var(--c-${subject.color})` } : undefined}
+                                          aria-label={t.status.replace("_", " ")}
+                                        />
+                                        <span
+                                          className={cn(
+                                            "line-clamp-2 text-[11.5px] leading-snug",
+                                            here && "font-medium text-[var(--accent)]",
+                                            t.status === "mastered" && !here && "text-subtle",
+                                          )}
+                                        >
+                                          {t.title}
+                                        </span>
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            ) : null}
                           </li>
                         );
                       })

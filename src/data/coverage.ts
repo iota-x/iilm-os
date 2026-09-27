@@ -66,14 +66,14 @@ export const coverage: Record<string, Coverage> = {
     ],
     missing:
       "Overflow detection — when adding two numbers of the same sign gives a result of the other sign — is not in the notes.",
-    learnFrom: `${MANO} §1.6, or ${NESO}`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §1.6, or ${NESO}`,
   },
   "deco-u1-codes": {
     status: "partial",
     sources: [{ file: DE, where: "pp. 10–12", what: "BCD 8421 / 2421, Excess-3, Gray ↔ binary" }],
     missing:
       "Parity and error-detection codes — the actual syllabus topic — are not in the notes at all. Only the BCD, Excess-3 and Gray codes are.",
-    learnFrom: `${MANO} §1.7 (error-detecting code), or ${NESO}`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §1.7 (error-detecting code), or ${NESO}`,
   },
   "deco-u1-boolean": {
     status: "partial",
@@ -82,7 +82,7 @@ export const coverage: Record<string, Coverage> = {
       { file: DE, where: "pp. 23–25", what: "complement of a function, duality, self-dual functions" },
     ],
     missing: "The absorption and consensus theorems are missing from the list of laws.",
-    learnFrom: `${MANO} §2.4`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §2.4`,
   },
   "deco-u1-implementation": {
     status: "partial",
@@ -91,7 +91,7 @@ export const coverage: Record<string, Coverage> = {
       { file: DE, where: "p. 31", what: "one worked expression → gate circuit" },
     ],
     missing: "Only one worked expression-to-circuit example, and no circuit-to-expression practice.",
-    learnFrom: `${MANO} §2.6–2.8`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §2.6–2.8`,
   },
   "deco-u1-gates": {
     status: "covered",
@@ -122,7 +122,7 @@ export const coverage: Record<string, Coverage> = {
     status: "partial",
     sources: [{ file: DE, where: "p. 27", what: "one line on don't-cares" }],
     missing: "Don't-cares get one line and no worked example with + d(…).",
-    learnFrom: `${MANO} §3.6`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §3.6`,
   },
   "deco-u1-implicants": {
     status: "covered",
@@ -151,7 +151,7 @@ export const coverage: Record<string, Coverage> = {
     status: "missing",
     sources: [],
     missing: "Magnitude comparators (A>B, A=B, A<B for 1 and 2 bits) are not in the notes at all.",
-    learnFrom: `${MANO} §4.8, or ${NESO}`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §4.8, or ${NESO}`,
   },
 
   /* ── DE+CO · Unit III ───────────────────────────────────── */
@@ -171,13 +171,13 @@ export const coverage: Record<string, Coverage> = {
     sources: [{ file: DE, where: "pp. 56–58", what: "edge vs level triggering, race-around in JK, master–slave JK" }],
     missing:
       "No side-by-side latch vs edge-triggered flip-flop comparison with a timing diagram — Class Test question 5.",
-    learnFrom: `Floyd, Digital Fundamentals ch. 7, or ${NESO}`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or Floyd, Digital Fundamentals ch. 7, or ${NESO}`,
   },
   "deco-u3-sync-fundamentals": {
     status: "missing",
     sources: [{ file: DE, where: "p. 49", what: "only the block diagram of a sequential circuit" }],
     missing: "Moore vs Mealy machines, state tables and state diagrams are not in the notes.",
-    learnFrom: `${MANO} §5.5, or ${NESO}`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §5.5, or ${NESO}`,
   },
   "deco-u3-clocked": {
     status: "partial",
@@ -186,14 +186,14 @@ export const coverage: Record<string, Coverage> = {
       { file: DE, where: "pp. 71–72", what: "steps to design a synchronous circuit, worked with D flip-flops" },
     ],
     missing: "Analysis — taking a given clocked circuit to its state table and state diagram — is not covered; only design is.",
-    learnFrom: `${MANO} §5.5`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §5.5`,
   },
   "deco-u3-counters": {
     status: "partial",
     sources: [{ file: DE, where: "pp. 68–72", what: "MOD-N counting, flip-flops needed, sync vs async, up/down, a 2-bit synchronous design" }],
     missing:
       "The 3-bit synchronous up counter with JK or T flip-flops (lab experiment 10) isn't worked, and building a MOD-N by clearing on the count isn't shown.",
-    learnFrom: `${MANO} §6.3–6.4`,
+    learnFrom: `the study note for this topic in Notes (it covers the missing part) — or ${MANO} §6.3–6.4`,
   },
   "deco-u3-registers": {
     status: "covered",

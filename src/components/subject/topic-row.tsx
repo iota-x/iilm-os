@@ -21,8 +21,11 @@ export function TopicRow({
   resourceCount = 0,
   subjectSlug,
   unitNumber,
+  notesGap,
 }: {
   topic: Topic;
+  /** the class notes skip this topic, or part of it */
+  notesGap?: "partial" | "missing";
   noteCount?: number;
   resourceCount?: number;
   subjectSlug: string;
@@ -115,6 +118,11 @@ export function TopicRow({
               <span className="text-[length:var(--text-micro)] text-subtle font-mono">{topic.session}</span>
             ) : null}
             {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
+            {notesGap ? (
+              <Badge tone={notesGap === "missing" ? "bad" : "warn"}>
+                {notesGap === "missing" ? "not in notes" : "gap in notes"}
+              </Badge>
+            ) : null}
             <span className="text-[length:var(--text-micro)] text-subtle">{STATUS_LABEL[status]}</span>
             {noteCount ? (
               <Link

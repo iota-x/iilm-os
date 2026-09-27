@@ -6,9 +6,12 @@
  * so the whole section sees it, not just the account `npm run seed` uses.
  *
  * Never touches notes, marks, photos, attendance, goals or the class board:
- * the seed only upserts curriculum rows by their natural keys. The personal
- * 18-day plan and the strategies written to one student go only to the
- * SEED_EMAIL account, as before.
+ * the seed only upserts curriculum rows by their natural keys. The strategies
+ * written to one student go only to the SEED_EMAIL account.
+ *
+ * The personal 18-day plan is NOT rewritten unless you pass --with-plan: the
+ * live plan in the database has been re-planned by hand since plan.ts was
+ * written (and keeps being), and rewriting it from the file would undo that.
  */
 import { config } from "dotenv";
 config({ path: [".env.local", ".env"] });
@@ -19,6 +22,7 @@ const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPAB
   auth: { autoRefreshToken: false, persistSession: false },
 });
 const OWNER = (process.env.SEED_EMAIL ?? "").toLowerCase();
+const WITH_PLAN = process.argv.includes("--with-plan");
 
 async function main() {
   const { data, error } = await db.auth.admin.listUsers({ perPage: 1000 });
@@ -32,9 +36,9 @@ async function main() {
     const mine = u.email!.toLowerCase() === OWNER;
     const t0 = Date.now();
     try {
-      await seedUser(db, u.id, { plan: mine, personal: mine });
+      await seedUser(db, u.id, { plan: mine && WITH_PLAN, personal: mine });
       ok++;
-      console.log(`  ✓ ${u.email!.padEnd(38)} ${((Date.now() - t0) / 1000).toFixed(1)}s${mine ? "  (owner: plan + personal)" : ""}`);
+      console.log(`  ✓ ${u.email!.padEnd(38)} ${((Date.now() - t0) / 1000).toFixed(1)}s${mine ? `  (owner: personal${WITH_PLAN ? " + plan" : ""})` : ""}`);
     } catch (e) {
       failed.push(u.email!);
       console.log(`  ✗ ${u.email!.padEnd(38)} ${e instanceof SeedError ? e.step + ": " : ""}${(e as Error).message}`);

@@ -1,4 +1,5 @@
 import type { SeedQuestion } from "./types";
+import { notesQuestions } from "./questions-notes";
 
 /**
  * A starter drill set for the mid-sem scope — Applied Calculus Units I–III
@@ -498,4 +499,5 @@ export const questions: SeedQuestion[] = [
     kind: "viva",
     source: "C lab viva, week of 21 Sept 2026",
   },
+  ...notesQuestions,
 ];

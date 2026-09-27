@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight, ExternalLink, NotebookPen } from "lucide-react";
+import { CoverageCard } from "@/components/subject/coverage-card";
 import { FindMore } from "@/components/subject/find-more";
 import {
   AddResourceForm,
@@ -21,6 +22,7 @@ import {
   getTopics,
   getUnits,
 } from "@/lib/queries";
+import { coverageOf } from "@/data/coverage";
 import { reviewLabel, reviewStateOf } from "@/lib/review";
 import { cn, fmtDate } from "@/lib/utils";
 
@@ -46,7 +48,7 @@ export default async function TopicPage({
     getTopics(subject.id),
     getResources(subject.id),
     getNotes({ subjectId: subject.id }),
-    getInboxFiles(subject.id),
+    getInboxFiles(subject.id, { withNotePages: true }),
   ]);
 
   const unit = units.find((u) => u.number === number);
@@ -58,9 +60,15 @@ export default async function TopicPage({
 
   const resources = allResources.filter((r) => r.topic_id === topic.id);
   const notes = allNotes.filter((n) => n.topic_id === topic.id);
-  const photos = allPhotos.filter((p) => p.topic_id === topic.id);
+  const placed = allPhotos.filter((p) => p.topic_id === topic.id);
+  // pages cut from the handed-out notes and decks, in page order
+  const notePages = placed
+    .filter((p) => p.storage_path.includes("/notes/"))
+    .sort((a, b) => a.storage_path.localeCompare(b.storage_path, undefined, { numeric: true }));
+  const photos = placed.filter((p) => !p.storage_path.includes("/notes/"));
   const checkpoints = await getCheckpoints([topic.id]);
   const review = reviewStateOf(topic);
+  const notesCoverage = coverageOf(topic.code, slug, unit.number);
   const questions = await getQuestions({ topicId: topic.id });
   const attempts = await getAttempts(questions.map((q) => q.id));
 
@@ -129,6 +137,9 @@ export default async function TopicPage({
         ) : null}
       </div>
 
+      {/* ── where it is in the notes, and what they miss ──── */}
+      {notesCoverage ? <CoverageCard coverage={notesCoverage} /> : null}
+
       {/* ── status ─────────────────────────────────────────── */}
       <Card className="p-4">
         <TopicStatusControl topic={topic} />
@@ -179,6 +190,37 @@ export default async function TopicPage({
           />
         </Card>
       </section>
+
+      {/* ── the pages themselves ───────────────────────────── */}
+      {notePages.length ? (
+        <section>
+          <SectionTitle>
+            Pages from your notes
+            <span className="ml-1.5 tabular-nums text-subtle">{notePages.length}</span>
+          </SectionTitle>
+          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {notePages.map((f) => (
+              <li
+                key={f.id}
+                className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
+              >
+                <a href={`/api/vault/${f.storage_path}`} target="_blank" rel="noopener noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/api/vault/${f.storage_path}`}
+                    alt={f.caption ?? "notes page"}
+                    loading="lazy"
+                    className="w-full bg-white"
+                  />
+                </a>
+                {f.caption ? (
+                  <p className="px-2.5 py-2 text-[length:var(--text-micro)] leading-snug text-muted">{f.caption}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {/* ── from class ─────────────────────────────────────── */}
       {photos.length ? (

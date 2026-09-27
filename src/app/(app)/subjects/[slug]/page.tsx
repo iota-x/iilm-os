@@ -25,6 +25,7 @@ import {
   getProfile,
 } from "@/lib/queries";
 import { TopicRow } from "@/components/subject/topic-row";
+import { coverage, notesGapOf, unitGaps } from "@/data/coverage";
 import { ExperimentRow } from "@/components/subject/experiment-row";
 import { MarksTable } from "@/components/subject/marks-table";
 import { PhotoWall } from "@/components/subject/photo-wall";
@@ -85,11 +86,19 @@ export default async function SubjectPage({
   ]);
 
   const hasLab = subject.has_lab && experiments.length > 0;
-  // A pure lab course has nothing on the syllabus tab, so open it on the lab list.
-  const defaultTab: Tab = hasLab && topics.length === 0 ? "lab" : "syllabus";
+  // A pure lab course has no syllabus to sit, so open it on the lab list —
+  // even when it has theory topics for the quizzes (Linux).
+  const defaultTab: Tab = hasLab && topics.every((t) => !t.in_midsem) ? "lab" : "syllabus";
   const tab: Tab = (TABS.includes(rawTab as Tab) ? rawTab : defaultTab) as Tab;
 
   const midTopics = topics.filter((t) => t.in_midsem);
+  // Topics the class notes skip or only half cover, in syllabus order.
+  const unitNumberById = new Map(units.map((u) => [u.id, u.number]));
+  const notesGaps = topics
+    .map((t) => ({ t, c: coverage[t.code], unit: unitNumberById.get(t.unit_id) }))
+    .filter((x) => x.c && x.c.status !== "covered")
+    .sort((a, b) => (a.unit ?? 0) - (b.unit ?? 0));
+  const notesUnitGap = unitGaps[slug];
   const midProgress = progressOf(midTopics.map((t) => t.status));
   const allProgress = progressOf(topics.map((t) => t.status));
   const group = profile?.lab_group ?? 2;
@@ -204,6 +213,48 @@ export default async function SubjectPage({
         </Card>
       ) : null}
 
+      {/* ── what the class notes leave out ─────────────────── */}
+      {notesGaps.length || notesUnitGap ? (
+        <Card className="border-[var(--warn)]/35">
+          <div className="flex gap-3 px-4 py-3">
+            <AlertTriangle size={16} className="text-[var(--warn)] shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-[length:var(--text-small)] font-semibold">
+                Missing from your notes
+                {notesGaps.length ? (
+                  <span className="ml-1.5 tabular-nums text-subtle font-normal">{notesGaps.length} topics</span>
+                ) : null}
+              </p>
+              <ul className="mt-1.5 space-y-1">
+                {notesGaps.map(({ t, c, unit }) => (
+                  <li key={t.id} className="text-[length:var(--text-small)] text-muted leading-relaxed flex gap-2">
+                    <span className="text-subtle select-none shrink-0">·</span>
+                    <span>
+                      <Link
+                        href={`/subjects/${slug}/unit-${unit}/${t.code}`}
+                        className="font-medium text-fg hover:underline focus-ring rounded"
+                      >
+                        {t.title}
+                      </Link>
+                      {c!.status === "missing" ? (
+                        <Badge tone="bad" className="ml-1.5">not in notes</Badge>
+                      ) : null}
+                      {c!.missing ? <span> — {c!.missing}</span> : null}
+                    </span>
+                  </li>
+                ))}
+                {notesUnitGap ? (
+                  <li className="text-[length:var(--text-small)] text-muted leading-relaxed flex gap-2">
+                    <span className="text-subtle select-none shrink-0">·</span>
+                    <span>{notesUnitGap.note}</span>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
       {/* ── tabs ───────────────────────────────────────────── */}
       <div className="border-b border-line">
         <nav className="flex gap-0.5 -mb-px overflow-x-auto">
@@ -272,6 +323,7 @@ export default async function SubjectPage({
                         topic={t}
                         subjectSlug={slug}
                         unitNumber={u.number}
+                        notesGap={notesGapOf(t.code, slug, u.number)}
                         noteCount={notes.filter((n) => n.topic_id === t.id).length}
                         resourceCount={resources.filter((r) => r.topic_id === t.id).length}
                       />

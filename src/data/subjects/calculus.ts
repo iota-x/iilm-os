@@ -127,6 +127,17 @@ export const calculus: SeedSubject = {
           inMidsem: true,
           outcome:
             "Test a limit along multiple paths (y=mx, y=x²) to prove non-existence, and distinguish existence of partials from differentiability.",
+          subtopics: [
+            "Domain working rule: denominators ≠ 0, radicands ≥ 0, log arguments > 0 (slide 5)",
+            "ε–δ definition; the value f(a,b) needn't exist (slides 7–8)",
+            "Disprove a limit with two paths: axes, y = mx, then y = x² when every line agrees (slides 10–11)",
+            "Prove a limit with a uniform bound, e.g. |x²y/(x²+y²)| ≤ |y|, or with polar coordinates (slides 12–13)",
+            "Continuity: f(a,b) exists, the limit exists, they're equal; pick c for continuity (slides 17–19)",
+            "Differentiability: remainder R(h,k)/√(h²+k²) → 0; differentiable ⇒ continuous (slides 28–30)",
+            "Sufficient condition: fx, fy continuous near the point (slides 31–32)",
+            "Counterexamples: xy/(x²+y²) has partials but isn't continuous; xy/√(x²+y²) is continuous with partials but not differentiable (slides 25, 34)",
+            "Practice A and C with answers (slides 15–16, 35–36)",
+          ],
         },
         {
           code: "calc-u2-partial",
@@ -136,6 +147,13 @@ export const calculus: SeedSubject = {
           inMidsem: true,
           outcome:
             "Compute first and higher-order partials, verify mixed-partial equality, and evaluate at a point.",
+          subtopics: [
+            "Definition as a limit: fx(a,b) = lim [f(a+h,b) − f(a,b)]/h (slide 20)",
+            "Working rules: hold the other variable constant, differentiate, substitute last (slides 21–23)",
+            "Second and mixed partials; Clairaut's theorem fxy = fyx (slide 24)",
+            "At a piecewise point use the difference quotient, not the formula (slide 25)",
+            "Practice B with answers (slides 26–27)",
+          ],
         },
         {
           code: "calc-u2-total",
@@ -144,6 +162,15 @@ export const calculus: SeedSubject = {
           weight: 4,
           inMidsem: true,
           outcome: "Apply the chain rule for composite functions and compute df/dt along a curve.",
+          subtopics: [
+            "Total differential dz = fx dx + fy dy; gradient ∇f = (fx, fy) (slide 37)",
+            "Tangent plane z = f(a,b) + fx(x−a) + fy(y−b) and linear approximation (slide 38)",
+            "Differential approximation, e.g. √(4.04 + 8.97) (slide 39)",
+            "dz/dt = fx·x′(t) + fy·y′(t) along a path (slide 40)",
+            "Chain rule with two new variables: zu = fx·xu + fy·yu (slide 41)",
+            "Error propagation: dA/A = dx/x + dy/y (slide 42)",
+            "Practice D with answers (slides 43–44)",
+          ],
         },
         {
           code: "calc-u2-euler",
@@ -153,6 +180,14 @@ export const calculus: SeedSubject = {
           inMidsem: true,
           outcome:
             "Identify degree of homogeneity and verify x·fx + y·fy = n·f, including the second-order extension.",
+          subtopics: [
+            "Homogeneous of degree n: f(tx,ty) = tⁿ f(x,y), t > 0; degree rules for sums, products, powers (slides 45–46)",
+            "Euler's theorem x·fx + y·fy = n·f, its hypotheses, and the proof by the chain rule (slides 47–48)",
+            "Solved examples, including fractional powers (slides 49–50)",
+            "Second order: x²fxx + 2xy·fxy + y²fyy = n(n−1)f (slide 51)",
+            "Composite v = φ(u): x·vx + y·vy = n·u·φ′(u), e.g. log u gives n (slide 52)",
+            "Practice E with answers (slides 53–54)",
+          ],
         },
         {
           code: "calc-u2-taylor2",
@@ -161,6 +196,15 @@ export const calculus: SeedSubject = {
           weight: 4,
           inMidsem: true,
           outcome: "Expand f(x,y) about a point up to second or third-order terms.",
+          subtopics: [
+            "Notation: h = x − a, k = y − b; T₁ and T₂; the mixed term is hk·fxy (slides 55–56)",
+            "T₃ with coefficients 1, 3, 3, 1; keep only total degree ≤ m (slide 57)",
+            "General Tₘ, and Taylor polynomial vs Taylor series (slide 58)",
+            "Remainder via g(t) = f(a+th, b+tk), and the bound |Rₘ| ≤ M(|h|+|k|)^(m+1)/(m+1)! (slides 59–60)",
+            "Six-step working rule, and T₂ of x²y about (1,2) used to estimate f(1.02, 1.97) (slides 61–63)",
+            "Maclaurin: e^(x+y), log(1+x+y), eˣcos y, sin(xy) — substitute into one-variable series (slides 64–69)",
+            "Practice F and G, mixed revision, common mistakes, formula sheet (slides 70–80)",
+          ],
         },
       ],
     },
@@ -608,6 +652,7 @@ Write one \`utils.py\` with your plotting helpers early on and every later exper
     "applied_calculus/Applied Calculus lab 2 - limits and continuity.ipynb",
     "applied_calculus/Applied Calculus lab 3 - derivatives and critical points.ipynb",
     "applied_calculus/Applied Calculus_GN.docx",
+    "applied_calculus/Unit_2_Two_Variable_Calculus.pptx",
   ],
   gaps: [],
 };

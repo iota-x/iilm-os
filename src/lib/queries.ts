@@ -173,11 +173,22 @@ export async function getPost(id: string): Promise<{ post: Post; replies: Reply[
   };
 }
 
-/** Files dropped straight into the inbox — not attached to a note. */
-export async function getInboxFiles(subjectId?: string): Promise<Attachment[]> {
+/**
+ * Files dropped straight into the inbox — not attached to a note.
+ *
+ * Pages cut from handed-out notes and decks (`<user>/notes/…`, placed by
+ * scripts/attach-notes.mts) belong on their topic pages only; a hundred and
+ * fifty of them would bury the inbox and the photo wall, so they're left out
+ * unless asked for.
+ */
+export async function getInboxFiles(
+  subjectId?: string,
+  opts: { withNotePages?: boolean } = {},
+): Promise<Attachment[]> {
   const db = await createClient();
   let q = db.from("attachments").select("*").is("note_id", null);
   if (subjectId) q = q.eq("subject_id", subjectId);
+  if (!opts.withNotePages) q = q.not("storage_path", "like", "%/notes/%");
   const { data, error } = await q
     .order("taken_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });

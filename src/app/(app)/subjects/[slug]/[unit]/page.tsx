@@ -9,6 +9,7 @@ import {
   Target,
 } from "lucide-react";
 import { TopicRow } from "@/components/subject/topic-row";
+import { notesGapOf } from "@/data/coverage";
 import { Badge, Bar, Card, Empty, SectionTitle } from "@/components/ui";
 import {
   getNotes,
@@ -136,6 +137,7 @@ export default async function UnitPage({
                   topic={t}
                   subjectSlug={slug}
                   unitNumber={unit.number}
+                  notesGap={notesGapOf(t.code, slug, unit.number)}
                   noteCount={allNotes.filter((n) => n.topic_id === t.id).length}
                   resourceCount={allResources.filter((r) => r.topic_id === t.id).length}
                 />

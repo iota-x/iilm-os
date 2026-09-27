@@ -71,7 +71,9 @@ async function main() {
     lab_group: 2,
   });
   ok(`profile (${name})`);
-  await seedUser(db, userId, { plan: true, personal: true }, ok);
+  // The plan in the database has been re-planned by hand since plan.ts was
+  // written; rewriting it from the file would undo that. Opt in explicitly.
+  await seedUser(db, userId, { plan: process.argv.includes("--with-plan"), personal: true }, ok);
   console.log("\n\x1b[1m\x1b[32mDone.\x1b[0m Run `npm run dev` and sign in as " + EMAIL + "\n");
 }
 

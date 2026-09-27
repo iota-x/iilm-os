@@ -807,6 +807,7 @@ For each experiment the file needs: aim, apparatus with IC numbers, pin diagram,
     "digital_electronics/299204_Course Plan_DECO_updatedpolicy.pdf",
     "digital_electronics/299206_DE syllabus 26102.pdf",
     "digital_electronics/299203_Lab_Course Plan_DECO_NEWPOLICY.pdf",
+    "digital_electronics/DENotes.pdf",
   ],
   gaps: [
     "Exact dates for Quiz 1 and Class Test 1 are 'after Unit I' / 'Unit II & half of Unit III' — the Monday 21 Sept test is assumed to be Class Test 1.",

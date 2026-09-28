@@ -40,6 +40,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Share2,
+  Copy,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -145,48 +147,75 @@ export function NoteEditor({
   const fileRef = useRef<HTMLInputElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
+  const [shareMenu, setShareMenu] = useState(false);
+  // The Mac/desktop native share sheet doesn't list WhatsApp/Discord, so only
+  // offer "Share…" where the browser can actually hand files off (mostly phones).
+  const [canNativeShare] = useState(() => {
+    try {
+      if (typeof navigator === "undefined") return false;
+      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+      const probe = new File([new Uint8Array()], "x.png", { type: "image/png" });
+      return !!nav.canShare?.({ files: [probe] });
+    } catch {
+      return false;
+    }
+  });
 
-  // Turn the whole note (text, tables, math, images) into one image and either
-  // share it (mobile → WhatsApp etc.) or download it. Snapshots the hidden
-  // full-width render below so the capture is complete, not the scrolled view.
-  async function shareNote() {
+  // Render the whole note (text, tables, math, images) to a PNG once. Snapshots
+  // the hidden full-width render below so the capture is complete, not the
+  // scrolled view; the caller then copies, downloads or shares it.
+  async function makeNoteImage() {
     const el = exportRef.current;
-    if (!el || sharing) return;
+    if (!el) throw new Error("no export node");
+    // The rendered <img>s are loading="lazy" and may be unloaded; preload each
+    // URL with a fresh Image() (fires load/error reliably and warms the cache)
+    // so html-to-image can embed them. 6s guard so it never hangs.
+    const srcs = [...new Set(Array.from(el.querySelectorAll("img")).map((i) => i.src).filter(Boolean))];
+    await Promise.all(
+      srcs.map(
+        (src) =>
+          new Promise((r) => {
+            const im = new Image();
+            const done = () => r(null);
+            im.onload = done;
+            im.onerror = done;
+            im.src = src;
+            setTimeout(done, 6000);
+          }),
+      ),
+    );
+    const dataUrl = await toPng(el, { backgroundColor: "#ffffff", pixelRatio: 2, cacheBust: true });
+    const blob = await (await fetch(dataUrl)).blob();
+    const safe = (title || "note").replace(/[^\w\s-]/g, "").trim().slice(0, 50) || "note";
+    return { dataUrl, blob, file: new File([blob], `${safe}.png`, { type: "image/png" }) };
+  }
+
+  // Copy is the one that actually reaches WhatsApp/Discord on a Mac — paste it
+  // straight in. Download and the native sheet are fallbacks.
+  async function runShare(kind: "copy" | "download" | "native") {
+    if (sharing) return;
+    setShareMenu(false);
     setSharing(true);
     try {
-      // The rendered <img>s are loading="lazy" and may be unloaded; preload each
-      // URL with a fresh Image() (which reliably fires load/error and warms the
-      // cache) so html-to-image can embed them. 6s guard so it never hangs.
-      const srcs = [...new Set(Array.from(el.querySelectorAll("img")).map((i) => i.src).filter(Boolean))];
-      await Promise.all(
-        srcs.map(
-          (src) =>
-            new Promise((r) => {
-              const im = new Image();
-              const done = () => r(null);
-              im.onload = done;
-              im.onerror = done;
-              im.src = src;
-              setTimeout(done, 6000);
-            }),
-        ),
-      );
-      const dataUrl = await toPng(el, { backgroundColor: "#ffffff", pixelRatio: 2, cacheBust: true });
-      const blob = await (await fetch(dataUrl)).blob();
-      const safe = (title || "note").replace(/[^\w\s-]/g, "").trim().slice(0, 50) || "note";
-      const file = new File([blob], `${safe}.png`, { type: "image/png" });
-      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
-      if (nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: title || "Note" });
+      const { dataUrl, blob, file } = await makeNoteImage();
+      if (kind === "copy") {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        toast.success("Image copied — paste it into WhatsApp, Discord, anywhere");
+      } else if (kind === "native") {
+        const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+        if (nav.canShare?.({ files: [file] })) await nav.share({ files: [file], title: title || "Note" });
+        else throw new Error("share unsupported");
       } else {
         const a = document.createElement("a");
         a.href = dataUrl;
         a.download = file.name;
         a.click();
-        toast.success("Image downloaded — send it to your friends");
+        toast.success("Image downloaded");
       }
     } catch (e) {
-      if ((e as Error).name !== "AbortError") toast.error("Couldn't create the image");
+      const name = (e as Error).name;
+      if (name === "AbortError") return; // user dismissed the native sheet
+      toast.error(name === "NotAllowedError" ? "Clipboard blocked — try Download instead" : "Couldn't create the image");
     } finally {
       setSharing(false);
     }
@@ -438,16 +467,53 @@ export function NoteEditor({
         >
           <Sigma size={14} />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          title="Share / export as image"
-          aria-label="Share note as image"
-          onClick={shareNote}
-          disabled={sharing || !content.trim()}
-        >
-          {sharing ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} />}
-        </Button>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Share / export as image"
+            aria-label="Share note as image"
+            onClick={() => setShareMenu((v) => !v)}
+            disabled={sharing || !content.trim()}
+          >
+            {sharing ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} />}
+          </Button>
+          {shareMenu ? (
+            <>
+              {/* click-away */}
+              <div className="fixed inset-0 z-[110]" onClick={() => setShareMenu(false)} />
+              <div className="absolute left-0 top-full z-[120] mt-1 w-56 overflow-hidden rounded-[var(--radius-control)] border border-line bg-surface py-1 shadow-lg">
+                <p className="px-3 pb-1 pt-1.5 text-[length:var(--text-micro)] font-medium uppercase tracking-wide text-subtle">
+                  Share as image
+                </p>
+                <button
+                  onClick={() => runShare("copy")}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[length:var(--text-small)] transition-colors hover:bg-surface-2 focus-ring"
+                >
+                  <Copy size={14} className="text-sc" />
+                  <span className="flex-1">Copy image</span>
+                  <span className="text-[length:var(--text-micro)] text-subtle">paste anywhere</span>
+                </button>
+                <button
+                  onClick={() => runShare("download")}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[length:var(--text-small)] transition-colors hover:bg-surface-2 focus-ring"
+                >
+                  <Download size={14} className="text-sc" />
+                  <span className="flex-1">Download PNG</span>
+                </button>
+                {canNativeShare ? (
+                  <button
+                    onClick={() => runShare("native")}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[length:var(--text-small)] transition-colors hover:bg-surface-2 focus-ring"
+                  >
+                    <Share2 size={14} className="text-sc" />
+                    <span className="flex-1">Share…</span>
+                  </button>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+        </div>
 
         <div className="ml-auto flex items-center gap-2">
           <span className="text-[length:var(--text-micro)] text-subtle tabular-nums">

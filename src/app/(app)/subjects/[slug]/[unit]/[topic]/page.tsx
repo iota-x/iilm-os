@@ -203,6 +203,9 @@ export default async function TopicPage({
             variant="pages"
             title={`${subject.short_name} · ${topic.title}`}
             boardsKey={topic.code}
+            progressKey={topic.code}
+            topicId={topic.id}
+            topicStatus={topic.status}
             items={notePages.map((f) => ({
               key: (f.filename ?? f.storage_path.split("/").pop() ?? f.id).replace(/\.[a-z]+$/i, ""),
               storagePath: f.storage_path,

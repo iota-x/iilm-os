@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import {
   ChevronLeft,
@@ -306,6 +307,13 @@ export function PageReader({
     };
   }, []);
 
+  // a sidebar click changes the route — close so the new page shows
+  const pathname = usePathname();
+  const startPath = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== startPath.current) onClose();
+  }, [pathname, onClose]);
+
   /* ── sizing: fit the page to the stage, then zoom ───────────── */
   const stageRef = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState({ w: 800, h: 600 });
@@ -512,7 +520,7 @@ export function PageReader({
   const inkCount = items?.length ?? 0;
 
   const ui = (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg)]" role="dialog" aria-label={title}>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg)] md:left-[var(--reader-inset-left,264px)]" role="dialog" aria-label={title}>
       {/* top bar */}
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-line bg-surface px-3 py-2">
         <div className="mr-auto min-w-0">

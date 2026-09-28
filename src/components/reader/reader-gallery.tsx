@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { BookOpen, PenLine } from "lucide-react";
-import { PageReader, type ReaderPage } from "./page-reader";
+import type { ReaderPage } from "./page-reader";
+import { ReaderFeed } from "./reader-feed";
 import { cn } from "@/lib/utils";
 
 export interface GalleryItem {
@@ -24,12 +25,19 @@ export function ReaderGallery({
   title,
   variant,
   boardsKey,
+  progressKey,
+  topicId,
+  topicStatus,
 }: {
   items: GalleryItem[];
   title: string;
   variant: "pages" | "photos";
   /** lets the reader add blank whiteboard pages after these */
   boardsKey?: string;
+  /** where "seen / got it / revisit" is stored (a topic code or deck name) */
+  progressKey?: string;
+  topicId?: string;
+  topicStatus?: import("@/lib/db-types").TopicStatus;
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const pages: ReaderPage[] = items.map((i) => ({ key: i.key, src: src(i.storagePath), caption: i.caption }));
@@ -65,12 +73,15 @@ export function ReaderGallery({
         ))}
       </ul>
       {open !== null ? (
-        <PageReader
+        <ReaderFeed
           pages={pages}
           start={open}
           title={title}
           userId={userOf(items)}
           boardsKey={boardsKey}
+          progressKey={progressKey ?? boardsKey ?? title}
+          topicId={topicId}
+          topicStatus={topicStatus}
           onClose={() => setOpen(null)}
         />
       ) : null}
@@ -98,12 +109,13 @@ export function DeckShelf({ decks }: { decks: { name: string; items: GalleryItem
         ))}
       </div>
       {deck ? (
-        <PageReader
+        <ReaderFeed
           pages={deck.items.map((i) => ({ key: i.key, src: src(i.storagePath), caption: i.caption }))}
           start={0}
           title={deck.name}
           userId={userOf(deck.items)}
           boardsKey={`deck-${deck.name}`}
+          progressKey={`deck-${deck.name}`}
           onClose={() => setOpen(null)}
         />
       ) : null}

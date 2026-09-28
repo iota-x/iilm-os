@@ -86,6 +86,10 @@ export function Sidebar({
   // you around without an effect — and you can still collapse the active one.
   const [openMap, setOpenMap] = useLocalStorage<Record<string, boolean>>(OPEN_KEY, NO_OVERRIDES);
   const [collapsed, setCollapsed] = useLocalStorage<boolean>(COLLAPSED_KEY, false);
+  // expose the sidebar width so the full-screen reader can sit beside it (md+)
+  useEffect(() => {
+    document.documentElement.style.setProperty("--reader-inset-left", collapsed ? "52px" : "264px");
+  }, [collapsed]);
 
   const activeSlug = useMemo(() => {
     const m = pathname.match(/^\/subjects\/([^/]+)/);

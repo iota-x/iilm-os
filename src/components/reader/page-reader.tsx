@@ -9,6 +9,9 @@ import {
   Hand,
   Highlighter,
   LayoutGrid,
+  PanelRightClose,
+  PanelRightOpen,
+  Sparkles,
   Minus,
   Pen,
   Plus,
@@ -19,6 +22,7 @@ import {
   Undo2,
   X,
 } from "lucide-react";
+import { pageNoteOf } from "@/data/page-notes";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +60,7 @@ const BLANK_ASPECT = 1 / 1.414; // A4 portrait
 
 const inkPath = (uid: string, key: string) => `${uid}/annotations/${encodeURIComponent(key)}.json`;
 const boardsPath = (uid: string, ctx: string) => `${uid}/annotations/boards-${encodeURIComponent(ctx)}.json`;
+const myNotePath = (uid: string, key: string) => `${uid}/pagenotes/${encodeURIComponent(key)}.json`;
 
 export function PageReader({
   pages: basePages,
@@ -94,6 +99,13 @@ export function PageReader({
   const [thumbs, setThumbs] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [save, setSave] = useState<SaveState>("idle");
+  const [panel, setPanel] = useState(true);
+
+  // the reader's own explainer for this page (mine), and the user's own notes
+  const note = pageNoteOf(page.key);
+  const [myNotes, setMyNotes] = useState<Record<string, string>>({});
+  const myNote = myNotes[page.key];
+  const [noteSave, setNoteSave] = useState<SaveState>("idle");
 
   // ink per page, loaded lazily and kept for the session
   const [inks, setInks] = useState<Record<string, Item[]>>({});
@@ -150,6 +162,50 @@ export function PageReader({
       })
       .catch(() => setInks((m) => (m[key] ? m : { ...m, [key]: [] })));
   }, [page.key, loaded, db, userId]);
+
+  // load the user's own notes for this page
+  const myLoaded = myNotes[page.key] !== undefined;
+  useEffect(() => {
+    if (myLoaded) return;
+    const key = page.key;
+    db.storage
+      .from("vault")
+      .download(myNotePath(userId, key))
+      .then(async ({ data }) => {
+        const md = data ? String(JSON.parse(await data.text()).md ?? "") : "";
+        setMyNotes((m) => (m[key] !== undefined ? m : { ...m, [key]: md }));
+      })
+      .catch(() => setMyNotes((m) => (m[key] !== undefined ? m : { ...m, [key]: "" })));
+  }, [page.key, myLoaded, db, userId]);
+
+  // save the user's notes, debounced per page
+  const noteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const notePending = useRef<{ key: string; md: string } | null>(null);
+  const flushNote = useCallback(async () => {
+    const job = notePending.current;
+    if (!job) return;
+    notePending.current = null;
+    setNoteSave("saving");
+    const { error } = await db.storage
+      .from("vault")
+      .upload(myNotePath(userId, job.key), new Blob([JSON.stringify({ v: 1, md: job.md })], { type: "application/json" }), {
+        upsert: true,
+        contentType: "application/json",
+      });
+    setNoteSave(error ? "error" : "saved");
+  }, [db, userId]);
+  const editMyNote = (key: string, md: string) => {
+    setMyNotes((m) => ({ ...m, [key]: md }));
+    notePending.current = { key, md };
+    if (noteTimer.current) clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(flushNote, 700);
+  };
+  useEffect(() => {
+    return () => {
+      if (noteTimer.current) clearTimeout(noteTimer.current);
+      void flushNote();
+    };
+  }, [page.key, flushNote]);
 
   /* ── saving: debounced, per page ────────────────────────────── */
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -525,6 +581,13 @@ export function PageReader({
           <IconBtn label="Zoom in" onClick={() => setZoom((z) => Math.min(3, z + 0.5))} disabled={zoom >= 3}>
             <Plus size={16} />
           </IconBtn>
+          <IconBtn
+            label={panel ? "Hide takeaways" : "Takeaways & your notes"}
+            onClick={() => setPanel((v) => !v)}
+            active={panel}
+          >
+            {panel ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+          </IconBtn>
           <IconBtn label="All pages" onClick={() => setThumbs((v) => !v)} active={thumbs}>
             <LayoutGrid size={16} />
           </IconBtn>
@@ -547,7 +610,8 @@ export function PageReader({
         </div>
       </div>
 
-      {/* stage */}
+      {/* stage + takeaways panel */}
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
       <div className="relative min-h-0 flex-1">
         <div ref={stageRef} className="absolute inset-0 overflow-auto">
           <div className="flex min-h-full min-w-full items-center justify-center" style={{ padding: pad }}>
@@ -651,6 +715,67 @@ export function PageReader({
         >
           <ChevronRight size={20} />
         </button>
+      </div>
+
+      {panel ? (
+        <aside className="flex min-h-0 shrink-0 flex-col border-t border-line bg-surface max-md:max-h-[46vh] md:min-w-[320px] md:max-w-[460px] md:basis-[38%] md:border-l md:border-t-0">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+            {note ? (
+              <section>
+                <p className="flex items-center gap-1.5 text-[length:var(--text-micro)] font-medium uppercase tracking-wide text-subtle">
+                  <Sparkles size={12} className="text-sc" /> Takeaways
+                </p>
+                <p className="mt-1.5 text-[length:var(--text-small)] font-semibold leading-snug">{note.title}</p>
+                <ul className="mt-2 space-y-1.5">
+                  {note.points.map((pt, i) => (
+                    <li key={i} className="flex gap-2 text-[length:var(--text-small)] leading-relaxed text-muted">
+                      <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-sc" aria-hidden />
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+                {note.watch ? (
+                  <p className="mt-2.5 rounded-[8px] border border-[var(--warn)]/35 bg-[var(--warn-soft)] px-2.5 py-1.5 text-[length:var(--text-small)] leading-relaxed text-[var(--warn)]">
+                    <span className="font-semibold">Watch out — </span>
+                    {note.watch}
+                  </p>
+                ) : null}
+              </section>
+            ) : (
+              <section>
+                <p className="text-[length:var(--text-micro)] font-medium uppercase tracking-wide text-subtle">Takeaways</p>
+                <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-subtle">
+                  No takeaways written for this page yet — jot your own below.
+                </p>
+              </section>
+            )}
+
+            <section className="flex min-h-0 flex-1 flex-col">
+              <div className="flex items-center justify-between">
+                <p className="text-[length:var(--text-micro)] font-medium uppercase tracking-wide text-subtle">Your notes</p>
+                <span
+                  className={cn(
+                    "text-[length:var(--text-micro)]",
+                    noteSave === "error" ? "text-[var(--bad)]" : "text-subtle",
+                  )}
+                >
+                  {noteSave === "saving" ? "Saving…" : noteSave === "saved" ? "Saved" : ""}
+                </span>
+              </div>
+              <textarea
+                value={myNote ?? ""}
+                disabled={myNote === undefined}
+                onChange={(e) => editMyNote(page.key, e.target.value)}
+                placeholder="Write your own points, doubts, examples… (saved automatically)"
+                className="mt-1.5 min-h-[180px] w-full flex-1 resize-y rounded-[10px] border border-line bg-surface-2/50 p-3 text-[length:var(--text-small)] leading-relaxed outline-none focus:border-[var(--accent)] focus-ring"
+              />
+              <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                Kept per page — it follows this page wherever you open it.
+              </p>
+            </section>
+          </div>
+        </aside>
+      ) : null}
       </div>
 
       {/* thumbnails */}

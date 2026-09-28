@@ -29,6 +29,7 @@ export function NotesShell({
   const [filter, setFilter] = useState<string>("");
   const [picked, setPicked] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [listOpen, setListOpen] = useState(true);
 
   // The Notes page wants the whole content width — the shared <main> caps every
   // page at 1100px, which leaves the editor cramped. Drop that cap while Notes
@@ -99,9 +100,9 @@ export function NotesShell({
     /* A writing surface, not a page of cards: both columns own the viewport
        height and scroll inside themselves, so the note never sits in a short
        box with dead space under it. */
-    <div className={cn("grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[520px]", expanded ? "lg:grid-cols-1" : "lg:grid-cols-[320px_1fr]")}>
+    <div className={cn("grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[520px]", expanded || !listOpen ? "lg:grid-cols-1" : "lg:grid-cols-[320px_1fr]")}>
       {/* list */}
-      <Card className={cn("flex max-h-[45dvh] min-h-0 flex-col overflow-hidden lg:max-h-none", expanded && "hidden")}>
+      <Card className={cn("flex max-h-[45dvh] min-h-0 flex-col overflow-hidden lg:max-h-none", (expanded || !listOpen) && "hidden")}>
         <div className="p-2.5 border-b border-line space-y-2">
           <div className="relative">
             <Search
@@ -200,6 +201,8 @@ export function NotesShell({
                 topics={topics}
                 expanded={expanded}
                 onToggleExpanded={() => setExpanded((v) => !v)}
+                listOpen={listOpen}
+                onToggleList={() => setListOpen((v) => !v)}
                 onChanged={(n) => setNotes((prev) => prev.map((x) => (x.id === n.id ? n : x)))}
                 onDeleted={(id) => {
                   setNotes((prev) => prev.filter((x) => x.id !== id));

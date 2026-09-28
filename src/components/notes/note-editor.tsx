@@ -36,6 +36,8 @@ import {
   Table as TableIcon,
   FunctionSquare,
   Braces,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -115,6 +117,8 @@ export function NoteEditor({
   onDeleted,
   expanded,
   onToggleExpanded,
+  listOpen,
+  onToggleList,
 }: {
   note: Note;
   subjects: Subject[];
@@ -123,6 +127,8 @@ export function NoteEditor({
   onDeleted: (id: string) => void;
   expanded?: boolean;
   onToggleExpanded?: () => void;
+  listOpen?: boolean;
+  onToggleList?: () => void;
 }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
@@ -317,6 +323,17 @@ export function NoteEditor({
     <div className="flex flex-col h-full min-h-0">
       {/* toolbar */}
       <div className="flex flex-wrap items-center gap-2 px-3 py-2.5 border-b border-line">
+        {onToggleList ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            title={listOpen ? "Hide notes list" : "Show notes list"}
+            aria-label={listOpen ? "Hide notes list" : "Show notes list"}
+            onClick={onToggleList}
+          >
+            {listOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} />}
+          </Button>
+        ) : null}
         <div className="flex gap-0.5 bg-surface-2 rounded-lg p-0.5 border border-line">
           {(
             [

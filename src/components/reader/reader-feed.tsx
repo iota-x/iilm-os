@@ -274,18 +274,18 @@ export function ReaderFeed({
               }}
               className="flex h-full snap-start snap-always flex-col md:flex-row"
             >
-              {/* page image */}
-              <div className="relative grid min-h-0 flex-1 place-items-center bg-[var(--bg)] p-3 max-md:h-[46%] max-md:flex-none">
+              {/* page image — absolute-fills its box, object-contain never overflows */}
+              <div className="relative min-h-0 flex-1 bg-[var(--bg)] max-md:h-[46%] max-md:flex-none">
                 {page.src ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={page.src}
                     alt={page.caption ?? `page ${i + 1}`}
                     loading={Math.abs(i - index) <= 2 ? "eager" : "lazy"}
-                    className="max-h-full max-w-full rounded-[6px] bg-white object-contain shadow-[var(--shadow-sm)]"
+                    className="absolute inset-0 h-full w-full object-contain p-3"
                   />
                 ) : (
-                  <div className="grid h-full w-full max-w-md place-items-center rounded-[6px] border border-dashed border-line bg-white text-subtle">
+                  <div className="absolute inset-3 grid place-items-center rounded-[6px] border border-dashed border-line bg-white text-subtle">
                     Blank page
                   </div>
                 )}

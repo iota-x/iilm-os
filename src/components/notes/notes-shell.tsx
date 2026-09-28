@@ -29,6 +29,17 @@ export function NotesShell({
   const [filter, setFilter] = useState<string>("");
   const [picked, setPicked] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+
+  // The Notes page wants the whole content width — the shared <main> caps every
+  // page at 1100px, which leaves the editor cramped. Drop that cap while Notes
+  // is open (and restore it on leave) so the writing area fills the screen.
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (!main) return;
+    main.classList.add("!max-w-none");
+    return () => main.classList.remove("!max-w-none");
+  }, []);
+
   // Esc leaves full-screen; lock body scroll behind the overlay
   useEffect(() => {
     if (!expanded) return;

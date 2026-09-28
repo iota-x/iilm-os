@@ -11,6 +11,8 @@ import {
   Sigma,
   Trash2,
   Columns2,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
@@ -28,12 +30,16 @@ export function NoteEditor({
   topics,
   onChanged,
   onDeleted,
+  expanded,
+  onToggleExpanded,
 }: {
   note: Note;
   subjects: Subject[];
   topics: Topic[];
   onChanged: (n: Note) => void;
   onDeleted: (id: string) => void;
+  expanded?: boolean;
+  onToggleExpanded?: () => void;
 }) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
@@ -226,6 +232,17 @@ export function NoteEditor({
           <span className="text-[length:var(--text-micro)] text-subtle tabular-nums">
             {saving ? "Saving…" : dirty ? "Unsaved" : "Saved"}
           </span>
+          {onToggleExpanded ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              title={expanded ? "Exit full screen (Esc)" : "Full-screen writing"}
+              aria-label={expanded ? "Exit full screen" : "Full-screen writing"}
+              onClick={onToggleExpanded}
+            >
+              {expanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </Button>
+          ) : null}
           <Button
             variant="ghost"
             size="icon"

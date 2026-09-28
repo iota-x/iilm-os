@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FileText, Pin, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -27,6 +28,21 @@ export function NotesShell({
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<string>("");
   const [picked, setPicked] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  // Esc leaves full-screen; lock body scroll behind the overlay
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && (e.target as HTMLElement).tagName !== "TEXTAREA") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [expanded]);
 
   // Adjust state during render when the props/URL change, rather than in an
   // effect — see react.dev "You Might Not Need an Effect".
@@ -72,9 +88,9 @@ export function NotesShell({
     /* A writing surface, not a page of cards: both columns own the viewport
        height and scroll inside themselves, so the note never sits in a short
        box with dead space under it. */
-    <div className="grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[520px] lg:grid-cols-[320px_1fr]">
+    <div className={cn("grid gap-4 lg:h-[calc(100dvh-11rem)] lg:min-h-[520px]", expanded ? "lg:grid-cols-1" : "lg:grid-cols-[320px_1fr]")}>
       {/* list */}
-      <Card className="flex max-h-[45dvh] min-h-0 flex-col overflow-hidden lg:max-h-none">
+      <Card className={cn("flex max-h-[45dvh] min-h-0 flex-col overflow-hidden lg:max-h-none", expanded && "hidden")}>
         <div className="p-2.5 border-b border-line space-y-2">
           <div className="relative">
             <Search
@@ -155,36 +171,49 @@ export function NotesShell({
         </ul>
       </Card>
 
-      {/* editor */}
-      <Card className="flex min-h-[420px] flex-col overflow-hidden lg:min-h-0">
-        {current ? (
-          <NoteEditor
-            key={current.id}
-            note={current}
-            subjects={subjects}
-            topics={topics}
-            onChanged={(n) => setNotes((prev) => prev.map((x) => (x.id === n.id ? n : x)))}
-            onDeleted={(id) => {
-              setNotes((prev) => prev.filter((x) => x.id !== id));
-              setPicked(null);
-              router.refresh();
-            }}
-          />
-        ) : (
-          <div className="grid flex-1 place-items-center">
-          <Empty
-            icon={<FileText size={26} strokeWidth={1.5} />}
-            title="No note open"
-            body="Pick one from the list, or start a new one. Markdown and LaTeX both render, and a screenshot pasted into the editor uploads itself."
-            action={
-              <Button variant="primary" size="sm" onClick={newNote}>
-                <Plus size={14} /> New note
-              </Button>
-            }
-          />
-          </div>
-        )}
-      </Card>
+      {/* editor — portals to <body> when expanded so it fills the whole screen
+          (a transformed ancestor would otherwise trap a fixed overlay). */}
+      {(() => {
+        const card = (
+          <Card
+            className={cn(
+              "flex min-h-[420px] flex-col overflow-hidden lg:min-h-0",
+              expanded && "fixed inset-0 z-[95] m-0 min-h-0 rounded-none border-0",
+            )}
+          >
+            {current ? (
+              <NoteEditor
+                key={current.id}
+                note={current}
+                subjects={subjects}
+                topics={topics}
+                expanded={expanded}
+                onToggleExpanded={() => setExpanded((v) => !v)}
+                onChanged={(n) => setNotes((prev) => prev.map((x) => (x.id === n.id ? n : x)))}
+                onDeleted={(id) => {
+                  setNotes((prev) => prev.filter((x) => x.id !== id));
+                  setPicked(null);
+                  router.refresh();
+                }}
+              />
+            ) : (
+              <div className="grid flex-1 place-items-center">
+                <Empty
+                  icon={<FileText size={26} strokeWidth={1.5} />}
+                  title="No note open"
+                  body="Pick one from the list, or start a new one. Markdown and LaTeX both render, and a screenshot pasted into the editor uploads itself."
+                  action={
+                    <Button variant="primary" size="sm" onClick={newNote}>
+                      <Plus size={14} /> New note
+                    </Button>
+                  }
+                />
+              </div>
+            )}
+          </Card>
+        );
+        return expanded && typeof document !== "undefined" ? createPortal(card, document.body) : card;
+      })()}
     </div>
   );
 }

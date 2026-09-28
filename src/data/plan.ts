@@ -637,7 +637,7 @@ export const planDays: PlanDay[] = [
       {
         subject: "programming-in-c",
         minutes: 90,
-        label: "Timed mock: Units 1–4, 90 minutes, on paper",
+        label: "Timed mock: Units 1–3, 90 minutes, on paper",
         topics: [],
         kind: "mock",
       },

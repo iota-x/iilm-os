@@ -15,6 +15,7 @@ import {
   Minimize2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { toPng } from "html-to-image";
 import { createClient } from "@/lib/supabase/client";
 import { updateNote, deleteNote, recordAttachment } from "@/lib/actions";
 import type { Note, Subject, Topic } from "@/lib/db-types";
@@ -38,6 +39,7 @@ import {
   Braces,
   PanelLeftClose,
   PanelLeftOpen,
+  Share2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -141,6 +143,54 @@ export function NoteEditor({
   const [uploading, setUploading] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [sharing, setSharing] = useState(false);
+
+  // Turn the whole note (text, tables, math, images) into one image and either
+  // share it (mobile → WhatsApp etc.) or download it. Snapshots the hidden
+  // full-width render below so the capture is complete, not the scrolled view.
+  async function shareNote() {
+    const el = exportRef.current;
+    if (!el || sharing) return;
+    setSharing(true);
+    try {
+      // The rendered <img>s are loading="lazy" and may be unloaded; preload each
+      // URL with a fresh Image() (which reliably fires load/error and warms the
+      // cache) so html-to-image can embed them. 6s guard so it never hangs.
+      const srcs = [...new Set(Array.from(el.querySelectorAll("img")).map((i) => i.src).filter(Boolean))];
+      await Promise.all(
+        srcs.map(
+          (src) =>
+            new Promise((r) => {
+              const im = new Image();
+              const done = () => r(null);
+              im.onload = done;
+              im.onerror = done;
+              im.src = src;
+              setTimeout(done, 6000);
+            }),
+        ),
+      );
+      const dataUrl = await toPng(el, { backgroundColor: "#ffffff", pixelRatio: 2, cacheBust: true });
+      const blob = await (await fetch(dataUrl)).blob();
+      const safe = (title || "note").replace(/[^\w\s-]/g, "").trim().slice(0, 50) || "note";
+      const file = new File([blob], `${safe}.png`, { type: "image/png" });
+      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+      if (nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file], title: title || "Note" });
+      } else {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = file.name;
+        a.click();
+        toast.success("Image downloaded — send it to your friends");
+      }
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") toast.error("Couldn't create the image");
+    } finally {
+      setSharing(false);
+    }
+  }
 
   // "/" command menu
   const [slash, setSlash] = useState<{ at: number; query: string; top: number; left: number } | null>(null);
@@ -388,6 +438,16 @@ export function NoteEditor({
         >
           <Sigma size={14} />
         </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          title="Share / export as image"
+          aria-label="Share note as image"
+          onClick={shareNote}
+          disabled={sharing || !content.trim()}
+        >
+          {sharing ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} />}
+        </Button>
 
         <div className="ml-auto flex items-center gap-2">
           <span className="text-[length:var(--text-micro)] text-subtle tabular-nums">
@@ -557,6 +617,23 @@ export function NoteEditor({
             )}
           </div>
         ) : null}
+      </div>
+
+      {/* Full render used only for the share/export image. Kept in the viewport
+          but invisible (opacity-0, behind everything) so lazy images actually
+          load; the captured inner node is opaque, so the PNG isn't transparent. */}
+      <div aria-hidden className="pointer-events-none fixed left-0 top-0 -z-10 opacity-0">
+      <div
+        ref={exportRef}
+        data-theme="light"
+        className="w-[760px] bg-white px-8 py-7 text-[#1b1915]"
+      >
+        <h1 className="mb-1 text-2xl font-semibold tracking-tight text-[#1b1915]">{title || "Untitled"}</h1>
+        <p className="mb-4 border-b border-[#e6e1d7] pb-3 text-[13px] text-[#6b665c]">
+          {(subjects.find((s) => s.id === subjectId)?.name ?? "") + (subjectId ? " · " : "")}IILM OS notes
+        </p>
+        {content.trim() ? <Markdown>{content}</Markdown> : null}
+      </div>
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ export const exams: SeedExam[] = [
     maxMarks: 20,
     weightage: 20,
     scope:
-      "Syllabus confirmed; dates are not. Calculus Units I–III · C Units 1–4 · DE+CO Units I–III · CDT Units 1–2 · AI Units 1–2. Linux is a lab course with no mid-sem.",
+      "Syllabus confirmed; dates are not. Calculus Units I–III · C Units 1–3 · DE+CO Units I–III · CDT Units 1–2 · AI Units 1–2. Linux is a lab course with no mid-sem.",
   },
   {
     key: "mse-calculus",
@@ -94,7 +94,7 @@ export const exams: SeedExam[] = [
     window: "Expected 5–11 Oct 2026 — dates not announced",
     maxMarks: 20,
     weightage: 20,
-    scope: "Units 1, 2, 3 & 4 — conceptual, analytical and application-based questions. CO1, CO2.",
+    scope: "Units 1, 2 & 3 — conceptual, analytical and application-based questions. CO1, CO2.",
   },
   {
     key: "ct1-deco",

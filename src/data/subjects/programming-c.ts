@@ -18,7 +18,7 @@ export const programmingC: SeedSubject = {
   overview:
     "Fundamentals of computer programming using C. Starts from computer basics, algorithms and structured problem solving, then C syntax and semantics — variables, operators, I/O, control structures, functions, arrays, strings, pointers, user-defined data types, dynamic memory allocation and file handling.",
   midsemScope:
-    "Units 1, 2, 3 & 4 — computer fundamentals and problem solving, C basics, input/output and program control, and functions.",
+    "Units 1, 2 & 3 — computer fundamentals and problem solving, C basics, and input/output and program control.",
   midsemConfirmed: true,
   objectives: [
     "Build a foundation in computer organisation, problem solving and algorithm design.",
@@ -220,14 +220,14 @@ export const programmingC: SeedSubject = {
       sessions: 6,
       co: "CO2",
       assessment: "Class Test 1 (offline) — before mid-sem",
-      inMidsem: true,
+      inMidsem: false,
       topics: [
         {
           code: "c-u4-intro",
           session: "S1",
           title: "Introduction to functions, types of functions, passing parameters to functions",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Write declaration, definition and call correctly; classify the four function types by args/return.",
         },
@@ -236,7 +236,7 @@ export const programmingC: SeedSubject = {
           session: "S2",
           title: "Call by value, recursive functions",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Trace a recursion stack by hand (factorial, fibonacci, tower of hanoi) and state the base case.",
         },
@@ -245,7 +245,7 @@ export const programmingC: SeedSubject = {
           session: "S3",
           title: "Storage classes",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Fill in the auto/register/static/extern table: scope, lifetime, default value, storage location.",
         },
@@ -254,7 +254,7 @@ export const programmingC: SeedSubject = {
           session: "S4",
           title: "Implementation of programs based on previous units through functions",
           weight: 3,
-          inMidsem: true,
+          inMidsem: false,
           outcome: "Refactor earlier programs into functions.",
         },
         {
@@ -262,7 +262,7 @@ export const programmingC: SeedSubject = {
           session: "S5",
           title: "Class Test 1",
           weight: 1,
-          inMidsem: true,
+          inMidsem: false,
           outcome: "10 marks, covers Units 3 & 4.",
         },
         {
@@ -270,7 +270,7 @@ export const programmingC: SeedSubject = {
           session: "S6",
           title: "Revision of all units",
           weight: 1,
-          inMidsem: true,
+          inMidsem: false,
           outcome: "Pre-mid-sem revision session.",
         },
       ],
@@ -986,8 +986,8 @@ export const programmingC: SeedSubject = {
       name: "Mid-Term Examination",
       marks: 20,
       weightage: 20,
-      scope: "Units 1, 2, 3 & 4",
-      timing: "After Unit 4 — expected 5–11 Oct (not announced)",
+      scope: "Units 1, 2 & 3",
+      timing: "After Unit 3 — expected 5–11 Oct (not announced)",
       co: "CO1, CO2",
       track: "theory",
     },

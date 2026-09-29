@@ -21,6 +21,7 @@ import {
   Repeat2,
   PanelLeftClose,
   PanelLeftOpen,
+  Rocket,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -42,6 +43,7 @@ const GROUPS: { label: string | null; links: { href: string; label: string; icon
     links: [
       { href: "/goals", label: "Goals", icon: Target },
       { href: "/planner", label: "Planner", icon: CalendarRange },
+      { href: "/sprint", label: "Sprint", icon: Rocket },
       { href: "/review", label: "Review", icon: Repeat2 },
       { href: "/practice", label: "Practice", icon: Dumbbell },
       { href: "/ask", label: "Ask", icon: Sparkles },

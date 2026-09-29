@@ -7,8 +7,8 @@ import type { SeedResource } from "./types";
  */
 export const resources: SeedResource[] = [
   // ── Mid-sem SPRINT sheets (video routes) ──
-  { target: "applied-calculus", title: "Calculus Mid-Sem Sprint — video route (Units 1 & 2)", url: "https://claude.ai/artifact/PQvtNJvaodN9ite29tGsL9", kind: "video", source: "Your sprint sheet", rank: 1, why: "A from-zero, ticked-off video route: trig → limits → derivatives → Unit 1 → Unit 2. Start here." },
-  { target: "digital-electronics", title: "DE+CO Mid-Sem Sprint — video route (Units 1 & 2)", url: "https://claude.ai/artifact/Midc2G3qs3xNvcF98pHZJq", kind: "video", source: "Your sprint sheet", rank: 1, why: "Fills the gaps in your Unit 1 notes, then teaches Unit 2 end to end. Start here." },
+  { target: "applied-calculus", title: "Calculus Mid-Sem Sprint — video route (Units 1 & 2)", url: "/sprint?subject=applied-calculus", kind: "video", source: "In-app sprint", rank: 1, why: "A from-zero, ticked-off video route: trig → limits → derivatives → Unit 1 → Unit 2. Start here." },
+  { target: "digital-electronics", title: "DE+CO Mid-Sem Sprint — video route (Units 1 & 2)", url: "/sprint?subject=digital-electronics", kind: "video", source: "In-app sprint", rank: 1, why: "Fills the gaps in your Unit 1 notes, then teaches Unit 2 end to end. Start here." },
   { target: "digital-electronics", title: "Neso Academy — Digital Electronics (full playlist)", url: "https://www.youtube.com/playlist?list=PLE-RdVsYEV0v8uzhal0VnDDrhz-WmhF44", kind: "playlist", source: "YouTube", rank: 2, why: "The standard for this subject — one titled video per topic across Units 1–2 (and beyond)." },
   // ── DE+CO Unit 1 — what the class notes skip ──
   { target: "deco-u1-arithmetic", title: "Overflow detection in 2's-complement addition", url: "https://www.youtube.com/watch?v=vl1LYH26RCM", kind: "video", source: "Neso Academy", rank: 2, why: "The overflow rule your notes skip — same-sign inputs giving an opposite-sign result." },

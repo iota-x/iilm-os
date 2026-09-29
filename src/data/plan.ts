@@ -712,5 +712,5 @@ export const planDays: PlanDay[] = [
 ];
 
 export const MIDSEM_START = "2026-10-05";
-export const MIDSEM_END = "2026-10-11";
-export const MIDSEM_CONFIRMED = false;
+export const MIDSEM_END = "2026-10-08";
+export const MIDSEM_CONFIRMED = true;

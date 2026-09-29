@@ -159,5 +159,92 @@ const deco: Sprint = {
   ],
 };
 
-export const sprints: Sprint[] = [calculus, deco];
+const AI_PL = "https://www.youtube.com/playlist?list=PLNxx5gyq8aLB-RAQxfyScQLV6wHue-Gj6";
+
+const ai: Sprint = {
+  subject: "foundation-of-ai",
+  title: "AI Sprint",
+  examLine: "Theory: Wed 7 Oct · 2–3 PM",
+  scopeLine: "Units 1 & 2. You attended Unit 1 — the focus here is Unit 2 (agents & search), which you missed.",
+  intro:
+    "All from Gate Smashers' Artificial Intelligence playlist (numbered lectures, one topic each). Where I have the exact lecture it's linked directly; otherwise open the playlist and pick the titled lecture. Your Agent & Environment and KR decks are now on the matching topic pages in Notes.",
+  groups: [
+    {
+      heading: "Unit 1 · quick revise",
+      tag: "you attended these",
+      steps: [
+        {
+          id: "a1", kind: "watch", title: "State space & the problem-solving process",
+          note: "The bridge into Unit 2 — how a problem becomes a graph of states. Your Unit 1 decks (definition, Turing test, problem reduction) are already on their topic pages in Notes.",
+          videos: [{ title: "What is State Space Search (Gate Smashers)", url: "https://www.youtube.com/watch?v=E5jVBqe59EE", dur: "~10m" }],
+        },
+      ],
+    },
+    {
+      heading: "Unit 2 · Agents & Search",
+      tag: "you missed these · learn from scratch",
+      steps: [
+        {
+          id: "a2", kind: "watch", title: "Intelligent agents, PEAS & agent types",
+          note: "Watch the agent run: simple reflex → model-based → goal-based → utility. PEAS = Performance, Environment, Actuators, Sensors. Your 58-slide Agent & Environment deck is the same material.",
+          videos: [
+            { title: "Goal-Based Agents (Gate Smashers)", url: "https://www.youtube.com/watch?v=HsdiMkKnNLk", dur: "~8m" },
+            { title: "Agents & their types — full run", url: AI_PL, dur: "in playlist" },
+          ],
+        },
+        {
+          id: "a3", kind: "watch", title: "Uninformed (blind) search — the problem-solving agent",
+          note: "Brute-force search: expanding nodes with no heuristic. Sets up BFS/DFS.",
+          videos: [{ title: "Uninformed / Blind Search (Gate Smashers)", url: AI_PL, dur: "in playlist" }],
+        },
+        {
+          id: "a4", kind: "watch", title: "Breadth-first & depth-first search",
+          note: "Queue (FIFO) vs stack (LIFO); complete? optimal? memory? Draw the trees as you watch.",
+          videos: [
+            { title: "Lec-7: Breadth First Search (Gate Smashers)", url: "https://www.youtube.com/watch?v=qul0f79gxGs", dur: "~12m" },
+            { title: "Lec-8: Depth First Search (Gate Smashers)", url: "https://www.youtube.com/watch?v=f8luGFRtshY", dur: "~12m" },
+          ],
+        },
+        {
+          id: "a5", kind: "watch", title: "Heuristic search & Hill Climbing",
+          note: "Heuristic h(n); hill climbing and its local-maxima / plateau / ridge problems.",
+          videos: [
+            { title: "8-Puzzle with Heuristic / Informed Search (Gate Smashers)", url: "https://www.youtube.com/watch?v=nmWGhb9E4es", dur: "~12m" },
+            { title: "Hill Climbing Algorithm", url: AI_PL, dur: "in playlist" },
+          ],
+        },
+        {
+          id: "a6", kind: "watch", title: "Best First Search",
+          note: "Greedy: expand the node with the best (lowest) h(n). Not optimal.",
+          videos: [{ title: "Best First Search (Gate Smashers)", url: AI_PL, dur: "in playlist" }],
+        },
+        {
+          id: "a7", kind: "watch", title: "A* and AO* algorithms",
+          note: "A*: f(n) = g(n) + h(n) — the one to know cold. AO*: AND-OR graphs (ties back to problem reduction from Unit 1).",
+          videos: [
+            { title: "A* Algorithm with example", url: AI_PL, dur: "in playlist" },
+            { title: "AO* Algorithm with example", url: AI_PL, dur: "in playlist" },
+          ],
+        },
+        {
+          id: "a8", kind: "watch", title: "Knowledge representation",
+          note: "Logical (propositional / predicate) representation, semantic networks, frames. Your 34-page KR deck is on this topic in Notes.",
+          videos: [{ title: "Knowledge Representation — Semantic Nets & Frames", url: AI_PL, dur: "in playlist" }],
+        },
+        {
+          id: "a9", kind: "do", title: "5 problems → Unit 2 done", milestone: true,
+          note: "Draw BFS, DFS and A* trees for water jug, 8-puzzle and missionaries & cannibals; write the PEAS / agent-types table.",
+        },
+      ],
+    },
+    {
+      heading: "Then — revise",
+      steps: [
+        { id: "a10", kind: "do", title: "Trees + tables from memory", note: "Redraw the three search trees and the agent-types table on blank paper. Skim the Agent & KR decks in Notes." },
+      ],
+    },
+  ],
+};
+
+export const sprints: Sprint[] = [calculus, deco, ai];
 export const sprintFor = (slug: string) => sprints.find((s) => s.subject === slug) ?? null;

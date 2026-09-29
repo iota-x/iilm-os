@@ -17,7 +17,7 @@ export const calculus: SeedSubject = {
   labLtpc: "0-0-2-1",
   overview:
     "Differential and integral calculus for single and multiple variables. Limits, continuity, differentiation, Taylor and Maclaurin expansions, partial derivatives, multivariable optimisation, definite and indefinite integrals, double and triple integrals, and vector calculus — with applications to real engineering problems.",
-  midsemScope: "Units I, II and III — one-variable calculus, two-variable calculus, and applications of differential calculus.",
+  midsemScope: "Units I & II only — one-variable calculus and two-variable calculus. Unit III (maxima/minima, Lagrange, gradient descent, regression) is NOT in the mid-sem.",
   midsemConfirmed: true,
   objectives: [
     "Build a foundation in differential calculus of one and two variables — differentiation techniques, mean value theorems, Taylor expansions.",
@@ -214,14 +214,14 @@ export const calculus: SeedSubject = {
       sessions: 10,
       co: "CO2",
       assessment: "Mid-Term Examination (20 marks)",
-      inMidsem: true,
+      inMidsem: false,
       topics: [
         {
           code: "calc-u3-maxmin",
           session: "S1-S2",
           title: "Maxima and minima of functions of two variables",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Find stationary points, apply the second-derivative (rt − s²) test, and classify max / min / saddle.",
         },
@@ -230,7 +230,7 @@ export const calculus: SeedSubject = {
           session: "S3",
           title: "Lagrange's method of multipliers",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Set up the auxiliary function, solve the constrained system, and interpret λ.",
         },
@@ -239,7 +239,7 @@ export const calculus: SeedSubject = {
           session: "S4",
           title: "Gradient vector and Hessian matrices",
           weight: 4,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Build ∇f and H, use eigenvalues / leading minors to classify a critical point.",
         },
@@ -248,7 +248,7 @@ export const calculus: SeedSubject = {
           session: "S5-S6",
           title: "Gradient descent algorithm, Newton's method for optimisation",
           weight: 4,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Write the update rules, hand-iterate 2–3 steps, and explain why the learning rate controls convergence.",
         },
@@ -257,7 +257,7 @@ export const calculus: SeedSubject = {
           session: "S7-S9",
           title: "Simple and multiple linear regression through optimisation",
           weight: 3,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Derive normal equations by minimising squared error and connect them to the gradient-descent update.",
         },
@@ -266,7 +266,7 @@ export const calculus: SeedSubject = {
           session: "S10",
           title: "Revision & practice questions",
           weight: 1,
-          inMidsem: true,
+          inMidsem: false,
           outcome: "The pre-mid-sem revision session. Turn up with your doubt list.",
         },
       ],

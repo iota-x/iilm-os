@@ -170,13 +170,23 @@ const ai: Sprint = {
     "All from Gate Smashers' Artificial Intelligence playlist (numbered lectures, one topic each). Where I have the exact lecture it's linked directly; otherwise open the playlist and pick the titled lecture. Your Agent & Environment and KR decks are now on the matching topic pages in Notes.",
   groups: [
     {
-      heading: "Unit 1 · quick revise",
-      tag: "you attended these",
+      heading: "Unit 1 · quick revise + 2 gaps",
+      tag: "you studied this from 8 PDFs",
       steps: [
         {
           id: "a1", kind: "watch", title: "State space & the problem-solving process",
-          note: "The bridge into Unit 2 — how a problem becomes a graph of states. Your Unit 1 decks (definition, Turing test, problem reduction) are already on their topic pages in Notes.",
+          note: "The bridge into Unit 2 — how a problem becomes a graph of states. Your 8 Unit 1 decks are on their topic pages in Notes; skim them, this ties the search part together.",
           videos: [{ title: "What is State Space Search (Gate Smashers)", url: "https://www.youtube.com/watch?v=E5jVBqe59EE", dur: "~10m" }],
+        },
+        {
+          id: "a1b", kind: "gap", title: "Chinese Room argument — gap in your notes",
+          note: "Your Turing-test deck covers the Turing Test but not Searle's Chinese Room, and the syllabus names both. Point: syntax isn't enough for semantics.",
+          videos: [{ title: "The Chinese Room thought experiment (Searle)", url: "https://www.youtube.com/watch?v=tBE06SdgzwM", dur: "~6m" }],
+        },
+        {
+          id: "a1c", kind: "gap", title: "Problem reduction & AND-OR graphs — gap in your notes",
+          note: "Your 8 decks cover problem representation but not reduction. AND-OR graphs decompose a problem into AND/OR sub-problems — and it's what AO* (Unit 2) runs on.",
+          videos: [{ title: "AO* Search — problem reduction with AND-OR graphs", url: "https://www.youtube.com/watch?v=NiY32wS2UVw", dur: "~12m" }],
         },
       ],
     },

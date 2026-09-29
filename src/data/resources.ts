@@ -20,6 +20,9 @@ export const resources: SeedResource[] = [
   { target: "deco-u2-mux", title: "Multiplexers & realising a function on a MUX (Neso)", url: "https://www.youtube.com/watch?v=FKvnmxte98A", kind: "video", source: "Neso Academy", rank: 2, why: "Putting F(A,B,C) on an 8:1 MUX is a near-guaranteed question." },
   { target: "deco-u2-codec", title: "Encoders & Decoders (Neso)", url: "https://www.youtube.com/watch?v=feBvhLFQEDk", kind: "video", source: "Neso Academy", rank: 2, why: "Decoder basics, a full adder from a 3:8 decoder, and the priority encoder." },
   { target: "deco-u2-comparators", title: "2-bit Magnitude Comparator (Neso)", url: "https://www.youtube.com/watch?v=BhUUmbz76P0", kind: "video", source: "Neso Academy", rank: 1, why: "Missing from your notes entirely — learn the truth table and K-map for A>B, A=B, A<B." },
+  // ── AI Unit 1 — fill the two note-gaps ──
+  { target: "ai-u1-turing", title: "Chinese Room argument (Searle)", url: "https://www.youtube.com/watch?v=tBE06SdgzwM", kind: "video", source: "YouTube", rank: 1, why: "The Chinese Room isn't in your notes — the syllabus pairs it with the Turing Test. Point: syntax isn't enough for semantics." },
+  { target: "ai-u1-representation", title: "AO* — problem reduction with AND-OR graphs", url: "https://www.youtube.com/watch?v=NiY32wS2UVw", kind: "video", source: "YouTube", rank: 1, why: "Your Unit 1 PDFs cover problem representation but not reduction; this fills it and sets up AO* in Unit 2." },
   // ══════════════════════════════════════════════════════════
   // APPLIED CALCULUS — subject level
   // ══════════════════════════════════════════════════════════

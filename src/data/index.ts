@@ -83,7 +83,7 @@ export const exams: SeedExam[] = [
     window: "Tue 6 Oct 2026 · 2:00–3:00 PM · CONFIRMED",
     maxMarks: 20,
     weightage: 20,
-    scope: "Units I, II & III — conceptual, analytical and application-based questions. CO1, CO2.",
+    scope: "Units I & II — conceptual, analytical and application-based questions. CO1, CO2.",
   },
   {
     key: "mse-c",
@@ -128,7 +128,7 @@ export const exams: SeedExam[] = [
     window: "Thu 8 Oct 2026 · 2:00–3:00 PM · CONFIRMED",
     maxMarks: 20,
     weightage: 20,
-    scope: "Units I, II & III — conceptual, analytical and application-based questions. CO1, CO2, CO3.",
+    scope: "Units I & II — conceptual, analytical and application-based questions. CO1, CO2.",
   },
   {
     key: "mse-cdt",

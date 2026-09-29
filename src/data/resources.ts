@@ -6,6 +6,20 @@ import type { SeedResource } from "./types";
  * Rank 1 = start here. Every URL below was checked before being added.
  */
 export const resources: SeedResource[] = [
+  // ── Mid-sem SPRINT sheets (video routes) ──
+  { target: "applied-calculus", title: "Calculus Mid-Sem Sprint — video route (Units 1 & 2)", url: "https://claude.ai/artifact/PQvtNJvaodN9ite29tGsL9", kind: "video", source: "Your sprint sheet", rank: 1, why: "A from-zero, ticked-off video route: trig → limits → derivatives → Unit 1 → Unit 2. Start here." },
+  { target: "digital-electronics", title: "DE+CO Mid-Sem Sprint — video route (Units 1 & 2)", url: "https://claude.ai/artifact/Midc2G3qs3xNvcF98pHZJq", kind: "video", source: "Your sprint sheet", rank: 1, why: "Fills the gaps in your Unit 1 notes, then teaches Unit 2 end to end. Start here." },
+  { target: "digital-electronics", title: "Neso Academy — Digital Electronics (full playlist)", url: "https://www.youtube.com/playlist?list=PLE-RdVsYEV0v8uzhal0VnDDrhz-WmhF44", kind: "playlist", source: "YouTube", rank: 2, why: "The standard for this subject — one titled video per topic across Units 1–2 (and beyond)." },
+  // ── DE+CO Unit 1 — what the class notes skip ──
+  { target: "deco-u1-arithmetic", title: "Overflow detection in 2's-complement addition", url: "https://www.youtube.com/watch?v=vl1LYH26RCM", kind: "video", source: "Neso Academy", rank: 2, why: "The overflow rule your notes skip — same-sign inputs giving an opposite-sign result." },
+  { target: "deco-u1-codes", title: "Parity & error-detection codes", url: "https://www.youtube.com/watch?v=Bwih7_AT1oI", kind: "video", source: "YouTube", rank: 2, why: "Your notes have BCD / Excess-3 / Gray but not parity — the actual syllabus topic." },
+  { target: "deco-u1-boolean", title: "Absorption & consensus (redundancy) theorems", url: "https://www.youtube.com/watch?v=kcekwNJRAHM", kind: "video", source: "YouTube", rank: 2, why: "The two Boolean laws missing from your notes' list." },
+  // ── DE+CO Unit 2 — combinational logic ──
+  { target: "deco-u1-canonical", title: "SOP/POS, minterms & maxterms + K-map minimisation", url: "https://www.youtube.com/watch?v=zAI7u1Oz3KQ", kind: "video", source: "YouTube", rank: 2, why: "The backbone of Unit 2 — SOP (group the 1s), POS (group the 0s), and don't-cares." },
+  { target: "deco-u2-adders", title: "Half Adder & Full Adder (Neso)", url: "https://www.youtube.com/watch?v=aLUY-s7LSns", kind: "video", source: "Neso Academy", rank: 2, why: "Full adder = two half adders; know the Sum = A⊕B⊕C and Carry expressions." },
+  { target: "deco-u2-mux", title: "Multiplexers & realising a function on a MUX (Neso)", url: "https://www.youtube.com/watch?v=FKvnmxte98A", kind: "video", source: "Neso Academy", rank: 2, why: "Putting F(A,B,C) on an 8:1 MUX is a near-guaranteed question." },
+  { target: "deco-u2-codec", title: "Encoders & Decoders (Neso)", url: "https://www.youtube.com/watch?v=feBvhLFQEDk", kind: "video", source: "Neso Academy", rank: 2, why: "Decoder basics, a full adder from a 3:8 decoder, and the priority encoder." },
+  { target: "deco-u2-comparators", title: "2-bit Magnitude Comparator (Neso)", url: "https://www.youtube.com/watch?v=BhUUmbz76P0", kind: "video", source: "Neso Academy", rank: 1, why: "Missing from your notes entirely — learn the truth table and K-map for A>B, A=B, A<B." },
   // ══════════════════════════════════════════════════════════
   // APPLIED CALCULUS — subject level
   // ══════════════════════════════════════════════════════════

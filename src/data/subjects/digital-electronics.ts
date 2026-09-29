@@ -26,7 +26,7 @@ export const digitalElectronics: SeedSubject = {
   overview:
     "Two halves. The first is digital logic: number systems and codes, Boolean algebra and gates, then combinational design (SOP/POS, K-maps, adders, multiplexers, encoders, decoders) and sequential design (latches, flip-flops, counters, shift registers). The second is how a computer is put together: functional units, buses and the Von Neumann model, then registers, memory hierarchy and the fetch–decode–execute cycle. 45 sessions of 60 minutes. Mid-sem covers Units I–III; the whole syllabus comes back in the end-term. The lab (CSE26102P, 1 credit, 15 two-hour sessions) is twelve experiments on the digital trainer kits — gates through flip-flops, counters, a simple ALU and register transfer — marked entirely by five quizzes and five execution-and-viva sittings.",
   midsemScope:
-    "Units I, II and III — number systems and Boolean algebra, combinational logic design, synchronous sequential circuits. Conceptual, analytical and application-based questions. CO1, CO2, CO3.",
+    "Units I & II only — number systems and Boolean algebra, and combinational logic design. Unit III (sequential circuits — flip-flops, counters, registers) is NOT in the mid-sem. CO1, CO2.",
   midsemConfirmed: true,
   objectives: [
     "Understand and apply number systems and Boolean algebra in digital circuit design.",
@@ -264,14 +264,14 @@ export const digitalElectronics: SeedSubject = {
       sessions: 8,
       co: "CO3",
       assessment: "Class Test 1 (half of this unit), then Mid-Term Examination (20 marks) after Unit III",
-      inMidsem: true,
+      inMidsem: false,
       topics: [
         {
           code: "deco-u3-latches",
           session: "S1",
           title: "Sequential logic: why memory is needed, the binary cell, SR latch",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Explain set, reset and hold for an SR latch (NOR and NAND forms) and why S = R = 1 is the forbidden state — a class-test question.",
         },
@@ -280,7 +280,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S2",
           title: "Flip-flops: SR, JK, D and T — truth tables, characteristic and excitation tables",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Write the characteristic table and equation for each flip-flop, and the excitation table you need for counter design.",
         },
@@ -289,7 +289,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S3",
           title: "Master–slave and edge-triggered flip-flops; race-around in JK",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Explain the race-around condition (J = K = 1 with a clock pulse wider than the gate delay) and how the master–slave JK removes it; list the differences between a latch and an edge-triggered flip-flop with a timing diagram — two class-test questions.",
         },
@@ -298,7 +298,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S4",
           title: "Fundamentals of synchronous sequential circuits: state, clock, Moore and Mealy",
           weight: 3,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Draw the block model (combinational logic + memory), and read a state table and state diagram.",
         },
@@ -307,7 +307,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S5",
           title: "Clocked sequential circuit analysis and design",
           weight: 4,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Analyse a given circuit into its state table; design a circuit from a state diagram using excitation tables and K-maps.",
         },
@@ -316,7 +316,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S6",
           title: "Synchronous and asynchronous (ripple) counters; MOD-N counters",
           weight: 5,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Design a 3-bit synchronous up counter with JK or T flip-flops, draw a ripple counter, and build a MOD-N counter by clearing on the count.",
         },
@@ -325,7 +325,7 @@ export const digitalElectronics: SeedSubject = {
           session: "S7",
           title: "Shift registers (SISO, SIPO, PISO, PIPO) and ring / Johnson counters",
           weight: 4,
-          inMidsem: true,
+          inMidsem: false,
           outcome:
             "Draw a 4-bit shift register in each mode and trace a ring counter and a twisted-ring (Johnson) counter through their sequences.",
         },

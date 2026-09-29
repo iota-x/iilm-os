@@ -311,6 +311,20 @@ export const coverage: Record<string, Coverage> = {
   "cdt-u2-lateral": { status: "covered", sources: [{ file: CDT2, where: "slides 20–22", what: "vertical vs lateral, four tools, random word + reversal" }] },
   "cdt-u2-dt-process": { status: "covered", sources: [{ file: CDT2, where: "slides 23–27", what: "five stages; empathize, define (POV + HMW), ideate" }] },
   "cdt-u2-selecting": { status: "covered", sources: [{ file: CDT2, where: "slides 28–35", what: "shortlisting, dot voting, NUF, impact–effort, weighted matrix, wrap-up, quick check" }] },
+
+  /* ── Foundations of AI · Units I–II ─────────────────────── */
+  "ai-u1-representation": {
+    status: "covered",
+    sources: [{ file: "9-Problem reduction in AI.pptx.pdf", where: "slides 1–14", what: "problem reduction — breaking a problem into sub-problems, AND/OR graphs, worked examples" }],
+  },
+  "ai-u2-agents": {
+    status: "covered",
+    sources: [{ file: "10 Agent & Environment.pptx.pdf", where: "slides 1–58", what: "intelligent agents, PEAS, rationality, agent types (simple reflex → model/goal/utility/learning) and environment types" }],
+  },
+  "ai-u2-knowledge": {
+    status: "covered",
+    sources: [{ file: "KR in AI.pdf", where: "pp. 1–34", what: "knowledge representation — logical (propositional/predicate) representation, syntax & semantics, tautology/contradiction, procedural vs declarative, frames, semantic networks" }],
+  },
 };
 
 /** Units the notes don't reach at all. Shown once on the subject page. */

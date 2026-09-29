@@ -49,6 +49,24 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
     label: "CDT Unit 2 deck, slide",
     takenAt: "2026-09-27T12:00:00+05:30",
   },
+  "9-Problem reduction in AI.pptx.pdf": {
+    dir: "AI_automation/slides",
+    image: (n) => `PR-s${String(n).padStart(2, "0")}.jpg`,
+    label: "Problem Reduction deck, slide",
+    takenAt: "2026-09-29T12:00:00+05:30",
+  },
+  "10 Agent & Environment.pptx.pdf": {
+    dir: "AI_automation/slides",
+    image: (n) => `AE-s${String(n).padStart(2, "0")}.jpg`,
+    label: "Agent & Environment deck, slide",
+    takenAt: "2026-09-29T12:00:00+05:30",
+  },
+  "KR in AI.pdf": {
+    dir: "AI_automation/slides",
+    image: (n) => `KR-s${String(n).padStart(2, "0")}.jpg`,
+    label: "Knowledge Representation notes, p.",
+    takenAt: "2026-09-29T12:00:00+05:30",
+  },
 };
 
 /** "p. 19", "pp. 26–29", "slide 79", "slides 4–16" → page numbers */

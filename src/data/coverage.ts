@@ -313,9 +313,49 @@ export const coverage: Record<string, Coverage> = {
   "cdt-u2-selecting": { status: "covered", sources: [{ file: CDT2, where: "slides 28–35", what: "shortlisting, dot voting, NUF, impact–effort, weighted matrix, wrap-up, quick check" }] },
 
   /* ── Foundations of AI · Units I–II ─────────────────────── */
-  "ai-u1-representation": {
+  "ai-u1-defn": {
     status: "covered",
-    sources: [{ file: "9-Problem reduction in AI.pptx.pdf", where: "slides 1–14", what: "problem reduction — breaking a problem into sub-problems, AND/OR graphs, worked examples" }],
+    sources: [{ file: "1-Introduction.pptx.pdf", where: "slides 1–8", what: "what AI is, AI vs human intelligence, scope vs applications, scope and applications of AI" }],
+  },
+  "ai-u1-turing": {
+    status: "partial",
+    sources: [
+      { file: "2-turing test.pptx.pdf", where: "slides 1–11", what: "Turing Test — the imitation game, how it works, the criterion for AI, and the critics' limited-scope objection" },
+      { file: "1-Introduction.pptx.pdf", where: "slide 1", what: "brief historical context / evolution" },
+    ],
+    missing: "The Chinese Room argument is not in the notes — only the Turing Test and its critiques. Historical evolution is barely touched.",
+    learnFrom: "a short video on Searle's Chinese Room argument; a timeline of AI history (GeeksforGeeks)",
+  },
+  "ai-u1-domains": {
+    status: "covered",
+    sources: [
+      { file: "6-Components of AI.pptx.pdf", where: "slides 1–18", what: "technical and functional components of AI (= the domains/subfields)" },
+      { file: "1-Introduction.pptx.pdf", where: "slides 6–7", what: "applications of AI" },
+    ],
+  },
+  "ai-u1-representation": {
+    status: "partial",
+    sources: [
+      { file: "3-Problem representation in AI.pptx.pdf", where: "slides 1–15", what: "problem formulation, state-space representation, problem-solving as search, representation schemes (graph, constraint)" },
+      { file: "9-Problem reduction in AI.pptx.pdf", where: "slides 1–14", what: "problem reduction — breaking a problem into AND/OR sub-problems (from the separate deck)" },
+    ],
+    missing: "Your 8 Unit-1 PDFs cover problem representation but NOT problem reduction / AND-OR graphs — that only comes from the separate Problem Reduction deck (attached here), and it's what AO* in Unit 2 builds on.",
+    learnFrom: "the Problem Reduction deck attached to this topic, or a video on AND-OR graphs / problem reduction",
+  },
+  "ai-u1-statespace": {
+    status: "covered",
+    sources: [{ file: "5-State Space Search.pptx.pdf", where: "slides 1–11", what: "state space search — key concepts, challenges and applications" }],
+  },
+  "ai-u1-problemsolving": {
+    status: "covered",
+    sources: [
+      { file: "7 - Problem Solving in AI.pptx.pdf", where: "slides 1–15", what: "problem-solving process — recoverable/irrecoverable problems, steps in designing an AI problem, CSP" },
+      { file: "4-Characteristics of AI problem.pptx.pdf", where: "slides 1–23", what: "characteristics of AI problems — decomposability, uncertainty, complexity, heuristic approach" },
+    ],
+  },
+  "ai-u1-search": {
+    status: "covered",
+    sources: [{ file: "8-AI and Search Process.pdf", where: "slides 1–57", what: "the whole search process — uninformed (BFS/DFS/UCS/DLS/IDS/bidirectional), informed (greedy, A*), local search and adversarial. Very thorough — spills well into Unit 2." }],
   },
   "ai-u2-agents": {
     status: "covered",

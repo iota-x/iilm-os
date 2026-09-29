@@ -67,6 +67,15 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
     label: "Knowledge Representation notes, p.",
     takenAt: "2026-09-29T12:00:00+05:30",
   },
+  // AI Unit 1 — the 8 decks the student studied from
+  "1-Introduction.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Intro-s${String(n).padStart(2, "0")}.jpg`, label: "Intro deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "2-turing test.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Turing-s${String(n).padStart(2, "0")}.jpg`, label: "Turing Test deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "3-Problem representation in AI.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Rep-s${String(n).padStart(2, "0")}.jpg`, label: "Problem Representation deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "4-Characteristics of AI problem.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Char-s${String(n).padStart(2, "0")}.jpg`, label: "Problem Characteristics deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "5-State Space Search.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-SS-s${String(n).padStart(2, "0")}.jpg`, label: "State Space deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "6-Components of AI.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Comp-s${String(n).padStart(2, "0")}.jpg`, label: "Components of AI deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "7 - Problem Solving in AI.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-PS-s${String(n).padStart(2, "0")}.jpg`, label: "Problem Solving deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  "8-AI and Search Process.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Search-s${String(n).padStart(2, "0")}.jpg`, label: "AI & Search Process deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
 };
 
 /** "p. 19", "pp. 26–29", "slide 79", "slides 4–16" → page numbers */

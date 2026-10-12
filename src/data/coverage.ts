@@ -44,6 +44,9 @@ const L_VM = "Installing Linux Using a Virtual Machine.pdf";
 const L_FMT = "Lab File format.docx";
 const CDT1 = "Unit1-Computational Design Thinking.pdf";
 const CDT2 = "Unit2CreativeThinkingandDesignIdeation.pdf";
+const EM1 = "Entrepreneurship_Mindset.pptx";
+const EMI = "types-of-innovation.pptx";
+const EM2 = "Unit-2(design-thinking).pptx";
 
 const MANO = "Mano & Ciletti, Digital Design";
 const NESO = "the Neso Academy playlist under Resources";
@@ -365,6 +368,16 @@ export const coverage: Record<string, Coverage> = {
     status: "covered",
     sources: [{ file: "KR in AI.pdf", where: "pp. 1–34", what: "knowledge representation — logical (propositional/predicate) representation, syntax & semantics, tautology/contradiction, procedural vs declarative, frames, semantic networks" }],
   },
+  /* ── Entrepreneur Mindset · Units 1–2 (from the class decks) ── */
+  "em-u1-innovation": { status: "covered", sources: [{ file: EM1, where: "slides 3–4", what: "why engineers need it, definition, product/process/business model/market" }] },
+  "em-u1-invention": { status: "covered", sources: [{ file: EM1, where: "slides 5–8", what: "the two terms, comparison table, steam engine/telephone/IC engine pairs, why it matters" }] },
+  "em-u1-mindset": { status: "covered", sources: [{ file: EM1, where: "slides 9–12", what: "traditional vs entrepreneurial focus, six traits, Notice → Prototype → Validate → Scale" }] },
+  "em-u1-types": { status: "covered", sources: [{ file: EMI, where: "slides 1–12", what: "incremental, disruptive, frugal: definitions, traits, examples, classify activity, takeaways" }] },
+  "em-u2-dt": { status: "covered", sources: [{ file: EM2, where: "slides 1–3", what: "definition, people/process/purpose ↔ desirable/feasible/viable" }] },
+  "em-u2-framework": { status: "covered", sources: [{ file: EM2, where: "slides 4–5", what: "five stages as a loop, diverge vs converge" }] },
+  "em-u2-problem": { status: "covered", sources: [{ file: EM2, where: "slides 6–7", what: "four framing rules, startup-failure stats, 5 Whys / HMW / POV / problem statement" }] },
+  "em-u2-fit": { status: "covered", sources: [{ file: EM2, where: "slides 8–9", what: "fit definition and conditions, five validation steps" }] },
+  "em-u2-ideation": { status: "covered", sources: [{ file: EM2, where: "slides 10–15", what: "brainstorming rules and session, SCAMPER, mind mapping, the full flow, takeaways" }] },
 };
 
 /** Units the notes don't reach at all. Shown once on the subject page. */

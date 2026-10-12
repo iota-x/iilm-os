@@ -76,6 +76,10 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
   "6-Components of AI.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Comp-s${String(n).padStart(2, "0")}.jpg`, label: "Components of AI deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
   "7 - Problem Solving in AI.pptx.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-PS-s${String(n).padStart(2, "0")}.jpg`, label: "Problem Solving deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
   "8-AI and Search Process.pdf": { dir: "AI_automation/slides", image: (n) => `AiU1-Search-s${String(n).padStart(2, "0")}.jpg`, label: "AI & Search Process deck, slide", takenAt: "2026-09-19T12:00:00+05:30" },
+  // Entrepreneur Mindset decks (pptx exported to PDF with Keynote, then pdftoppm)
+  "Entrepreneurship_Mindset.pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EM1-s${String(n).padStart(2, "0")}.jpg`, label: "EM orientation deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
+  "types-of-innovation.pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EMinno-s${String(n).padStart(2, "0")}.jpg`, label: "Types of Innovation deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
+  "Unit-2(design-thinking).pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EM2-s${String(n).padStart(2, "0")}.jpg`, label: "EM Unit 2 deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
 };
 
 /** "p. 19", "pp. 26–29", "slide 79", "slides 4–16" → page numbers */

@@ -11,7 +11,7 @@ export const PERIODS = [
   { n: 7, start: "16:20", end: "17:20" },
 ] as const;
 
-/** B.TECH SEM 1 E, IILM Gurugram. Effective 06-08-2026, generated 11-08-2026. */
+/** B.TECH SEM 1 E, IILM Gurugram. Effective 07-09-2026, generated 12-10-2026. */
 export const slots: SeedSlot[] = [
   // ---------- MONDAY ----------
   {
@@ -41,11 +41,11 @@ export const slots: SeedSlot[] = [
     periods: [3],
     start: "11:10",
     end: "12:10",
-    subject: "programming-in-c",
+    subject: "applied-calculus",
     kind: "lecture",
     group: null,
-    room: "205",
-    teacher: "Dr. Sapna Arora",
+    room: "104",
+    teacher: "Dr. Vishwa Prakash Jha",
   },
   {
     day: "Mon",
@@ -57,6 +57,17 @@ export const slots: SeedSlot[] = [
     group: null,
     room: "205",
     teacher: "Dr. Ankita",
+  },
+  {
+    day: "Mon",
+    periods: [5, 6],
+    start: "14:00",
+    end: "16:10",
+    subject: "programming-in-c",
+    kind: "lab",
+    group: 1,
+    room: "Lab 3-A-03",
+    teacher: "Dr Rahul Thakur",
   },
 
   // ---------- TUESDAY ----------
@@ -102,7 +113,7 @@ export const slots: SeedSlot[] = [
     kind: "lab",
     group: 2,
     room: "Lab 12-A-12",
-    teacher: "Dr. Sapna Arora",
+    teacher: "Dr Shagun Panghal",
   },
   {
     day: "Tue",
@@ -122,11 +133,11 @@ export const slots: SeedSlot[] = [
     periods: [1],
     start: "08:50",
     end: "09:50",
-    subject: "applied-calculus",
+    subject: "digital-electronics",
     kind: "lecture",
     group: null,
     room: "94",
-    teacher: "Dr. Vishwa Prakash Jha",
+    teacher: "Dr Puja Acharya",
   },
   {
     day: "Wed",
@@ -144,11 +155,11 @@ export const slots: SeedSlot[] = [
     periods: [3],
     start: "11:10",
     end: "12:10",
-    subject: "digital-electronics",
+    subject: "programming-in-c",
     kind: "lecture",
     group: null,
-    room: "94",
-    teacher: "Dr Puja Acharya",
+    room: "301",
+    teacher: "Dr. Sapna Arora",
   },
   {
     day: "Wed",
@@ -215,7 +226,7 @@ export const slots: SeedSlot[] = [
     subject: "programming-in-c",
     kind: "lecture",
     group: null,
-    room: "94",
+    room: "204",
     teacher: "Dr. Sapna Arora",
   },
   {
@@ -234,17 +245,6 @@ export const slots: SeedSlot[] = [
     periods: [5, 6],
     start: "14:00",
     end: "16:10",
-    subject: "programming-in-c",
-    kind: "lab",
-    group: 1,
-    room: "Lab 10-A-10",
-    teacher: "Dr. Sapna Arora",
-  },
-  {
-    day: "Thu",
-    periods: [5, 6],
-    start: "14:00",
-    end: "16:10",
     subject: "digital-electronics",
     kind: "lab",
     group: 2,
@@ -253,6 +253,17 @@ export const slots: SeedSlot[] = [
   },
 
   // ---------- FRIDAY ----------
+  {
+    day: "Fri",
+    periods: [1],
+    start: "08:50",
+    end: "09:50",
+    subject: "entrepreneur-mindset",
+    kind: "lecture",
+    group: null,
+    room: "104",
+    teacher: "Dr. Sangeeta",
+  },
   {
     day: "Fri",
     periods: [2],
@@ -285,6 +296,17 @@ export const slots: SeedSlot[] = [
     group: 2,
     room: "Lab 5-A-05",
     teacher: "Dr. Pooja Batra",
+  },
+  {
+    day: "Fri",
+    periods: [5],
+    start: "14:00",
+    end: "15:00",
+    subject: "entrepreneur-mindset",
+    kind: "lecture",
+    group: null,
+    room: "101",
+    teacher: "Dr. Sangeeta",
   },
 ];
 

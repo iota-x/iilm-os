@@ -4,6 +4,7 @@ import { designThinking } from "./subjects/design-thinking";
 import { digitalElectronics } from "./subjects/digital-electronics";
 import { aiAutomation } from "./subjects/ai-automation";
 import { linux } from "./subjects/linux";
+import { entrepreneurMindset } from "./subjects/entrepreneur-mindset";
 import type { SeedSubject, SeedExam } from "./types";
 
 export const subjects: SeedSubject[] = [
@@ -13,6 +14,7 @@ export const subjects: SeedSubject[] = [
   designThinking,
   aiAutomation,
   linux,
+  entrepreneurMindset,
 ];
 
 export const SEMESTER = {
@@ -24,7 +26,7 @@ export const SEMESTER = {
   university: "IILM University, Gurugram",
   school: "School of Computer Science & Engineering",
   startDate: "2026-08-06",
-  timetableGenerated: "2026-08-11",
+  timetableGenerated: "2026-10-12",
 };
 
 /**

@@ -417,7 +417,9 @@ export async function seedUser(
       seen.add(key);
       const id = idByKey.get(key);
       return {
-        ...(id ? { id } : {}),
+        // A batch upsert with only some rows carrying an id sends null for the
+        // rest, so new slots get their own id up front.
+        id: id ?? crypto.randomUUID(),
         user_id: userId,
         semester_id: semesterId,
         day: s.day,

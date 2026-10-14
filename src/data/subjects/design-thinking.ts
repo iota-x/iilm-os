@@ -12,8 +12,8 @@ export const designThinking: SeedSubject = {
   teacher: "Dr. Ankita",
   hasLab: false,
   // Source: "Syllabus — Computational Design Thinking, CSE26104" (B.Tech 2026–30),
-  // the Unit 1 deck (64 slides) and the Unit 2 deck (35 slides), all in
-  // computational_design_thinking/. Mid-sem scope confirmed in class: Units 1–2.
+  // the Unit 1 deck (64 slides), Unit 2 (35), Unit 3 (35), Unit 4 (35) and Unit 5 (34),
+  // all in computational_design_thinking/. Mid-sem scope confirmed in class: Units 1–2.
   overview:
     "Structured problem solving (well- vs ill-structured problems, IDEAL, Polya, understand → plan → solve → verify → reflect), human-centred design (empathy maps, interviews, POV and How Might We), then creative ideation (divergent/convergent, brainstorming, brainwriting, SCAMPER, mind maps, lateral thinking, selecting ideas). Later units: algorithms and flowcharts, critical thinking and fallacies, and applications. 2-1-0: two lectures and a tutorial a week.",
   midsemScope: "Units 1 and 2 — foundations and problem solving, and creative thinking and design ideation.",
@@ -307,7 +307,7 @@ export const designThinking: SeedSubject = {
       title: "Computational Problem-Solving using Algorithms",
       sessions: 9,
       co: "CO3",
-      assessment: "Not in the mid-sem",
+      assessment: "End-term (Units 1–5)",
       inMidsem: false,
       topics: [
         {
@@ -316,6 +316,14 @@ export const designThinking: SeedSubject = {
           title: "Algorithmic thinking and characteristics of good algorithms",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Define an algorithm, list the five essentials with a violation of each, and the six qualities of a great algorithm.",
+          subtopics: [
+            "Algorithmic thinking: precise, repeatable, transferable (slide 3)",
+            "Algorithm = finite, well-defined steps, input → process → output; making tea; al-Khwārizmī (slide 4)",
+            "Input, Output, Definiteness, Finiteness, Effectiveness and a violation of each (slides 5–6)",
+            "Correctness, efficiency, readability, generality, robustness, modularity (slide 7)",
+          ],
         },
         {
           code: "cdt-u3-pseudocode",
@@ -323,6 +331,15 @@ export const designThinking: SeedSubject = {
           title: "Pseudocode writing and flowcharts",
           weight: 5,
           inMidsem: false,
+          outcome:
+            "Write pseudocode with the standard keywords and draw a flowchart with the six standard symbols for a small problem.",
+          subtopics: [
+            "Pseudocode: definition, keywords table, conventions (slides 8–9)",
+            "Largest of three numbers, traced (slide 10)",
+            "Do / avoid list (slide 11)",
+            "Flowchart symbols and the even/odd example (slides 12–14)",
+            "Pseudocode vs flowchart table (slide 15)",
+          ],
         },
         {
           code: "cdt-u3-decomposition",
@@ -330,6 +347,14 @@ export const designThinking: SeedSubject = {
           title: "Problem decomposition and pattern recognition",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Decompose a problem into a tree of sub-problems and spot the patterns that let one solution be reused.",
+          subtopics: [
+            "Decomposition and its three benefits (slide 16)",
+            "College tech-fest tree (slide 17)",
+            "Four steps and the one-sentence stopping rule (slide 18)",
+            "Pattern recognition in data, steps and across problems; 3, 6, 9, 12 → 3n; 60 students in a loop (slides 19–20)",
+          ],
         },
         {
           code: "cdt-u3-control",
@@ -337,6 +362,15 @@ export const designThinking: SeedSubject = {
           title: "Conditional logic (if–else) and iterative processes (loops)",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Use IF, IF–ELSE and ELSE IF ladders, AND/OR/NOT, and FOR/WHILE/REPEAT–UNTIL loops; trace a loop.",
+          subtopics: [
+            "IF, IF–ELSE, ELSE IF ladder (slide 21)",
+            "Grade calculator and test cases (slide 22)",
+            "AND / OR / NOT truth table and examples (slide 23)",
+            "FOR, WHILE, REPEAT–UNTIL; initialise, condition, body, update; sum of 1..N trace (slides 24–25)",
+            "FOR vs WHILE and the infinite loop (slide 26)",
+          ],
         },
         {
           code: "cdt-u3-datastructures",
@@ -344,6 +378,13 @@ export const designThinking: SeedSubject = {
           title: "Basic data structures for problem solving",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Pick an array, stack, queue or dictionary for a given problem and justify the choice.",
+          subtopics: [
+            "Why data structures (slide 27)",
+            "Array, stack (LIFO), queue (FIFO), dictionary (slide 28)",
+            "Choosing table: average, undo, help desk, roll number, Back button (slide 29)",
+          ],
         },
         {
           code: "cdt-u3-efficiency",
@@ -351,6 +392,15 @@ export const designThinking: SeedSubject = {
           title: "Introduction to algorithm efficiency and time complexity",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Explain time and space complexity, read the Big-O table, and analyse a one-pass algorithm as O(n).",
+          subtopics: [
+            "Linear vs binary search on 1,000,000 items (slide 30)",
+            "Big-O table O(1) to O(2ⁿ) (slide 31)",
+            "Growth graph and takeaways (slide 32)",
+            "Class-topper case study using every Unit 3 idea (slide 33)",
+            "Unit 3 takeaways (slide 34)",
+          ],
         },
       ],
     },
@@ -359,7 +409,7 @@ export const designThinking: SeedSubject = {
       title: "Critical Thinking and Computational Decision Making",
       sessions: 9,
       co: "CO1, CO2",
-      assessment: "Not in the mid-sem",
+      assessment: "End-term (Units 1–5)",
       inMidsem: false,
       topics: [
         {
@@ -368,6 +418,16 @@ export const designThinking: SeedSubject = {
           title: "Critical thinking fundamentals: components and stages",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Define critical thinking, list the Paul–Elder elements and standards, and walk the six stages on an example.",
+          subtopics: [
+            "Definition: question, evaluate, conclude (slide 3)",
+            "Critical vs uncritical table (slide 4)",
+            "Six traits (slide 5)",
+            "Paul–Elder eight elements of thought (slide 6)",
+            "Nine intellectual standards (slide 7)",
+            "Identify → Gather → Analyse → Evaluate → Conclude → Reflect (slide 8)",
+          ],
         },
         {
           code: "cdt-u4-reasoning",
@@ -375,6 +435,15 @@ export const designThinking: SeedSubject = {
           title: "Deductive and inductive reasoning; syllogisms",
           weight: 5,
           inMidsem: false,
+          outcome:
+            "Compare deductive and inductive reasoning, name the terms of a syllogism, and spot invalid forms.",
+          subtopics: [
+            "Deductive top-down vs inductive bottom-up (slides 9–10)",
+            "Comparison table, abductive reasoning (slide 11)",
+            "Major, minor and middle terms (slide 12)",
+            "Categorical, hypothetical, disjunctive; modus ponens/tollens; affirming the consequent (slide 13)",
+            "Venn test; undistributed middle (slide 14)",
+          ],
         },
         {
           code: "cdt-u4-logic",
@@ -382,6 +451,15 @@ export const designThinking: SeedSubject = {
           title: "Digital logic fundamentals; analogies and logical relationships",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Write truth tables for the basic gates and simple expressions, and solve A : B :: C : D analogies.",
+          subtopics: [
+            "Binary values, gates, truth tables (slide 15)",
+            "AND, OR, NOT, NAND, NOR, XOR (slides 16–17)",
+            "Hostel security alarm (slide 18)",
+            "Ten analogy relationships (slide 19)",
+            "Analogy practice (slide 20)",
+          ],
         },
         {
           code: "cdt-u4-cause",
@@ -389,6 +467,13 @@ export const designThinking: SeedSubject = {
           title: "Cause-and-effect analysis",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Separate correlation from causation and find a root cause with a fishbone diagram and the 5 Whys.",
+          subtopics: [
+            "Correlation vs causation and four checks (slide 21)",
+            "Fishbone with six categories: low 8 AM lab attendance (slide 22)",
+            "5 Whys: website crash on result day (slide 23)",
+          ],
         },
         {
           code: "cdt-u4-fallacies",
@@ -396,6 +481,15 @@ export const designThinking: SeedSubject = {
           title: "Logical fallacies and cognitive biases",
           weight: 5,
           inMidsem: false,
+          outcome:
+            "Name and illustrate common fallacies and cognitive biases, and explain System 1 vs System 2.",
+          subtopics: [
+            "Ad hominem, straw man, false dilemma, slippery slope (slide 24)",
+            "Hasty generalisation, authority, bandwagon, post hoc, circular, false analogy (slide 25)",
+            "Six cognitive biases (slide 26)",
+            "Thinking fast and slow; debiasing (slide 27)",
+            "Spot-the-fallacy activity (slide 28)",
+          ],
         },
         {
           code: "cdt-u4-evidence",
@@ -403,6 +497,16 @@ export const designThinking: SeedSubject = {
           title: "Evaluating data, evidence and arguments; decision making under uncertainty",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Evaluate a source with CRAAP, an argument by its parts, and choose under uncertainty with maximax, maximin, Laplace, minimax regret and expected value.",
+          subtopics: [
+            "CRAAP test (slide 29)",
+            "Anatomy of an argument and the evidence ladder (slide 30)",
+            "Reading data critically (slide 31)",
+            "Certainty, risk, uncertainty; campus-app payoff table (slide 32)",
+            "Decision criteria worked (slide 33)",
+            "Quick check (slide 34)",
+          ],
         },
       ],
     },
@@ -411,7 +515,7 @@ export const designThinking: SeedSubject = {
       title: "Applications of Computational Design Thinking",
       sessions: 9,
       co: "CO4",
-      assessment: "Not in the mid-sem",
+      assessment: "End-term (Units 1–5)",
       inMidsem: false,
       topics: [
         {
@@ -420,6 +524,18 @@ export const designThinking: SeedSubject = {
           title: "Computational thinking in real-world systems: abstraction, decomposition, patterns, algorithms",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Apply all four computational-thinking pillars to a real system such as a navigation app or campus parking.",
+          subtopics: [
+            "Four pillars (slide 3)",
+            "Six real-world systems (slide 4)",
+            "Navigation app case (slide 5)",
+            "Abstraction: metro map, layers (slides 6–7)",
+            "Food delivery decomposition (slide 8)",
+            "Pattern recognition applied (slide 9)",
+            "Rider–driver matching pseudocode (slide 10)",
+            "Smart campus parking (slide 11)",
+          ],
         },
         {
           code: "cdt-u5-prototyping",
@@ -427,6 +543,17 @@ export const designThinking: SeedSubject = {
           title: "Rapid prototyping and iterative testing",
           weight: 4,
           inMidsem: false,
+          outcome:
+            "Compare prototype fidelities and types, and explain Build–Measure–Learn, usability testing and A/B testing.",
+          subtopics: [
+            "Prototype: fast, cheap, built to learn (slide 12)",
+            "Low, medium, high fidelity table (slide 13)",
+            "Six prototype types (slide 14)",
+            "Build–Measure–Learn (slide 15)",
+            "Usability testing in five steps; Nielsen's five users (slide 16)",
+            "A/B testing (slide 17)",
+            "Paper prototype activity (slide 18)",
+          ],
         },
         {
           code: "cdt-u5-ethics",
@@ -434,6 +561,15 @@ export const designThinking: SeedSubject = {
           title: "Ethical and sustainable computational design",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Apply the six ethical principles, match risks to design responses, and argue that efficient algorithms are greener.",
+          subtopics: [
+            "Six principles (slide 19)",
+            "Risk → design response table (slide 20)",
+            "Privacy by design, ethics checklist, DPDP Act 2023 (slide 21)",
+            "Data-centre energy and e-waste figures (slide 22)",
+            "O(n²) vs O(n log n) energy (slide 23)",
+          ],
         },
         {
           code: "cdt-u5-innovation",
@@ -441,6 +577,14 @@ export const designThinking: SeedSubject = {
           title: "Design thinking for innovation and entrepreneurship",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Classify innovations, trace idea → startup, and fill a Lean Canvas.",
+          subtopics: [
+            "Desirable ∩ feasible ∩ viable; incremental, disruptive, radical (slide 24)",
+            "Five steps from idea to startup (slide 25)",
+            "Lean Canvas: smart canteen pre-order (slide 26)",
+            "UPI, DigiLocker, eSanjeevani (slide 27)",
+          ],
         },
         {
           code: "cdt-u5-sdg",
@@ -448,6 +592,15 @@ export const designThinking: SeedSubject = {
           title: "Computational design thinking and the Sustainable Development Goals",
           weight: 3,
           inMidsem: false,
+          outcome:
+            "Name the 17 SDGs and propose a computational design solution for a local SDG problem.",
+          subtopics: [
+            "The 17 SDGs (slide 28)",
+            "SDG → problem → computational idea table (slide 29)",
+            "Canteen food-waste case through the five DT stages (slide 30)",
+            "Mini design sprint (slide 31)",
+            "Unit 5 takeaways and quick check (slides 32–33)",
+          ],
         },
       ],
     },
@@ -530,6 +683,9 @@ That's deliberate: it frees your evening hours for Calculus and C, which need th
     "computational_design_thinking/Syllabus-Computational design thinking.pdf",
     "computational_design_thinking/Unit1-Computational Design Thinking.pdf",
     "computational_design_thinking/Unit2CreativeThinkingandDesignIdeation.pdf",
+    "computational_design_thinking/Unit3-Computational_Design_Thinking.pdf",
+    "computational_design_thinking/Unit4-Critical_Thinking_and_Computational_Decision_Making.pdf",
+    "computational_design_thinking/Unit5-Applications_of_Computational_Design_Thinking.pdf",
   ],
   gaps: [
     "No lecture-by-lecture course plan yet, so there are no session dates, and nothing says how the 30% continuous marks split between quiz, assignment and presentation.",

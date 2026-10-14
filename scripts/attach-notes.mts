@@ -49,6 +49,24 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
     label: "CDT Unit 2 deck, slide",
     takenAt: "2026-09-27T12:00:00+05:30",
   },
+  "Unit3-Computational_Design_Thinking.pdf": {
+    dir: "computational_design_thinking/slides",
+    image: (n) => `CDT3-s${String(n).padStart(2, "0")}.jpg`,
+    label: "CDT Unit 3 deck, slide",
+    takenAt: "2026-10-14T12:00:00+05:30",
+  },
+  "Unit4-Critical_Thinking_and_Computational_Decision_Making.pdf": {
+    dir: "computational_design_thinking/slides",
+    image: (n) => `CDT4-s${String(n).padStart(2, "0")}.jpg`,
+    label: "CDT Unit 4 deck, slide",
+    takenAt: "2026-10-14T12:00:00+05:30",
+  },
+  "Unit5-Applications_of_Computational_Design_Thinking.pdf": {
+    dir: "computational_design_thinking/slides",
+    image: (n) => `CDT5-s${String(n).padStart(2, "0")}.jpg`,
+    label: "CDT Unit 5 deck, slide",
+    takenAt: "2026-10-14T12:00:00+05:30",
+  },
   "9-Problem reduction in AI.pptx.pdf": {
     dir: "AI_automation/slides",
     image: (n) => `PR-s${String(n).padStart(2, "0")}.jpg`,

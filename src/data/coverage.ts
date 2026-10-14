@@ -44,6 +44,9 @@ const L_VM = "Installing Linux Using a Virtual Machine.pdf";
 const L_FMT = "Lab File format.docx";
 const CDT1 = "Unit1-Computational Design Thinking.pdf";
 const CDT2 = "Unit2CreativeThinkingandDesignIdeation.pdf";
+const CDT3 = "Unit3-Computational_Design_Thinking.pdf";
+const CDT4 = "Unit4-Critical_Thinking_and_Computational_Decision_Making.pdf";
+const CDT5 = "Unit5-Applications_of_Computational_Design_Thinking.pdf";
 const EM1 = "Entrepreneurship_Mindset.pptx";
 const EMI = "types-of-innovation.pptx";
 const EM2 = "Unit-2(design-thinking).pptx";
@@ -315,6 +318,29 @@ export const coverage: Record<string, Coverage> = {
   "cdt-u2-dt-process": { status: "covered", sources: [{ file: CDT2, where: "slides 23–27", what: "five stages; empathize, define (POV + HMW), ideate" }] },
   "cdt-u2-selecting": { status: "covered", sources: [{ file: CDT2, where: "slides 28–35", what: "shortlisting, dot voting, NUF, impact–effort, weighted matrix, wrap-up, quick check" }] },
 
+  /* ── CDT · Unit 3 ───────────────────────────────────────── */
+  "cdt-u3-algorithmic": { status: "covered", sources: [{ file: CDT3, where: "slides 3–7", what: "algorithmic thinking, definition, five essentials and violations, six qualities" }] },
+  "cdt-u3-pseudocode": { status: "covered", sources: [{ file: CDT3, where: "slides 8–15", what: "pseudocode keywords, largest-of-three, do/avoid, flowchart symbols, even/odd, comparison" }] },
+  "cdt-u3-decomposition": { status: "covered", sources: [{ file: CDT3, where: "slides 16–20", what: "tech-fest tree, four steps, pattern recognition, sequences and loops" }] },
+  "cdt-u3-control": { status: "covered", sources: [{ file: CDT3, where: "slides 21–26", what: "IF forms, grade calculator, AND/OR/NOT, loop types and anatomy, FOR vs WHILE" }] },
+  "cdt-u3-datastructures": { status: "covered", sources: [{ file: CDT3, where: "slides 27–29", what: "array, stack, queue, dictionary and the choosing table" }] },
+  "cdt-u3-efficiency": { status: "covered", sources: [{ file: CDT3, where: "slides 30–34", what: "linear vs binary search, Big-O table, growth graph, class-topper case, takeaways" }] },
+
+  /* ── CDT · Unit 4 ───────────────────────────────────────── */
+  "cdt-u4-critical": { status: "covered", sources: [{ file: CDT4, where: "slides 3–8", what: "definition, critical vs uncritical, traits, Paul–Elder elements and standards, six stages" }] },
+  "cdt-u4-reasoning": { status: "covered", sources: [{ file: CDT4, where: "slides 9–14", what: "deductive vs inductive, abductive, syllogism terms and types, Venn test" }] },
+  "cdt-u4-logic": { status: "covered", sources: [{ file: CDT4, where: "slides 15–20", what: "gates and truth tables, alarm example, analogy relationships and practice" }] },
+  "cdt-u4-cause": { status: "covered", sources: [{ file: CDT4, where: "slides 21–23", what: "correlation vs causation, fishbone, 5 Whys" }] },
+  "cdt-u4-fallacies": { status: "covered", sources: [{ file: CDT4, where: "slides 24–28", what: "ten fallacies, six biases, System 1 vs 2, activity" }] },
+  "cdt-u4-evidence": { status: "covered", sources: [{ file: CDT4, where: "slides 29–34", what: "CRAAP, argument anatomy, evidence ladder, reading data, decision criteria, quick check" }] },
+
+  /* ── CDT · Unit 5 ───────────────────────────────────────── */
+  "cdt-u5-realworld": { status: "covered", sources: [{ file: CDT5, where: "slides 3–11", what: "four pillars, navigation case, abstraction layers, food delivery, patterns, rider matching, parking" }] },
+  "cdt-u5-prototyping": { status: "covered", sources: [{ file: CDT5, where: "slides 12–18", what: "fidelity table, prototype types, Build–Measure–Learn, usability testing, A/B, activity" }] },
+  "cdt-u5-ethics": { status: "covered", sources: [{ file: CDT5, where: "slides 19–23", what: "six principles, risks and responses, privacy by design, sustainability figures, Big-O energy" }] },
+  "cdt-u5-innovation": { status: "covered", sources: [{ file: CDT5, where: "slides 24–27", what: "desirable/feasible/viable, three innovation types, idea → startup, Lean Canvas, Indian examples" }] },
+  "cdt-u5-sdg": { status: "covered", sources: [{ file: CDT5, where: "slides 28–33", what: "17 SDGs, SDG idea table, canteen-waste case, design sprint, takeaways, quick check" }] },
+
   /* ── Foundations of AI · Units I–II ─────────────────────── */
   "ai-u1-defn": {
     status: "covered",
@@ -382,10 +408,6 @@ export const coverage: Record<string, Coverage> = {
 
 /** Units the notes don't reach at all. Shown once on the subject page. */
 export const unitGaps: Record<string, { units: number[]; note: string }> = {
-  "computational-design-thinking": {
-    units: [3, 4, 5],
-    note: "Only the Unit 1 and Unit 2 decks have been shared. Units 3–5 (algorithms, critical thinking, applications) have no deck yet. They aren't in the mid-sem.",
-  },
   "digital-electronics": {
     units: [4, 5],
     note: "DENotes.pdf stops at Unit III. There is nothing for Units IV–V (structure of computers, processor and memory). They aren't in the mid-sem, but you'll need another source before the end-term.",

@@ -6,8 +6,12 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 120; // seeding is a few hundred rows
 
 const DOMAIN = "@gg.iilm.edu";
-/** first.last.26 — the college's pattern. Digits are the batch year. */
-const LOCAL = /^[a-z]+(?:\.[a-z]+)+\.\d{2}$/;
+/**
+ * The college's patterns: first.last.26, or first.2026.26 for students with
+ * one name. One or more name parts, optional number parts, then the two-digit
+ * batch year.
+ */
+const LOCAL = /^[a-z]+(?:\.[a-z]+)*(?:\.\d+)*\.\d{2}$/;
 
 /** "priya.sharma.26" → "Priya Sharma" */
 function nameFromEmail(email: string) {
@@ -40,7 +44,7 @@ export async function POST(req: Request) {
 
   if (!email.endsWith(DOMAIN) || !LOCAL.test(email.slice(0, -DOMAIN.length))) {
     return NextResponse.json(
-      { error: `Use your college address — it looks like first.last.26${DOMAIN}.` },
+      { error: `Use your college address — it looks like first.last.26${DOMAIN} or first.2026.26${DOMAIN}.` },
       { status: 400 },
     );
   }

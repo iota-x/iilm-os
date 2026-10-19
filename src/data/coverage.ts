@@ -50,6 +50,7 @@ const CDT5 = "Unit5-Applications_of_Computational_Design_Thinking.pdf";
 const EM1 = "Entrepreneurship_Mindset.pptx";
 const EMI = "types-of-innovation.pptx";
 const EM2 = "Unit-2(design-thinking).pptx";
+const EM45 = "Unit_4_and_5.pptx";
 
 const MANO = "Mano & Ciletti, Digital Design";
 const NESO = "the Neso Academy playlist under Resources";
@@ -404,6 +405,18 @@ export const coverage: Record<string, Coverage> = {
   "em-u2-problem": { status: "covered", sources: [{ file: EM2, where: "slides 6–7", what: "four framing rules, startup-failure stats, 5 Whys / HMW / POV / problem statement" }] },
   "em-u2-fit": { status: "covered", sources: [{ file: EM2, where: "slides 8–9", what: "fit definition and conditions, five validation steps" }] },
   "em-u2-ideation": { status: "covered", sources: [{ file: EM2, where: "slides 10–15", what: "brainstorming rules and session, SCAMPER, mind mapping, the full flow, takeaways" }] },
+  /* ── Entrepreneur Mindset · Units 4–5 (Unit_4_and_5 deck) ── */
+  "em-u4-venture": { status: "covered", sources: [{ file: EM45, where: "slides 2–4", what: "learning journey, definition, value creation/delivery/capture, break-even and LTV:CAC, Dropbox/Zerodha/Tata Nano" }] },
+  "em-u4-vpc": { status: "covered", sources: [{ file: EM45, where: "slides 5–6", what: "customer profile vs value map, fit, Meesho/Practo/Aravind" }] },
+  "em-u4-bmc": { status: "covered", sources: [{ file: EM45, where: "slides 7–8", what: "the nine blocks with their questions, Zomato/Amul/Freshworks" }] },
+  "em-u4-revenue": { status: "covered", sources: [{ file: EM45, where: "slides 9–10", what: "segment, revenue and cost types, three formulas, Jio/Lenskart/Razorpay" }] },
+  "em-u4-ip": { status: "covered", sources: [{ file: EM45, where: "slides 11–12", what: "six IP types and durations, Startup India rebates, turmeric/Darjeeling/Coca-Cola" }] },
+  "em-u4-ethics": { status: "covered", sources: [{ file: EM45, where: "slides 13–14", what: "four pillars, how to apply, Theranos/J&J/Satyam" }] },
+  "em-u4-sustain": { status: "covered", sources: [{ file: EM45, where: "slides 15–16", what: "triple bottom line, four levers, SDGs, Bakeys/Patagonia/Cochin Airport" }] },
+  "em-u5-pitching": { status: "covered", sources: [{ file: EM45, where: "slides 17–18", what: "pitch types table, five audience questions, iPhone/YC Demo Day/Shark Tank India" }] },
+  "em-u5-deck": { status: "covered", sources: [{ file: EM45, where: "slides 19–20", what: "ten slides and their questions, rules of thumb, Airbnb/Uber/Buffer decks" }] },
+  "em-u5-story": { status: "covered", sources: [{ file: EM45, where: "slides 21–22", what: "hero–struggle–guide–plan–success, do/avoid, Dollar Shave Club/Paper Boat/Amul" }] },
+  "em-u5-elevator": { status: "covered", sources: [{ file: EM45, where: "slides 23–24", what: "30-second formula, investor flow and questions, rehearsal, Airbnb/Revamp Moto/YC" }] },
 };
 
 /** Units the notes don't reach at all. Shown once on the subject page. */

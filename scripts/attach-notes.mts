@@ -98,6 +98,7 @@ const DECKS: Record<string, { dir: string; image: (n: number) => string; label: 
   "Entrepreneurship_Mindset.pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EM1-s${String(n).padStart(2, "0")}.jpg`, label: "EM orientation deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
   "types-of-innovation.pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EMinno-s${String(n).padStart(2, "0")}.jpg`, label: "Types of Innovation deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
   "Unit-2(design-thinking).pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EM2-s${String(n).padStart(2, "0")}.jpg`, label: "EM Unit 2 deck, slide", takenAt: "2026-10-12T12:00:00+05:30" },
+  "Unit_4_and_5.pptx": { dir: "entrepreneur_mindset/slides", image: (n) => `EM45-s${String(n).padStart(2, "0")}.jpg`, label: "EM Units 4–5 deck, slide", takenAt: "2026-10-19T12:00:00+05:30" },
 };
 
 /** "p. 19", "pp. 26–29", "slide 79", "slides 4–16" → page numbers */

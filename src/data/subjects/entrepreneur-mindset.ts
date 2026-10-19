@@ -1,9 +1,10 @@
 import type { SeedSubject } from "../types";
 
 // Added with the 12-10-2026 timetable (w.e.f. 07-09-2026). Still no course plan:
-// the units and topics below are built from the three decks handed out in class
-// (orientation, types of innovation, Unit 2 design thinking), so code, credits,
-// unit titles and assessment are unconfirmed.
+// the units and topics below are built from the decks handed out in class
+// (orientation, types of innovation, Unit 2 design thinking, Units 4–5 venture
+// modelling and pitching), so code, credits, unit titles and assessment are
+// unconfirmed. No Unit 3 deck yet.
 export const entrepreneurMindset: SeedSubject = {
   slug: "entrepreneur-mindset",
   name: "Entrepreneur Mindset",
@@ -16,13 +17,15 @@ export const entrepreneurMindset: SeedSubject = {
   teacher: "Dr. Sangeeta",
   hasLab: false,
   overview:
-    "Entrepreneurship for engineers: from \"can we build it\" to \"should we build it\". So far: what innovation is, innovation vs invention, the entrepreneurial mindset and its six traits, the three types of innovation (incremental, disruptive, frugal), then design thinking: the five stages, framing the problem, problem–solution fit and ideation (brainstorming, SCAMPER, mind mapping). The orientation deck says business-model basics, engineer-founder case studies and a capstone project on a problem you choose come next. Two lectures a week on Fridays with Dr. Sangeeta.",
+    "Entrepreneurship for engineers: from \"can we build it\" to \"should we build it\". So far: what innovation is, innovation vs invention, the entrepreneurial mindset and its six traits, the three types of innovation (incremental, disruptive, frugal), then design thinking: the five stages, framing the problem, problem–solution fit and ideation (brainstorming, SCAMPER, mind mapping). Unit 4 models the venture: venture modelling and unit economics, the value proposition canvas, the business model canvas, customer segments, revenue and cost, IP, ethics and sustainability. Unit 5 pitches it: types of pitch, the pitch deck, storytelling, and the elevator and investor pitch. Every topic is a concept slide followed by three real cases (mostly Indian ventures). Two lectures a week on Fridays with Dr. Sangeeta.",
   midsemScope: "Not part of the October mid-sems (the course started after them).",
   midsemConfirmed: false,
   objectives: [
     "Tell innovation apart from invention and recognise the forms innovation takes.",
     "Approach technical work with an entrepreneurial mindset: problem first, test cheaply, measure adoption.",
     "Use design thinking to frame the right problem, prove problem–solution fit and generate ideas.",
+    "Model a venture on one page (value proposition, business model canvas, unit economics) and protect it with the right IP, ethics and sustainability choices.",
+    "Build and deliver a pitch: a 10-slide deck, a customer story, and a 30-second and an investor version.",
   ],
   outcomes: [],
   units: [
@@ -171,6 +174,178 @@ export const entrepreneurMindset: SeedSubject = {
         },
       ],
     },
+    {
+      number: 4,
+      title: "Venture Modelling, Business Models, IP, Ethics and Sustainability",
+      sessions: 5,
+      co: "",
+      assessment: "Not announced",
+      inMidsem: false,
+      topics: [
+        {
+          code: "em-u4-venture",
+          session: "U4",
+          title: "Venture modelling and unit economics",
+          weight: 4,
+          inMidsem: false,
+          outcome: "Define venture modelling, give its four parts and the evidence loop, and work out contribution margin, break-even and LTV:CAC.",
+          subtopics: [
+            "Definition: a simple, testable picture of how a startup creates, delivers and captures value, plus the assumptions that must hold (slide 3)",
+            "Value creation, value delivery, value capture, evidence loop (assumption → experiment → data → pivot/persevere/stop) (slide 3)",
+            "Mini-model: ₹500 − ₹300 = ₹200 contribution; ₹2,00,000 fixed ÷ ₹200 = 1,000 orders/month break-even; LTV:CAC ≥ 3 (slide 3)",
+            "Cases: Dropbox demo video (demand test, 5,000 → 75,000 waitlist), Zerodha ₹20 flat fee (unit economics), Tata Nano (untested status assumption) (slide 4)",
+          ],
+        },
+        {
+          code: "em-u4-vpc",
+          session: "U4",
+          title: "Value proposition canvas",
+          weight: 4,
+          inMidsem: false,
+          outcome: "Draw the value proposition canvas (customer profile vs value map), explain fit, and apply it to an example.",
+          subtopics: [
+            "Osterwalder & Pigneur: match customer jobs, pains and gains with what you offer (slide 5)",
+            "Customer profile: jobs, pains, gains ↔ value map: products & services, pain relievers, gain creators (slide 5)",
+            "Apply: profile first from interviews → rank pains/gains → design value map → test fit with evidence (slide 5)",
+            "Cases: Meesho (resellers, no inventory), Practo (trust as a gain creator), Aravind Eye Care (tiered pricing, cross-subsidy) (slide 6)",
+          ],
+        },
+        {
+          code: "em-u4-bmc",
+          session: "U4",
+          title: "Business model canvas: the nine blocks",
+          weight: 5,
+          inMidsem: false,
+          outcome: "Draw and fill the nine-block business model canvas and read it as a story; fill it for a given company.",
+          subtopics: [
+            "Nine blocks: Key Partners, Key Activities, Key Resources, Value Propositions, Customer Relationships, Channels, Customer Segments, Cost Structure, Revenue Streams (slide 7)",
+            "Apply: start with segments and value proposition → fill the rest → check revenue > cost → test each block (slide 7)",
+            "Cases: Zomato/Eternal (two-sided marketplace), Amul (farmers as partners and owners), Freshworks (SaaS, freemium as channel) (slide 8)",
+          ],
+        },
+        {
+          code: "em-u4-revenue",
+          session: "U4",
+          title: "Customer segments, revenue streams and cost structure",
+          weight: 4,
+          inMidsem: false,
+          outcome: "Name the segment types, revenue stream types and cost types with an example each, and use the three formulas.",
+          subtopics: [
+            "Segments: mass market, niche, segmented, multi-sided; start with a beachhead segment (slide 9)",
+            "Revenue: product sale, subscription, transaction fee, commission, advertising, freemium/licensing/leasing (slide 9)",
+            "Costs: fixed vs variable, CAC, cost-driven vs value-driven, scale lowers unit cost (slide 9)",
+            "Formulas: contribution margin = price − variable cost; break-even = fixed ÷ contribution; LTV:CAC ≈ 3+ (slide 9)",
+            "Cases: Reliance Jio (mass market, 100M users in 170 days), Lenskart (vertical integration), Razorpay (transaction fee) (slide 10)",
+          ],
+        },
+        {
+          code: "em-u4-ip",
+          session: "U4",
+          title: "IP basics: patent, trademark, copyright, design, GI, trade secret",
+          weight: 5,
+          inMidsem: false,
+          outcome: "Tabulate the six IP types with what they protect and their duration in India, list Startup India IP support, and explain one case each.",
+          subtopics: [
+            "IP = legal ownership of creations of the mind; file before public disclosure, use NDAs and IP-assignment agreements (slide 11)",
+            "Patent 20 yrs · trademark 10 yrs renewable · copyright life + 60 · design 10 + 5 · GI 10 renewable · trade secret while secret (slide 11)",
+            "Startup India (DPIIT): 80% patent fee rebate, 50% trademark rebate, fast-track examination, free facilitators (slide 11)",
+            "Cases: turmeric patent revoked 1997 (prior art, TKDL), Darjeeling Tea first Indian GI 2004–05, Coca-Cola formula as trade secret (slide 12)",
+          ],
+        },
+        {
+          code: "em-u4-ethics",
+          session: "U4",
+          title: "Ethics in entrepreneurship",
+          weight: 3,
+          inMidsem: false,
+          outcome: "Define entrepreneurial ethics, give its four pillars and how to apply them, and contrast Theranos, J&J and Satyam.",
+          subtopics: [
+            "Definition: honest, fair, responsible decisions for all stakeholders, beyond what the law forces (slide 13)",
+            "Pillars: honesty, safety & quality, data privacy (DPDP Act 2023), governance & fairness (slide 13)",
+            "Apply: code of conduct, front-page test, accurate records, protect data, safe way to raise concerns (slide 13)",
+            "Cases: Theranos (overclaiming = fraud), Johnson & Johnson Tylenol recall 1982 (crisis done right), Satyam 2009 (₹7,000 crore falsified) (slide 14)",
+          ],
+        },
+        {
+          code: "em-u4-sustain",
+          session: "U4",
+          title: "Sustainability for startups: triple bottom line",
+          weight: 3,
+          inMidsem: false,
+          outcome: "Define sustainability via profit, people and planet, give the four levers and SDG links, and explain one case at product, model and infrastructure level.",
+          subtopics: [
+            "Triple bottom line: profit, people, planet (slide 15)",
+            "Levers: reduce, include, reuse & recycle, measure & report (avoid greenwashing); SDGs 7, 8, 9, 12, 13 (slide 15)",
+            "Cases: Bakeys edible spoons (product, price gap), Patagonia (ownership to a trust), Cochin Airport first fully solar airport 2015 (slide 16)",
+          ],
+        },
+      ],
+    },
+    {
+      number: 5,
+      title: "Startup Pitching",
+      sessions: 4,
+      co: "",
+      assessment: "Not announced",
+      inMidsem: false,
+      topics: [
+        {
+          code: "em-u5-pitching",
+          session: "U5",
+          title: "Introduction to startup pitching: types of pitch",
+          weight: 4,
+          inMidsem: false,
+          outcome: "Define a pitch, tabulate the five pitch types by length and goal, and list the five questions every audience asks.",
+          subtopics: [
+            "Definition: short, structured, persuasive presentation for a specific decision (slide 17)",
+            "Elevator 30–60 s · demo day 2–3 min · competition 5–7 min · investor 10–20 min + Q&A · sales varies (slide 17)",
+            "Why this problem? Why you? Why now? What's the proof? What do you need? (slide 17)",
+            "Cases: iPhone launch 2007 (three products = one device), YC Demo Day W15 (~2.5 min each), Shark Tank India S1 (ask implies valuation) (slide 18)",
+          ],
+        },
+        {
+          code: "em-u5-deck",
+          session: "U5",
+          title: "Elements of an effective pitch deck",
+          weight: 5,
+          inMidsem: false,
+          outcome: "List the ten pitch-deck slides with the question each answers, the rules of thumb, and what Airbnb, Uber and Buffer's decks teach.",
+          subtopics: [
+            "Ten slides: title & hook, problem, solution, product/demo, market size, business model, traction, competition & moat, team, ask & use of funds (slide 19)",
+            "Rules: 10–12 slides, one idea per slide, Kawasaki 10/20/30, numbers over adjectives (slide 19)",
+            "Cases: Airbnb 2009 (~10 slides, ~$600K), UberCab 2008 (25 slides, $200K, loose story), Buffer 2011 (transparent traction) (slide 20)",
+          ],
+        },
+        {
+          code: "em-u5-story",
+          session: "U5",
+          title: "Storytelling for startups",
+          weight: 4,
+          inMidsem: false,
+          outcome: "Give the hero–struggle–guide–plan–success structure, the do's and don'ts, and explain one storytelling case.",
+          subtopics: [
+            "Definition: facts → memorable narrative with character, problem, turning point, result (slide 21)",
+            "Hero (customer) → Struggle → Guide (your venture) → Plan → Success; customer is the hero, not the founder (slide 21)",
+            "Pair one human example with one number; avoid jargon and feature lists (slide 21)",
+            "Cases: Dollar Shave Club video ($4,500, 12,000 orders in 48 h), Paper Boat (nostalgia), Amul girl since 1966 (slide 22)",
+          ],
+        },
+        {
+          code: "em-u5-elevator",
+          session: "U5",
+          title: "Elevator pitch and investor pitch",
+          weight: 5,
+          inMidsem: false,
+          outcome: "Write a 30-second elevator pitch with the formula, give the investor-pitch flow and investor questions, and compute an implied valuation.",
+          subtopics: [
+            "Elevator 30–60 s earns a follow-up; investor pitch 10–15 min + Q&A asks for a decision (slide 23)",
+            "Formula: For [customer] who [problem], [Company] is a [category] that [benefit]. Unlike [alternative], we [difference]. We have [proof]. We seek [ask]. (slide 23)",
+            "Flow: hook → problem → solution & demo → market → model → traction → competition → team → financials & ask; rehearse: write, time, record, mock Q&A (slide 23)",
+            "Cases: Airbnb one-liner, Revamp Moto ₹1 cr for 1% → 1.5% (₹100 cr → ~₹67 cr valuation), YC Rehearsal Day (slide 24)",
+          ],
+        },
+      ],
+    },
   ],
   experiments: [],
   components: [],
@@ -181,8 +356,10 @@ export const entrepreneurMindset: SeedSubject = {
     "entrepreneur_mindset/Entrepreneurship_Mindset.pptx",
     "entrepreneur_mindset/types-of-innovation.pptx",
     "entrepreneur_mindset/Unit-2(design-thinking).pptx",
+    "entrepreneur_mindset/Unit_4_and_5.pptx",
   ],
   gaps: [
     "No course plan yet: ask Dr. Sangeeta for the course code, credits, official unit list and how it's assessed. The units here are built from the class decks.",
+    "No Unit 3 deck yet: the class has decks for Units 1, 2, 4 and 5. Ask whether Unit 3 was taught or is still to come.",
   ],
 };

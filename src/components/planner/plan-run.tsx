@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, CheckCircle2, ChevronDown, Flame } from "lucide-react";
 import type { PlanDay, Subject, Task } from "@/lib/db-types";
 import type { Streak } from "@/lib/streak";
+import type { TaskLink } from "@/lib/task-links";
 import { TaskList } from "@/components/task-list";
 import { Badge, Bar, Card } from "@/components/ui";
 import { cn, fmtDuration } from "@/lib/utils";
@@ -36,6 +37,7 @@ export function PlanRun({
   today,
   streak,
   phases,
+  links = {},
 }: {
   /** the run's plan days in date order, the first one is Day 1 */
   days: PlanDay[];
@@ -46,6 +48,8 @@ export function PlanRun({
   today: string;
   streak: Streak;
   phases: PhaseMeta;
+  /** topic page / video / notes per task id */
+  links?: Record<string, TaskLink[]>;
 }) {
   const byDate = new Map<string, Task[]>();
   for (const t of tasks) {
@@ -119,7 +123,7 @@ export function PlanRun({
               ) : null}
               <div className="space-y-2">
                 {items.map((x) => (
-                  <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} open={x.status === "today"} />
+                  <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} open={x.status === "today"} />
                 ))}
               </div>
             </section>
@@ -136,7 +140,7 @@ export function PlanRun({
             </div>
             <div className="space-y-2">
               {[...behind].reverse().map((x) => (
-                <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} open={false} />
+                <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} open={false} />
               ))}
             </div>
           </section>
@@ -174,6 +178,7 @@ function DayRow({
   status,
   subjects,
   spent,
+  links,
   open,
 }: {
   day: PlanDay;
@@ -183,6 +188,7 @@ function DayRow({
   status: Status;
   subjects: Subject[];
   spent: Record<string, number>;
+  links: Record<string, TaskLink[]>;
   open: boolean;
 }) {
   const date = new Date(day.date + "T00:00:00+05:30").toLocaleDateString("en-GB", {
@@ -235,11 +241,11 @@ function DayRow({
             {fmtDuration(est)} planned
           </span>
         </div>
-        {todo.length ? <TaskList tasks={todo} subjects={subjects} spent={spent} /> : null}
+        {todo.length ? <TaskList tasks={todo} subjects={subjects} spent={spent} links={links} /> : null}
         {finished.length ? (
           <>
             <p className="px-4 pt-2 text-[length:var(--text-micro)] font-medium text-subtle">Completed</p>
-            <TaskList tasks={finished} subjects={subjects} spent={spent} />
+            <TaskList tasks={finished} subjects={subjects} spent={spent} links={links} />
           </>
         ) : null}
         {!list.length ? (

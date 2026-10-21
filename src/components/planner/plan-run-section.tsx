@@ -4,7 +4,12 @@ import {
   getPlanDays,
   getStudySessions,
   getActivityDays,
+  getUnits,
+  getTopics,
+  getResources,
+  getNotes,
 } from "@/lib/queries";
+import { taskLinks } from "@/lib/task-links";
 import { PlanRun, type PhaseMeta } from "@/components/planner/plan-run";
 import { Card, CardHead } from "@/components/ui";
 import { studyStreak } from "@/lib/streak";
@@ -77,10 +82,14 @@ export async function PlanRunSection() {
   }
   const runStart = run[0].date;
 
-  const [all, sessions, activity] = await Promise.all([
+  const [all, sessions, activity, units, topics, resources, notes] = await Promise.all([
     getTasks({ from: runStart }),
     getStudySessions(new Date(runStart + "T00:00:00+05:30").toISOString()),
     getActivityDays(),
+    getUnits(),
+    getTopics(),
+    getResources(),
+    getNotes(),
   ]);
   const tasks = all.filter((t) => t.source !== "manual");
   const spent: Record<string, number> = {};
@@ -95,6 +104,7 @@ export async function PlanRunSection() {
       today={today}
       streak={studyStreak(activity, today)}
       phases={PHASE_META}
+      links={taskLinks(tasks, { subjects, units, topics, resources, notes })}
     />
   );
 }

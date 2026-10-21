@@ -2,7 +2,8 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, Trash2, ChevronDown, Dumbbell, Sparkles } from "lucide-react";
+import { Check, Trash2, ChevronDown, Dumbbell, Sparkles, BookOpen, PlayCircle, NotebookText, ExternalLink } from "lucide-react";
+import type { TaskLink } from "@/lib/task-links";
 import { toast } from "sonner";
 import { setTaskStatus, deleteTask } from "@/lib/actions";
 import type { Task } from "@/lib/db-types";
@@ -37,6 +38,7 @@ export function TaskList({
   emptyText = "Nothing scheduled.",
   collapseAfter,
   spent,
+  links,
 }: {
   tasks: Task[];
   subjects: Subject[];
@@ -46,6 +48,8 @@ export function TaskList({
   collapseAfter?: number;
   /** minutes already logged per task id; shown as "spent / estimate" */
   spent?: Record<string, number>;
+  /** where to study each task from: topic page, video, notes */
+  links?: Record<string, TaskLink[]>;
 }) {
   const [expanded, setExpanded] = useState(false);
   if (!tasks.length) {
@@ -62,6 +66,7 @@ export function TaskList({
           subject={subjects.find((s) => s.id === t.subject_id) ?? null}
           showDate={showDate}
           spent={spent?.[t.id] ?? 0}
+          links={links?.[t.id]}
         />
       ))}
       {hidden ? (
@@ -86,11 +91,13 @@ function TaskRow({
   subject,
   showDate,
   spent = 0,
+  links,
 }: {
   task: Task;
   subject: Subject | null;
   showDate: boolean;
   spent?: number;
+  links?: TaskLink[];
 }) {
   const track = task.topic_codes?.map((c) => TRACKS[c]).find(Boolean);
   const [pending, start] = useTransition();
@@ -181,6 +188,22 @@ function TaskRow({
               </Link>
             ) : null}
             {track ? <Badge tone="accent">{track}</Badge> : null}
+            {links?.map((l) => {
+              const Icon =
+                l.kind === "topic" ? BookOpen : l.kind === "video" ? PlayCircle : l.kind === "notes" ? NotebookText : ExternalLink;
+              const outside = l.href.startsWith("http");
+              return (
+                <Link
+                  key={l.label + l.href}
+                  href={l.href}
+                  {...(outside ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  title={l.search ? "YouTube search — no hand-picked video for this topic yet" : undefined}
+                  className="inline-flex items-center gap-1 rounded text-[length:var(--text-micro)] text-[var(--accent)] hover:underline focus-ring"
+                >
+                  <Icon size={11} /> {l.label}
+                </Link>
+              );
+            })}
             <Badge tone={KIND_TONE[task.kind] ?? "neutral"}>{KIND_LABEL[task.kind]}</Badge>
             {showDate && task.due_date ? (
               <span className="text-[length:var(--text-micro)] text-subtle">{task.due_date}</span>

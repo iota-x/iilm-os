@@ -181,7 +181,9 @@ export default async function ExamsPage() {
                 : labs.map((e) => e.status);
               const noun = mid.length ? "topics" : "experiments";
               const p = progressOf(measured);
-              const exam = subjectExams.find((e) => e.subject_id === s.id);
+              const exam =
+                subjectExams.find((e) => e.subject_id === s.id && e.kind === "ese") ??
+                subjectExams.find((e) => e.subject_id === s.id);
               const internals = internalsStanding(components.filter((c) => c.subject_id === s.id));
 
               return (

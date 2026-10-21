@@ -250,7 +250,7 @@ export default async function Dashboard() {
               ? `${Math.round((doneMin / 60) * 10) / 10}h of ${Math.round((plannedMin / 60) * 10) / 10}h planned`
               : "nothing planned"
           }
-          href="/planner"
+          href="/sprint"
         />
         <Figure
           value={due.length ? String(due.length) : "—"}
@@ -323,10 +323,10 @@ export default async function Dashboard() {
               }
               right={
                 <Link
-                  href="/planner"
+                  href="/sprint"
                   className="text-[length:var(--text-micro)] text-muted hover:text-fg inline-flex items-center gap-1 focus-ring rounded"
                 >
-                  Planner <ArrowRight size={12} />
+                  Sprint <ArrowRight size={12} />
                 </Link>
               }
             />

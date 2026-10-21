@@ -49,9 +49,16 @@ export const APP_MAP: AppGroup[] = [
       {
         href: "/planner",
         label: "Planner",
-        blurb: "The week's timetable and the day-by-day study plan, with every block you can tick, skip or add to.",
-        when: "To see the week ahead or move things around.",
-        keywords: ["timetable", "schedule", "week", "calendar", "tasks", "blocks"],
+        blurb: "The week's timetable and your college to-dos — assignments, submissions, anything you add yourself.",
+        when: "To see the week ahead or add a deadline.",
+        keywords: ["timetable", "schedule", "week", "calendar", "assignment", "deadline", "todo"],
+      },
+      {
+        href: "/sprint",
+        label: "Sprint",
+        blurb: "The prep plan as numbered days — end-sem prep, DSA and GSoC — with time spent, today's progress and the week by goal. Video routes per subject below.",
+        when: "Every day: what to do next and how today is going.",
+        keywords: ["plan", "prep", "day", "dsa", "gsoc", "planly", "end-sem", "videos", "blocks"],
       },
       {
         href: "/subjects",

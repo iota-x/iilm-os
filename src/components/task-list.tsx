@@ -36,6 +36,7 @@ export function TaskList({
   showDate = false,
   emptyText = "Nothing scheduled.",
   collapseAfter,
+  spent,
 }: {
   tasks: Task[];
   subjects: Subject[];
@@ -43,6 +44,8 @@ export function TaskList({
   emptyText?: string;
   /** show this many, then a "show all" row — for long carried-over lists */
   collapseAfter?: number;
+  /** minutes already logged per task id; shown as "spent / estimate" */
+  spent?: Record<string, number>;
 }) {
   const [expanded, setExpanded] = useState(false);
   if (!tasks.length) {
@@ -58,6 +61,7 @@ export function TaskList({
           task={t}
           subject={subjects.find((s) => s.id === t.subject_id) ?? null}
           showDate={showDate}
+          spent={spent?.[t.id] ?? 0}
         />
       ))}
       {hidden ? (
@@ -74,15 +78,21 @@ export function TaskList({
   );
 }
 
+/** Plan blocks that belong to a personal track rather than a subject. */
+const TRACKS: Record<string, string> = { "track:dsa": "DSA", "track:gsoc": "GSoC" };
+
 function TaskRow({
   task,
   subject,
   showDate,
+  spent = 0,
 }: {
   task: Task;
   subject: Subject | null;
   showDate: boolean;
+  spent?: number;
 }) {
+  const track = task.topic_codes?.map((c) => TRACKS[c]).find(Boolean);
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   // tick now, persist behind it
@@ -150,7 +160,16 @@ function TaskRow({
             </button>
             {task.minutes ? (
               <span className="text-[length:var(--text-micro)] text-subtle tabular-nums shrink-0 mt-0.5">
-                {fmtDuration(task.minutes)}
+                {spent ? (
+                  <>
+                    <span className={cn(spent >= task.minutes ? "text-[var(--good)]" : "text-muted")}>
+                      {fmtDuration(Math.round(spent))}
+                    </span>{" "}
+                    / {fmtDuration(task.minutes)}
+                  </>
+                ) : (
+                  fmtDuration(task.minutes)
+                )}
               </span>
             ) : null}
           </div>
@@ -161,6 +180,7 @@ function TaskRow({
                 <Badge tone="subject">{subject.short_name}</Badge>
               </Link>
             ) : null}
+            {track ? <Badge tone="accent">{track}</Badge> : null}
             <Badge tone={KIND_TONE[task.kind] ?? "neutral"}>{KIND_LABEL[task.kind]}</Badge>
             {showDate && task.due_date ? (
               <span className="text-[length:var(--text-micro)] text-subtle">{task.due_date}</span>

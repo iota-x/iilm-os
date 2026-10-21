@@ -5,16 +5,20 @@ import {
   getSubjects,
   getTasks,
   getPlanDays,
+  getStudySessions,
+  getActivityDays,
 } from "@/lib/queries";
 import { TaskList } from "@/components/task-list";
+import { PlanRun, type PhaseMeta } from "@/components/planner/plan-run";
+import { studyStreak } from "@/lib/streak";
 import { QuickAdd } from "@/components/quick-add";
 import { WeekGrid } from "@/components/planner/week-grid";
 import { Badge, Card, CardHead } from "@/components/ui";
-import { cn, fmtDuration, istToday } from "@/lib/utils";
+import { istToday } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const PHASE_META: Record<string, { name: string; goal: string }> = {
+const PHASE_META: PhaseMeta = {
   triage: {
     name: "Triage",
     goal: "Stop the bleeding. Find out how far behind you are in each subject and close the DE+CO material gap. Almost no studying — messages, downloads and setup.",
@@ -60,21 +64,31 @@ export default async function PlannerPage() {
 
   const today = istToday();
   const group = profile?.lab_group ?? 2;
-  const [tasks, past] = await Promise.all([getTasks({ from: today }), getTasks({ to: today })]);
-
-  const overdue = past.filter((t) => t.status === "todo" && t.due_date !== today);
   const mySlots = slots.filter((s) => s.lab_group === null || s.lab_group === group);
-  const upcoming = planDays.filter((d) => d.date >= today);
 
-  // Group the run-up by phase so the shape of the plan is visible without
-  // scrolling through eighteen identical day cards.
-  const phases: { key: string; days: typeof upcoming }[] = [];
-  for (const d of upcoming) {
-    const key = d.phase ?? "other";
-    const last = phases[phases.length - 1];
-    if (last && last.key === key) last.days.push(d);
-    else phases.push({ key, days: [d] });
-  }
+  // The current run: the unbroken stretch of plan days that reaches today or
+  // the next plan day. Day 1 is its first day, the way Planly numbers a plan.
+  const sorted = [...planDays].sort((a, b) => a.date.localeCompare(b.date));
+  let end = sorted.findIndex((d) => d.date >= today);
+  if (end === -1) end = sorted.length;
+  let begin = Math.min(end, sorted.length - 1);
+  const dayBefore = (iso: string) =>
+    new Date(new Date(iso + "T12:00:00Z").getTime() - 86_400_000).toISOString().slice(0, 10);
+  while (begin > 0 && sorted[begin - 1].date === dayBefore(sorted[begin].date)) begin--;
+  const run = end < sorted.length || (sorted.length && sorted[sorted.length - 1].date >= today) ? sorted.slice(begin) : [];
+  const runStart = run[0]?.date ?? today;
+
+  const [tasks, past, sessions, activity] = await Promise.all([
+    getTasks({ from: runStart }),
+    getTasks({ to: today }),
+    getStudySessions(new Date(runStart + "T00:00:00+05:30").toISOString()),
+    getActivityDays(),
+  ]);
+  // carried over from before this run (inside it, missed days show as Missed)
+  const overdue = past.filter((t) => t.status === "todo" && t.due_date && t.due_date < runStart);
+  const spent: Record<string, number> = {};
+  for (const x of sessions) if (x.task_id) spent[x.task_id] = (spent[x.task_id] ?? 0) + (x.minutes ?? 0);
+  const streak = studyStreak(activity, today);
 
   return (
     <div className="space-y-6">
@@ -82,7 +96,7 @@ export default async function PlannerPage() {
         <div>
           <h1 className="text-[length:var(--text-page)]">Planner</h1>
           <p className="mt-1 text-[length:var(--text-small)] text-muted">
-            Lab group {group}&rsquo;s timetable, and the {upcoming.length}-day run-up to mid-sems.
+            Lab group {group}&rsquo;s timetable, and {run.length ? `your ${run.length}-day plan — college, DSA and GSoC` : "your plan"}.
           </p>
         </div>
         <QuickAdd subjects={subjects} defaultDate={today} />
@@ -114,121 +128,32 @@ export default async function PlannerPage() {
         </Card>
       ) : null}
 
-      {/* ── the run-up, one section per phase ──────────────── */}
-      {phases.length ? (
-        phases.map(({ key, days }) => {
-          const meta = PHASE_META[key];
-          const minutes = days.reduce(
-            (a, d) =>
-              a + tasks.filter((t) => t.due_date === d.date).reduce((b, t) => b + (t.minutes ?? 0), 0),
-            0,
-          );
-          return (
-            <section key={key + days[0].date} className="space-y-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h2 className="text-[length:var(--text-title)]">{meta?.name ?? "Ahead"}</h2>
-                <p className="text-[length:var(--text-small)] tabular-nums text-subtle">
-                  {days.length} {days.length === 1 ? "day" : "days"}
-                  {minutes ? ` · ${fmtDuration(minutes)} planned` : ""}
-                </p>
-              </div>
-              {meta ? (
-                <p className="max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">
-                  {meta.goal}
-                </p>
-              ) : null}
-
-              <Card className="overflow-hidden">
-                <ul className="divide-y divide-[var(--border)]">
-                  {days.map((d) => {
-                    const dayTasks = tasks.filter((t) => t.due_date === d.date);
-                    const done = dayTasks.filter((t) => t.status === "done").length;
-                    const isToday = d.date === today;
-                    const date = new Date(d.date + "T00:00:00+05:30");
-
-                    return (
-                      <li
-                        key={d.id}
-                        className={cn(
-                          "grid gap-x-4 px-4 py-3 sm:grid-cols-[104px_1fr]",
-                          isToday && "bg-[var(--accent-soft)]/45",
-                        )}
-                      >
-                        {/* date gutter */}
-                        <div className="sm:pt-1">
-                          <p
-                            className={cn(
-                              "text-[length:var(--text-small)] tabular-nums",
-                              isToday ? "font-semibold text-[var(--accent)]" : "font-medium",
-                            )}
-                          >
-                            {date.toLocaleDateString("en-GB", {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "short",
-                              timeZone: "Asia/Kolkata",
-                            })}
-                          </p>
-                          <p className="mt-0.5 text-[length:var(--text-micro)] tabular-nums text-subtle">
-                            {isToday
-                              ? "today"
-                              : dayTasks.length
-                                ? `${done}/${dayTasks.length} done`
-                                : "open"}
-                          </p>
-                        </div>
-
-                        <div className="min-w-0">
-                          {d.headline ? (
-                            <p className="mb-1 text-[length:var(--text-small)] font-medium">
-                              {d.headline}
-                            </p>
-                          ) : null}
-                          {dayTasks.length ? (
-                            <div className="-mx-4 sm:-mx-2">
-                              <TaskList tasks={dayTasks} subjects={subjects} />
-                            </div>
-                          ) : (
-                            <p className="py-1 text-[length:var(--text-small)] text-subtle">
-                              Nothing scheduled.
-                            </p>
-                          )}
-                          {d.note ? (
-                            <p className="mt-2 text-[length:var(--text-micro)] leading-relaxed text-subtle">
-                              {d.note}
-                            </p>
-                          ) : null}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Card>
-            </section>
-          );
-        })
+      {/* ── the plan, Planly-style ─────────────────────────── */}
+      {run.length ? (
+        <PlanRun
+          days={run}
+          tasks={tasks}
+          subjects={subjects}
+          spent={spent}
+          today={today}
+          streak={streak}
+          phases={PHASE_META}
+        />
       ) : (
         <Card>
           <CardHead title="No plan days ahead" />
           <p className="px-5 py-6 text-center text-[length:var(--text-small)] text-muted">
-            The seeded plan runs to 4 Oct. Add your own blocks with the Add button.
+            Nothing is planned from today on. Add your own blocks with the Add button, or set a goal.
           </p>
         </Card>
       )}
 
-      {/* ── exam week ──────────────────────────────────────── */}
-      <section className="space-y-2">
-        <h2 className="text-[length:var(--text-title)]">Exam week</h2>
-        <p className="max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">
-          5&ndash;11 Oct is deliberately empty. Once the datesheet is out, the only sensible plan is
-          &ldquo;revise tomorrow&rsquo;s paper&rdquo; — so add those days yourself when you know the
-          order.{" "}
-          <Link href="/exams" className="text-fg underline underline-offset-2 hover:text-[var(--accent)]">
-            Exams
-          </Link>{" "}
-          has the marking scheme and your marks so far.
-        </p>
-      </section>
+      <p className="max-w-[68ch] text-[length:var(--text-small)] leading-relaxed text-muted">
+        <Link href="/exams" className="text-fg underline underline-offset-2 hover:text-[var(--accent)]">
+          Exams
+        </Link>{" "}
+        has every paper&rsquo;s date, pattern and scope, and the marking scheme.
+      </p>
     </div>
   );
 }

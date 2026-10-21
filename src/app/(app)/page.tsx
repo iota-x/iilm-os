@@ -539,6 +539,10 @@ function phaseLabel(p: string) {
       drill: "Phase 2 · Drill",
       revise: "Phase 3 · Revision",
       exams: "Exam week",
+      "es-foundations": "End-sem · Foundations",
+      "es-first-pass": "End-sem · First pass",
+      "es-revise": "End-sem · Revision",
+      "es-exams": "End-sem papers",
     } as Record<string, string>
   )[p] ?? p;
 }

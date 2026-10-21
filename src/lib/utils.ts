@@ -8,8 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 export const MIDSEM_START = new Date("2026-10-05T00:00:00+05:30");
 /** Last day of the mid-sem window. Both dates are the unconfirmed 5–11 Oct. */
 export const MIDSEM_END = new Date("2026-10-11T00:00:00+05:30");
-/** Not announced yet. Set it and every countdown switches over after mid-sems. */
-export const ENDSEM_START: Date | null = null;
+/** First end-sem paper (DE+CO, Fri 4 Dec 2026). Confirmed on 2026-10-21. */
+export const ENDSEM_START: Date | null = new Date("2026-12-04T00:00:00+05:30");
 
 export type ExamPhase = "before" | "today" | "during" | "after";
 

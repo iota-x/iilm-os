@@ -32,6 +32,22 @@ const PHASE_META: Record<string, { name: string; goal: string }> = {
     goal: "One timed mock per major subject, then fix only what the mock exposed. No new material.",
   },
   exams: { name: "Exam week", goal: "Targeted revision for tomorrow's paper only." },
+  "es-foundations": {
+    name: "End-sem · Foundations",
+    goal: "Calculus from school basics (functions, logs, trig, differentiation, integration, vectors, matrices) while DE+CO Units I–II and C Unit 4 get caught up.",
+  },
+  "es-first-pass": {
+    name: "End-sem · First pass",
+    goal: "Every remaining unit of all four papers, once. Calculus every day; DE+CO, C and AI take turns. 26–27 Nov is catch-up for anything unticked.",
+  },
+  "es-revise": {
+    name: "End-sem · Revision & mocks",
+    goal: "Problem sets and timed mocks, DE+CO first because it is the first paper (Fri 4 Dec). No new material.",
+  },
+  "es-exams": {
+    name: "End-sem papers",
+    goal: "DE+CO 4 Dec · Calculus 7 Dec · AI 9 Dec · C 11 Dec. Revise the next paper only.",
+  },
 };
 
 export default async function PlannerPage() {

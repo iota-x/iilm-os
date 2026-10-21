@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PracticeDeck, type DeckItem } from "@/components/practice-deck";
 import { getAttempts, getQuestions, getSubjects, getTopics, getUnits } from "@/lib/queries";
 import { accuracyOf, drillScore, statsFor } from "@/lib/questions";
-import { cn } from "@/lib/utils";
+import { cn, inScope, nextPaper } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +36,7 @@ export default async function PracticePage({
     if (onlyCodes.size && !(q.topic_id && onlyIds.has(q.topic_id))) return false;
     if (midsemOnly) {
       const t = q.topic_id ? topicById.get(q.topic_id) : null;
-      if (!t?.in_midsem) return false;
+      if (!t || !inScope(t)) return false;
     }
     return true;
   });
@@ -97,7 +97,7 @@ export default async function PracticePage({
           href={`/practice?${new URLSearchParams({ ...(subjectSlug ? { subject: subjectSlug } : {}), scope: "midsem" })}`}
           active={midsemOnly}
         >
-          Mid-sem only
+          {nextPaper() === "endsem" ? "End-sem syllabus" : "Mid-sem only"}
         </Chip>
         {subjects.map((s) => (
           <Chip

@@ -29,7 +29,7 @@ const STEPS = [
   {
     icon: LayoutDashboard,
     title: "Today is the only page you need each morning",
-    body: "The block to do now sits at the top with a timer. Tick the classes you attended on the right. The four numbers above tell you how far mid-sems are, how much syllabus you've started, what's done today and what's due for review.",
+    body: "The block to do now sits at the top with a timer. Tick the classes you attended on the right. The four numbers above tell you how far the next exams are, how much syllabus you've started, what's done today and what's due for review.",
     href: "/",
     cta: "Today",
   },

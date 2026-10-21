@@ -1,3 +1,4 @@
+import { midsemBadge } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { istDay } from "@/lib/streak";
 import type {
@@ -492,7 +493,7 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
       href: n
         ? `/subjects/${s.slug}/unit-${n}/${t.code}`
         : `/subjects/${s.slug}#topic-${t.code}`,
-      meta: t.in_midsem ? "mid-sem" : undefined,
+      meta: midsemBadge(t) ? "mid-sem" : undefined,
     });
   }
   for (const n of notesRes.data ?? []) {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AlertTriangle, ArrowRight, FlaskConical } from "lucide-react";
 import { getSubjects, getTopics, getUnits, getExperiments } from "@/lib/queries";
 import { Badge, Bar, Card } from "@/components/ui";
-import { ACCENT_CLASS, cn, progressOf } from "@/lib/utils";
+import { ACCENT_CLASS, cn, progressOf, inScope, nextPaper } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export default async function SubjectsPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {subjects.map((s) => {
           const own = topics.filter((t) => t.subject_id === s.id);
-          const mid = own.filter((t) => t.in_midsem);
+          const mid = own.filter(inScope);
           const ownUnits = units.filter((u) => u.subject_id === s.id);
           const ownExp = experiments.filter((e) => e.subject_id === s.id);
           const progress = progressOf(own.map((t) => t.status));
@@ -82,7 +82,7 @@ export default async function SubjectsPage() {
                   <div className="mt-4 space-y-2.5">
                     <div>
                       <div className="flex items-baseline justify-between text-[length:var(--text-micro)] mb-1">
-                        <span className="text-muted">Mid-sem scope</span>
+                        <span className="text-muted">{nextPaper() === "endsem" ? "End-sem (whole syllabus)" : "Mid-sem scope"}</span>
                         <span className="font-semibold tabular-nums">
                           {Math.round(midProgress * 100)}%
                         </span>

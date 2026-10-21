@@ -7,19 +7,23 @@ import { TryIt } from "@/components/try-it";
 
 /**
  * The Goals demo, live: drag the deadline and the plan re-spreads. Runs the
- * same maths the app runs, on the real Calculus mid-sem scope.
+ * same maths the app runs, on the real Calculus syllabus for the next paper.
  */
 export function LandingGoal({
   topics,
   today,
   latest,
   color,
+  title,
+  endLabel,
 }: {
   topics: { weight: number; sort_order: number }[];
   today: string;
-  /** the last sensible deadline — the day before mid-sems */
+  /** the last sensible deadline — the day before the next paper */
   latest: string;
   color: string;
+  title: string;
+  endLabel: string;
 }) {
   const allDays = useMemo(() => daysBetween(today, latest), [today, latest]);
   const [dayCount, setDayCount] = useState(allDays.length);
@@ -34,7 +38,7 @@ export function LandingGoal({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <TryIt>Try it — drag the deadline</TryIt>
-          <p className="mt-3 font-serif text-[length:var(--text-lead)] font-semibold">Calculus mid-sem scope</p>
+          <p className="mt-3 font-serif text-[length:var(--text-lead)] font-semibold">{title}</p>
           <p className="mt-1 text-[length:var(--text-small)] text-muted">
             Units I–III · by{" "}
             <span className="text-fg">
@@ -57,7 +61,7 @@ export function LandingGoal({
       <label className="mt-5 block">
         <span className="flex items-center justify-between text-[length:var(--text-small)] text-muted">
           <span>Tomorrow</span>
-          <span>The day before mid-sems</span>
+          <span>{endLabel}</span>
         </span>
         <input
           type="range"

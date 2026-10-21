@@ -1,3 +1,4 @@
+import { inScope } from "@/lib/utils";
 import type { Topic } from "@/lib/db-types";
 
 /**
@@ -66,11 +67,11 @@ export function dueForReview(topics: Topic[], now: Date = new Date()) {
     .map((t) => ({ topic: t, review: reviewStateOf(t, now) }))
     .filter((x) => x.review.bucket === "overdue" || x.review.bucket === "today")
     .sort((a, b) => {
-      // most overdue first, then by exam weight, then mid-sem scope
+      // most overdue first, then by exam weight, then whether the next paper covers it
       const d = (a.review.daysUntilDue ?? 0) - (b.review.daysUntilDue ?? 0);
       if (d !== 0) return d;
       if (a.topic.weight !== b.topic.weight) return b.topic.weight - a.topic.weight;
-      return Number(b.topic.in_midsem) - Number(a.topic.in_midsem);
+      return Number(inScope(b.topic)) - Number(inScope(a.topic));
     });
 }
 

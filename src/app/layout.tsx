@@ -32,7 +32,7 @@ const sans = Inter({
 
 const SITE = "https://iilm-os.vercel.app";
 const DESCRIPTION =
-  "Section E's semester in one place: every syllabus from the course plans, the mid-sem scope for each, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
+  "Section E's semester in one place: every syllabus from the course plans, each paper's date, pattern and scope, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

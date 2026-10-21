@@ -41,7 +41,7 @@ export default async function InboxPage() {
             It becomes useful when you ask Claude to do something with it:{" "}
             <em>&ldquo;turn Tuesday&rsquo;s board photos into checkpoints on partial
             derivatives&rdquo;</em>, <em>&ldquo;make questions out of this tutorial sheet&rdquo;</em>,{" "}
-            <em>&ldquo;the teacher said Unit 4 is out of the mid-sem — fix the scope&rdquo;</em>.
+            <em>&ldquo;the teacher said Unit 4 won&rsquo;t be on the end-sem — fix the scope&rdquo;</em>.
             That is the step that changes the syllabus data, the question bank and your notes.
           </p>
           <p className="text-subtle">

@@ -6,12 +6,36 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const MIDSEM_START = new Date("2026-10-05T00:00:00+05:30");
-/** Last day of the mid-sem window. Both dates are the unconfirmed 5–11 Oct. */
+/** Last day of the mid-sem window (they ran 5–8 Oct 2026 for Section E). */
 export const MIDSEM_END = new Date("2026-10-11T00:00:00+05:30");
 /** First end-sem paper (DE+CO, Fri 4 Dec 2026). Confirmed on 2026-10-21. */
 export const ENDSEM_START: Date | null = new Date("2026-12-04T00:00:00+05:30");
 
 export type ExamPhase = "before" | "today" | "during" | "after";
+
+/**
+ * Which paper is next. Once the mid-sem window has closed it's the end-sem,
+ * and that covers the whole syllabus — so every "in scope" check, badge and
+ * filter in the app reads from here instead of the mid-sem flag directly.
+ */
+export function nextPaper(): "midsem" | "endsem" {
+  return Date.now() >= MIDSEM_END.getTime() + 86_400_000 ? "endsem" : "midsem";
+}
+
+/** Is this topic or unit on the next paper? Everything is, for the end-sem. */
+export function inScope(x: { in_midsem: boolean }): boolean {
+  return nextPaper() === "endsem" || x.in_midsem;
+}
+
+/** Show a "mid-sem" badge only while the mid-sem is the next paper. */
+export function midsemBadge(x: { in_midsem: boolean }): boolean {
+  return nextPaper() === "midsem" && x.in_midsem;
+}
+
+/** "mid-sem" / "end-sem", for labels. */
+export function paperLabel(): string {
+  return nextPaper() === "endsem" ? "end-sem" : "mid-sem";
+}
 
 /**
  * What the countdown should say right now. One place, so the chip in the

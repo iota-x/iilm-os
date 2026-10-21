@@ -25,7 +25,7 @@ import {
 } from "@/lib/queries";
 import { coverageOf } from "@/data/coverage";
 import { reviewLabel, reviewStateOf } from "@/lib/review";
-import { cn, fmtDate } from "@/lib/utils";
+import { cn, fmtDate, midsemBadge } from "@/lib/utils";
 
 function parseUnit(segment: string): number | null {
   const m = segment.match(/^unit-(\d+)$/);
@@ -100,7 +100,7 @@ export default async function TopicPage({
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-[length:var(--text-page)] leading-tight">{topic.title}</h1>
-          {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
+          {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[length:var(--text-micro)] text-subtle">
           {topic.session ? <span>{topic.session}</span> : null}

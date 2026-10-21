@@ -3,7 +3,7 @@ import { getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits } 
 import { NewGoal } from "@/components/goals/new-goal";
 import { GoalCard } from "@/components/goals/goal-card";
 import { Card, Empty } from "@/components/ui";
-import { istToday, MIDSEM_START } from "@/lib/utils";
+import { istToday, MIDSEM_START, ENDSEM_START, nextPaper } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export default async function GoalsPage() {
           subjects={subjects}
           units={units}
           topics={topics}
-          defaultDeadline={MIDSEM_START.toISOString().slice(0, 10)}
+          defaultDeadline={(ENDSEM_START && nextPaper() === "endsem" ? new Date(ENDSEM_START.getTime() - 86_400_000) : MIDSEM_START).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" })}
         />
       </div>
 
@@ -58,7 +58,7 @@ export default async function GoalsPage() {
           <Empty
             icon={<Target size={26} strokeWidth={1.5} />}
             title="No goal yet"
-            body="Try “Calculus mid-sem scope by 4 October”. You'll see the daily load before you commit."
+            body={nextPaper() === "endsem" ? "Try “Calculus, whole subject, by 6 December”. You'll see the daily load before you commit." : "Try “Calculus mid-sem scope by 4 October”. You'll see the daily load before you commit."}
           />
         </Card>
       )}

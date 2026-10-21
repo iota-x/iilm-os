@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Circle, CircleDashed, CircleDot, CheckCircle2, Link2, StickyNote } from "lucide-react";
 import { setTopicStatus } from "@/lib/actions";
 import type { Topic } from "@/lib/db-types";
-import { cn, nextStatus, STATUS_LABEL } from "@/lib/utils";
+import { cn, nextStatus, STATUS_LABEL, midsemBadge } from "@/lib/utils";
 import { Badge } from "@/components/ui";
 
 const ICON = {
@@ -117,7 +117,7 @@ export function TopicRow({
             {topic.session ? (
               <span className="text-[length:var(--text-micro)] text-subtle font-mono">{topic.session}</span>
             ) : null}
-            {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
+            {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
             {notesGap ? (
               <Badge tone={notesGap === "missing" ? "bad" : "warn"}>
                 {notesGap === "missing" ? "not in notes" : "gap in notes"}

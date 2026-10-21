@@ -23,6 +23,7 @@ import {
   getTopics,
   getUnits,
   getProfile,
+  getExams,
 } from "@/lib/queries";
 import { TopicRow } from "@/components/subject/topic-row";
 import { coverage, notesGapOf, unitGaps } from "@/data/coverage";
@@ -36,7 +37,7 @@ import { ResourceList } from "@/components/resource-list";
 import { QuickAdd } from "@/components/quick-add";
 import { Markdown } from "@/components/markdown";
 import { Badge, Bar, Card, CardHead, Empty, Ring } from "@/components/ui";
-import { ACCENT_CLASS, cn, fmtTime, progressOf, relativeDay } from "@/lib/utils";
+import { ACCENT_CLASS, cn, fmtTime, progressOf, relativeDay, inScope, nextPaper, paperLabel, midsemBadge } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -114,9 +115,11 @@ export default async function SubjectPage({
   // A pure lab course has no syllabus to sit, so open it on the lab list —
   // even when it has theory topics for the quizzes (Linux).
   const defaultTab: Tab = hasLab && topics.every((t) => !t.in_midsem) ? "lab" : "syllabus";
+  const endsem = nextPaper() === "endsem";
+  const ese = (await getExams()).find((e) => e.subject_id === subject.id && e.kind === "ese");
   const tab: Tab = (TABS.includes(rawTab as Tab) ? rawTab : defaultTab) as Tab;
 
-  const midTopics = topics.filter((t) => t.in_midsem);
+  const midTopics = topics.filter(inScope);
   // Topics the class notes skip or only half cover, in syllabus order.
   const unitNumberById = new Map(units.map((u) => [u.id, u.number]));
   const notesGaps = topics
@@ -178,7 +181,7 @@ export default async function SubjectPage({
             <div className="flex items-center gap-5">
               <div className="text-center">
                 <Ring value={midProgress} size={48} />
-                <p className="text-[length:var(--text-micro)] text-muted mt-1">mid-sem</p>
+                <p className="text-[length:var(--text-micro)] text-muted mt-1">{paperLabel()}</p>
               </div>
               <div className="text-center">
                 <Ring value={allProgress} size={48} />
@@ -189,21 +192,27 @@ export default async function SubjectPage({
         </div>
       </div>
 
-      {/* ── mid-sem scope banner ───────────────────────────── */}
-      <Card className={cn(!subject.midsem_confirmed && "border-[var(--warn)]/35")}>
+      {/* ── next paper's scope ─────────────────────────────── */}
+      <Card className={cn(!endsem && !subject.midsem_confirmed && "border-[var(--warn)]/35")}>
         <div className="flex gap-3 px-4 py-3">
           <Target size={16} className="shrink-0 mt-0.5 text-sc" />
           <div className="min-w-0">
             <p className="text-[length:var(--text-small)] font-semibold">
-              Mid-sem scope{" "}
-              {subject.midsem_confirmed ? (
+              {endsem ? "End-sem scope" : "Mid-sem scope"}{" "}
+              {endsem ? (
+                ese?.exam_date ? (
+                  <Badge tone="accent">
+                    {new Date(ese.exam_date + "T00:00:00+05:30").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}
+                  </Badge>
+                ) : null
+              ) : subject.midsem_confirmed ? (
                 <Badge tone="good">confirmed</Badge>
               ) : (
                 <Badge tone="warn">not confirmed</Badge>
               )}
             </p>
             <p className="text-[length:var(--text-small)] text-muted mt-1 leading-relaxed">
-              {subject.midsem_scope}
+              {endsem ? (ese?.scope ?? "The whole syllabus — every unit.") : subject.midsem_scope}
             </p>
             {midTopics.length ? (
               <div className="flex items-center gap-2.5 mt-2.5">
@@ -335,7 +344,7 @@ export default async function SubjectPage({
                         >
                           Unit {u.number} — {u.title}
                         </Link>
-                        {u.in_midsem ? <Badge tone="accent">in mid-sem</Badge> : null}
+                        {midsemBadge(u) ? <Badge tone="accent">in mid-sem</Badge> : null}
                       </span>
                     }
                     sub={[

@@ -22,7 +22,7 @@ export const PHASE_META: PhaseMeta = {
   },
   "first-pass": {
     name: "First pass",
-    goal: "Cover every mid-sem topic once. Not deeply — the goal is that nothing on the paper is a total stranger.",
+    goal: "Cover every topic once. Not deeply — the goal is that nothing on the paper is a total stranger.",
   },
   drill: {
     name: "Drill",

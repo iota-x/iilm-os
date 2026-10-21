@@ -55,7 +55,7 @@ export function MobileNav() {
           <Link
             href="/exams"
             className="shrink-0 rounded-lg border border-line bg-surface-2 px-2 py-1 text-[length:var(--text-micro)] tabular-nums"
-            title="Days until mid-semester exams begin"
+            title="Days until the next exams begin"
           >
             {/^\d+$/.test(countdown.chip.n) ? `${countdown.chip.n}d` : countdown.chip.n}
           </Link>

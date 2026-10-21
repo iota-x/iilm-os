@@ -18,7 +18,7 @@ import {
   getTopics,
   getUnits,
 } from "@/lib/queries";
-import { cn } from "@/lib/utils";
+import { cn, midsemBadge } from "@/lib/utils";
 
 /** URLs look like /subjects/applied-calculus/unit-2 */
 function parseUnit(segment: string): number | null {
@@ -94,7 +94,7 @@ export default async function UnitPage({
           <h1 className="text-[length:var(--text-page)]">
             Unit {unit.number} — {unit.title}
           </h1>
-          {unit.in_midsem ? <Badge tone="accent">in mid-sem</Badge> : null}
+          {midsemBadge(unit) ? <Badge tone="accent">in mid-sem</Badge> : null}
         </div>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
           <span className="flex flex-wrap items-baseline gap-x-5 gap-y-1">

@@ -9,7 +9,7 @@ import { createGoal } from "@/lib/actions";
 import { daysBetween, describeFit, fit, LEVEL_LABEL, remaining, type Level } from "@/lib/goals";
 import type { Subject, Topic, Unit } from "@/lib/db-types";
 import { Button, Card, chipCls, inputCls } from "@/components/ui";
-import { cn, istToday } from "@/lib/utils";
+import { cn, istToday, nextPaper } from "@/lib/utils";
 
 export function NewGoal({
   subjects,
@@ -27,7 +27,7 @@ export function NewGoal({
   const wantOpen = useUrlFlag("new");
   const open = openState ?? wantOpen;
   const [subjectId, setSubjectId] = useState(subjects[0]?.id ?? "");
-  const [scope, setScope] = useState<"midsem" | "unit" | "subject">("midsem");
+  const [scope, setScope] = useState<"midsem" | "unit" | "subject">(nextPaper() === "endsem" ? "subject" : "midsem");
   const [unitId, setUnitId] = useState("");
   const [deadline, setDeadline] = useState(defaultDeadline);
   const [minutes, setMinutes] = useState(90);

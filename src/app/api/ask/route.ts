@@ -1,3 +1,4 @@
+import { midsemBadge, nextPaper } from "@/lib/utils";
 import { streamText, tool, isStepCount, type ModelMessage } from "ai";
 import { z } from "zod";
 import { resolveModel } from "@/lib/ai-model";
@@ -72,10 +73,10 @@ export async function POST(req: Request) {
             .filter((t) => t.unit_id === u.id)
             .map((t) => `    - ${t.code} — ${t.title} [${t.status}]`)
             .join("\n");
-          return `  Unit ${u.number}: ${u.title}${u.in_midsem ? " (in mid-sem)" : ""}\n${ts}`;
+          return `  Unit ${u.number}: ${u.title}${midsemBadge(u) ? " (in mid-sem)" : ""}\n${ts}`;
         })
         .join("\n");
-      return `## ${s.name} (${s.short_name})\n  mid-sem scope: ${s.midsem_scope ?? "unknown"}\n${body}`;
+      return `## ${s.name} (${s.short_name})\n  ${nextPaper() === "endsem" ? "end-sem scope: the whole syllabus" : `mid-sem scope: ${s.midsem_scope ?? "unknown"}`}\n${body}`;
     })
     .join("\n\n");
 
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
     .map((n) => `- ${n.title}: ${(n.content ?? "").slice(0, 250)}`)
     .join("\n");
 
-  const system = `You are helping ${who}, a first-year B.Tech CSE student at IILM University Gurugram, study for Semester I mid-sems (5–11 October). They are a few weeks into the course.
+  const system = `You are helping ${who}, a first-year B.Tech CSE student at IILM University Gurugram, study for Semester I ${nextPaper() === "endsem" ? "end-sems (whole syllabus, 3-hour papers: DE+CO Fri 4 Dec, Applied Calculus Mon 7 Dec, Foundations of AI Wed 9 Dec, Programming in C Fri 11 Dec; mid-sems are done)" : "mid-sems (5–11 October)"}.
 
 You are wired into their study app: you can read their syllabus and notes, and you can change their data with the tools provided.
 

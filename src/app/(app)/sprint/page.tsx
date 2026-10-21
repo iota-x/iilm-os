@@ -39,7 +39,7 @@ export default async function SprintPage({
         <h2 className="text-[length:var(--text-title)]">Video routes</h2>
         <p className="mt-1 max-w-2xl text-[length:var(--text-small)] text-muted">
           A strict, ordered video route per subject — watch each step in turn and tick it off.
-          Written for the mid-sems; progress is kept in this browser.
+          Written for the mid-sems, so they cover the first units only; progress is kept in this browser.
         </p>
       </div>
 

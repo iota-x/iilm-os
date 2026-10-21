@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link
               href="/exams"
               className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-2 px-2.5 py-1 text-[length:var(--text-micro)] font-medium focus-ring hover:bg-surface-3"
-              title="Days until mid-semester exams begin"
+              title="Days until the next exams begin"
             >
               <span className="font-semibold tabular-nums">{countdown.chip.n}</span>
               <span className="text-muted">{countdown.chip.label}</span>

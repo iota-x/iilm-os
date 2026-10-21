@@ -9,7 +9,7 @@ import { markReviewed } from "@/lib/actions";
 import type { Topic } from "@/lib/db-types";
 import { reviewLabel, type ReviewState } from "@/lib/review";
 import { Badge, Card } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { cn, midsemBadge } from "@/lib/utils";
 
 export interface QueueItem {
   topic: Topic;
@@ -103,7 +103,7 @@ export function ReviewQueue({ items }: { items: QueueItem[] }) {
         <div className="flex flex-wrap items-center gap-2 text-[length:var(--text-micro)] text-subtle">
           <span>{subjectShort}</span>
           {unitNumber !== null ? <span>· Unit {unitNumber}</span> : null}
-          {topic.in_midsem ? <Badge tone="accent">mid-sem</Badge> : null}
+          {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
           <span
             className={cn(
               "ml-auto",

@@ -8,7 +8,7 @@ import { LandingFile } from "@/components/landing-file";
 import { subjects as seedSubjects, exams as seedExams } from "@/data";
 import { slots as seedSlots } from "@/data/timetable";
 import type { Slot, Subject } from "@/lib/db-types";
-import { ACCENT_CLASS, cn, examCountdown, MIDSEM_START } from "@/lib/utils";
+import { ACCENT_CLASS, cn, ENDSEM_START, examCountdown, MIDSEM_START, nextPaper } from "@/lib/utils";
 
 /**
  * The front door. Everything on it is the real data the app runs on — the
@@ -61,13 +61,16 @@ export default function LandingPage() {
       color: e.subject ? bySlug.get(e.subject)?.color ?? "slate" : "slate",
     }));
 
-  // The Goals demo works from the real Calculus mid-sem scope, up to the day before mid-sems.
+  // The Goals demo works from the real Calculus syllabus for the next paper —
+  // the mid-sem units before mid-sems, the whole course after — up to the day before it.
+  const endsem = nextPaper() === "endsem";
   const calc = seedSubjects.find((x) => x.slug === "applied-calculus")!;
   const calcTopics = calc.units
     .flatMap((u) => u.topics)
-    .filter((t) => t.inMidsem)
+    .filter((t) => endsem || t.inMidsem)
     .map((t, i) => ({ weight: t.weight, sort_order: i }));
-  const goalEndIso = new Date(MIDSEM_START.getTime() - 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  const paperStart = endsem && ENDSEM_START ? ENDSEM_START : MIDSEM_START;
+  const goalEndIso = new Date(paperStart.getTime() - 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 
   const cta =
     "inline-flex items-center gap-2 rounded-[var(--radius-control)] bg-[var(--accent)] px-4 py-2.5 text-[length:var(--text-body)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring";
@@ -182,7 +185,7 @@ export default function LandingPage() {
             </div>
             <ul className="divide-y divide-[var(--border)] border-y border-line">
               {[
-                ["Know the paper before you sit it", "Each subject shows exactly which units the mid-sem covers, straight from the course plan — with the unconfirmed ones flagged rather than guessed."],
+                ["Know the paper before you sit it", "Each subject shows exactly what the next paper covers, straight from the course plan, with its date and question pattern — unconfirmed details flagged rather than guessed."],
                 ["Practice that comes back", "Questions per topic, the viva set for next week's C lab, and spaced review that brings a topic back before you forget it, not after."],
                 ["Attendance you can act on", "Tick the classes you went to. It tells you your percentage against the 75% bar, how many you can still miss, and which subject is closest to the line."],
                 ["The class, in one place", "A board for the section: ask what you didn't ask in class, share the link that actually helped, mark what was useful."],
@@ -207,14 +210,21 @@ export default function LandingPage() {
                 Say what to finish and by when. Get today&rsquo;s share.
               </h2>
               <p className="mt-4 max-w-[46ch] text-[length:var(--text-body)] leading-relaxed text-muted">
-                Pick a subject, a scope — the mid-sem units, one unit, the whole thing — and a date.
+                Pick a subject, a scope — one unit or the whole thing — and a date.
                 It lays the topics across the days in syllabus order so no day is a cliff, and
                 puts each day&rsquo;s share on your Today page. Miss a day and hit Replan: what&rsquo;s
                 left spreads over the days that remain. You see the daily load before you commit.
               </p>
             </div>
 
-            <LandingGoal topics={calcTopics} today={today} latest={goalEndIso} color={ACCENT_CLASS.violet} />
+            <LandingGoal
+              topics={calcTopics}
+              today={today}
+              latest={goalEndIso}
+              color={ACCENT_CLASS.violet}
+              title={endsem ? "Calculus, whole syllabus" : "Calculus mid-sem scope"}
+              endLabel={endsem ? "The day before the paper" : "The day before mid-sems"}
+            />
           </div>
         </section>
 
@@ -355,7 +365,7 @@ export default function LandingPage() {
                       : [topics ? `${topics} topics` : null, s.experiments.length ? `${s.experiments.length} experiments` : null]
                           .filter(Boolean)
                           .join(", ")}
-                    {s.midsemConfirmed ? " · scope confirmed" : ""}
+                    {!endsem && s.midsemConfirmed ? " · scope confirmed" : ""}
                   </p>
                 </li>
               );

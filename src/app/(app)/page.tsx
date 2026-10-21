@@ -26,7 +26,7 @@ import { AutoReplan } from "@/components/auto-replan";
 import { Flame } from "lucide-react";
 import { studyStreak } from "@/lib/streak";
 import { holidayOn } from "@/lib/holidays";
-import { fmtDuration } from "@/lib/utils";
+import { fmtDuration, inScope, nextPaper, paperLabel } from "@/lib/utils";
 import { FirstRun } from "@/components/first-run";
 import { getGoals, getInboxFiles } from "@/lib/queries";
 import {
@@ -85,11 +85,11 @@ export default async function Dashboard() {
 
   const subjectById = Object.fromEntries(subjects.map((s) => [s.id, s]));
 
-  // Mid-sem progress per subject. A lab-only course like Linux has no topics at
+  // Progress per subject on the next paper. A lab-only course like Linux has no topics at
   // all — its syllabus is the experiment list — so measure whichever of the two
   // the course actually has.
   const midsemStats = subjects.map((s) => {
-    const own = topics.filter((t) => t.subject_id === s.id && t.in_midsem);
+    const own = topics.filter((t) => t.subject_id === s.id && inScope(t));
     if (own.length) {
       return {
         subject: s,
@@ -109,9 +109,7 @@ export default async function Dashboard() {
     };
   });
 
-  const overallMidsem = progressOf(
-    topics.filter((t) => t.in_midsem).map((t) => t.status),
-  );
+  const overallMidsem = progressOf(topics.filter(inScope).map((t) => t.status));
 
   const doneToday = todayTasks.filter((t) => t.status === "done").length;
   const plannedMin = todayTasks.reduce((a, t) => a + (t.minutes ?? 0), 0);
@@ -236,14 +234,14 @@ export default async function Dashboard() {
         <Figure
           value={countdown.chip?.n ?? "—"}
           unit={countdown.chip && /^\d+$/.test(countdown.chip.n) ? "days" : undefined}
-          label={countdown.chip?.label.replace(/^days? /, "") ?? "mid-sems done"}
+          label={countdown.chip?.label.replace(/^days? /, "") ?? "next paper"}
           note={countdown.note}
           href="/exams"
         />
         <Figure
           value={`${Math.round(overallMidsem * 100)}%`}
-          label="of the mid-sem syllabus"
-          note={`${topics.filter((t) => t.in_midsem && t.status !== "not_started").length} of ${topics.filter((t) => t.in_midsem).length} topics started`}
+          label={`of the ${paperLabel()} syllabus`}
+          note={`${topics.filter((t) => inScope(t) && t.status !== "not_started").length} of ${topics.filter(inScope).length} topics started`}
           href="/subjects"
         />
         <Figure
@@ -353,7 +351,10 @@ export default async function Dashboard() {
           ) : null}
 
           <Card>
-            <CardHead title="Mid-sem readiness" sub="Units in scope only" />
+            <CardHead
+              title={nextPaper() === "endsem" ? "End-sem readiness" : "Mid-sem readiness"}
+              sub={nextPaper() === "endsem" ? "Whole syllabus" : "Units in scope only"}
+            />
             <ul className="divide-y divide-[var(--border)]">
               {midsemStats
                 .sort((a, b) => a.progress - b.progress)

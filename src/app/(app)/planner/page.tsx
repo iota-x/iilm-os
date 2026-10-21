@@ -11,6 +11,7 @@ import { WeekGrid } from "@/components/planner/week-grid";
 import { ArrowRight } from "lucide-react";
 import { Badge, Card, CardHead } from "@/components/ui";
 import { istToday } from "@/lib/utils";
+import { holidayOn, holidayRange, upcomingHolidays } from "@/lib/holidays";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,32 @@ export default async function PlannerPage() {
           right={upcoming.length ? <Badge>{upcoming.length}</Badge> : null}
         />
         <TaskList tasks={upcoming} subjects={subjects} showDate emptyText="Nothing added. Use Add for an assignment or a deadline." />
+      </Card>
+
+      {/* ── holidays ───────────────────────────────────────── */}
+      <Card>
+        <CardHead
+          title="Holidays"
+          sub="Student holiday calendar, odd semester 2026"
+          right={holidayOn(today) ? <Badge tone="good">today</Badge> : null}
+        />
+        <ul className="divide-y divide-[var(--border)]">
+          {upcomingHolidays(today).map((h) => {
+            const on = h.from <= today && today <= h.to;
+            const days = Math.round((new Date(h.from + "T00:00:00Z").getTime() - new Date(today + "T00:00:00Z").getTime()) / 86_400_000);
+            return (
+              <li key={h.name} className="flex items-baseline justify-between gap-3 px-5 py-2.5 text-[length:var(--text-small)]">
+                <span className={on ? "font-medium text-[var(--good)]" : "font-medium"}>{h.name}</span>
+                <span className="text-right tabular-nums text-muted">
+                  {holidayRange(h)}
+                  <span className="ml-2 text-[length:var(--text-micro)] text-subtle">
+                    {on ? "now" : `in ${days} day${days === 1 ? "" : "s"}`}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </Card>
 
       <Link

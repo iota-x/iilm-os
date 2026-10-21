@@ -8,8 +8,10 @@ import {
   getTopics,
 } from "@/lib/queries";
 import { MarksTable } from "@/components/subject/marks-table";
+import { SgpaCalculator } from "@/components/sgpa-calculator";
+import { CREDIT_COURSES, GRADES, PROGRESSION, SGPA_RULE } from "@/data";
 import { Badge, Bar, Card, Ring } from "@/components/ui";
-import { ACCENT_CLASS, cn, daysUntil, MIDSEM_START, progressOf } from "@/lib/utils";
+import { ACCENT_CLASS, cn, daysUntil, ENDSEM_START, progressOf } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +30,14 @@ const SCHEME = [
     name: "Mid-semester",
     weight: 20,
     of: "20 marks",
-    body: "One written paper, 5–11 Oct. Roughly the first three units, though each course plan sets its own scope.",
+    body: "One written paper, 5–8 Oct (done). Roughly the first two or three units; each course plan set its own scope.",
   },
   {
     key: "ese",
     name: "End-semester",
     weight: 50,
     of: "100 marks, halved",
-    body: "The whole syllabus in one paper, marked out of 100 and scaled to half your grade.",
+    body: "The whole syllabus in one 3-hour paper, 4–11 Dec: Section A 5×4, B 4×10, C 2×20. Marked out of 100 and scaled to half your grade.",
   },
 ] as const;
 
@@ -48,7 +50,7 @@ export default async function ExamsPage() {
     getExperiments(),
   ]);
 
-  const left = daysUntil(MIDSEM_START);
+  const left = ENDSEM_START ? daysUntil(ENDSEM_START) : null;
   const subjectExams = exams.filter((e) => e.subject_id);
 
   return (
@@ -56,9 +58,9 @@ export default async function ExamsPage() {
       <div>
         <h1 className="text-[length:var(--text-page)]">Exams &amp; marking</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Mid-semesters run 5&ndash;11 Oct 2026 — {left} days away, on{" "}
-          <span className="text-[var(--warn)]">dates not yet officially confirmed</span>. Below is
-          how the 100 marks are split and where you stand in each paper.
+          End-semesters run 4&ndash;11 Dec 2026{left !== null && left > 0 ? ` — ${left} days away` : ""}:
+          DE+CO Fri 4, Calculus Mon 7, AI Wed 9, C Fri 11. Below is how the 100 marks are split,
+          how they turn into a grade and an SGPA, and where you stand in each paper.
         </p>
       </div>
 
@@ -114,6 +116,56 @@ export default async function ExamsPage() {
         </p>
       </section>
 
+      {/* ── marks → grade → SGPA ───────────────────────────── */}
+      <section className="space-y-3">
+        <h2 className="text-[length:var(--text-title)]">How your marks become a grade</h2>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <Card className="overflow-hidden">
+            <table className="w-full text-[length:var(--text-small)]">
+              <thead className="bg-surface-2 text-left text-[length:var(--text-micro)] uppercase tracking-wide text-subtle">
+                <tr>
+                  <th className="px-4 py-2 font-semibold">Grade</th>
+                  <th className="px-4 py-2 font-semibold">Total</th>
+                  <th className="px-4 py-2 font-semibold">Points</th>
+                  <th className="px-4 py-2 font-semibold">Means</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {GRADES.map((g) => (
+                  <tr key={g.grade} className={g.grade === "F" ? "text-[var(--bad)]" : ""}>
+                    <td className="px-4 py-1.5 font-semibold">{g.grade}</td>
+                    <td className="px-4 py-1.5 tabular-nums">
+                      {g.min}&ndash;{g.max}
+                    </td>
+                    <td className="px-4 py-1.5 tabular-nums">{g.points}</td>
+                    <td className="px-4 py-1.5 text-muted">{g.label}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+          <div className="space-y-3 text-[length:var(--text-small)] leading-relaxed">
+            <p>
+              <span className="font-medium">{SGPA_RULE.formula}.</span>{" "}
+              <span className="text-muted">e.g. {SGPA_RULE.example}. {SGPA_RULE.cgpa}</span>
+            </p>
+            <p className="text-muted">
+              A pass is 40 total — a D — and it still needs 40% in internals and 40% on the paper
+              separately (rule one below).
+            </p>
+            <ul className="space-y-1.5">
+              {PROGRESSION.map((r) => (
+                <li key={r} className="flex gap-2 text-muted">
+                  <span className="select-none text-subtle">·</span>
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <SgpaCalculator grades={GRADES} courses={CREDIT_COURSES} />
+      </section>
+
       {/* ── readiness, per paper ───────────────────────────── */}
       <section className="space-y-3">
         <h2 className="text-[length:var(--text-title)]">Where you stand, paper by paper</h2>
@@ -121,7 +173,8 @@ export default async function ExamsPage() {
           <ul className="divide-y divide-[var(--border)]">
             {subjects.map((s) => {
               // Lab-only courses measure experiments; there are no topics to count.
-              const mid = topics.filter((t) => t.subject_id === s.id && t.in_midsem);
+              // end-sems cover the whole syllabus, so every topic counts
+              const mid = topics.filter((t) => t.subject_id === s.id);
               const labs = experiments.filter((e) => e.subject_id === s.id);
               const measured = mid.length
                 ? mid.map((t) => t.status)
@@ -141,7 +194,6 @@ export default async function ExamsPage() {
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-2 text-[length:var(--text-small)] font-medium">
                         {s.name}
-                        {!s.midsem_confirmed ? <Badge tone="warn">scope unconfirmed</Badge> : null}
                       </p>
                       <p className="mt-0.5 text-[length:var(--text-micro)] leading-relaxed text-muted">
                         {exam?.scope ?? s.midsem_scope}

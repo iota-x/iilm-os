@@ -8,6 +8,7 @@ import {
   getSubjects,
 } from "@/lib/queries";
 import { attendanceBySubject, slotsForDay, THRESHOLD } from "@/lib/attendance";
+import { holidayOn } from "@/lib/holidays";
 import { ACCENT_CLASS, cn, istToday, istWeekday } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,8 @@ export default async function AttendancePage() {
   const group = profile?.lab_group ?? 2;
   const today = istToday();
   const day = istWeekday();
-  const todaySlots = slotsForDay(slots, day, group);
+  const holiday = holidayOn(today);
+  const todaySlots = holiday ? [] : slotsForDay(slots, day, group);
   const todayMarks = marks.filter((m) => m.on_date === today);
 
   const rows = attendanceBySubject(subjects, marks, baseline).filter(
@@ -47,7 +49,10 @@ export default async function AttendancePage() {
       </div>
 
       <Card className="overflow-hidden">
-        <CardHead title={`${day} — today`} sub="Mark it once and forget about it" />
+        <CardHead
+          title={`${day} — today`}
+          sub={holiday ? `${holiday.name} — no classes, nothing to mark` : "Mark it once and forget about it"}
+        />
         <AttendanceToday
           date={today}
           dayLabel={day}

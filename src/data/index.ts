@@ -261,3 +261,57 @@ export * from "./types";
 export * from "./timetable";
 export * from "./plan";
 export * from "./resources";
+
+/**
+ * How a course total (out of 100: internals 50 + end-sem scaled to 50)
+ * becomes a grade, and grades become SGPA. From the IILM Academic Directory.
+ */
+export const GRADES = [
+  { grade: "A+", min: 91, max: 100, points: 10, label: "Outstanding" },
+  { grade: "A", min: 81, max: 90, points: 9, label: "Excellent" },
+  { grade: "B+", min: 71, max: 80, points: 8, label: "Very Good" },
+  { grade: "B", min: 61, max: 70, points: 7, label: "Good" },
+  { grade: "C+", min: 51, max: 60, points: 6, label: "Above Average" },
+  { grade: "C", min: 46, max: 50, points: 5, label: "Average" },
+  { grade: "D", min: 40, max: 45, points: 4, label: "Satisfactory" },
+  { grade: "F", min: 0, max: 39, points: 0, label: "Fail" },
+] as const;
+
+export const SGPA_RULE = {
+  formula: "SGPA = Σ (credits × grade points) ÷ Σ credits",
+  example: "4 courses of 4 credits at grade points 9, 8, 8, 7 → (36 + 32 + 32 + 28) ÷ 16 = 8.0",
+  cgpa: "CGPA is the same calculation over every semester so far.",
+};
+
+export const PROGRESSION = [
+  "Earn at least 40% of the prescribed credits to move to the next academic year (50% for MBA).",
+  "Fail a subject and you can take a re-examination — but the best grade a re-exam can give is B+.",
+  "To finish the degree: clear every course and hold a CGPA of at least 4.5 (UG).",
+  "The degree must be completed within n + 2 years — 6 years for this 4-year B.Tech.",
+];
+
+/** Semester I courses that carry credits, theory and lab counted separately. */
+export const CREDIT_COURSES = [
+  { slug: "applied-calculus", name: "Applied Calculus", credits: 3 },
+  { slug: "applied-calculus", name: "Applied Calculus Lab", credits: 1, lab: true },
+  { slug: "programming-in-c", name: "Programming in C", credits: 3 },
+  { slug: "programming-in-c", name: "Programming in C Lab", credits: 2, lab: true },
+  { slug: "digital-electronics", name: "DE + CO", credits: 3 },
+  { slug: "digital-electronics", name: "Digital Electronics Lab", credits: 1, lab: true },
+  { slug: "computational-design-thinking", name: "Computational Design Thinking", credits: 3 },
+  { slug: "foundation-of-ai", name: "Foundations of AI & Automation", credits: 2 },
+  { slug: "linux-administration", name: "Linux Administration Lab", credits: 1, lab: true },
+] as const;
+
+/** Student holiday calendar, odd semester 2026 (signed by the Registrar). Inclusive ranges. */
+export const HOLIDAYS = [
+  { name: "Independence Day", from: "2026-08-15", to: "2026-08-15" },
+  { name: "Raksha Bandhan", from: "2026-08-28", to: "2026-08-28" },
+  { name: "Janmashtami", from: "2026-09-04", to: "2026-09-04" },
+  { name: "Ganesh Chaturthi", from: "2026-09-14", to: "2026-09-14" },
+  { name: "Gandhi Jayanti", from: "2026-10-02", to: "2026-10-02" },
+  { name: "Dussehra", from: "2026-10-20", to: "2026-10-20" },
+  { name: "Diwali break", from: "2026-11-07", to: "2026-11-11" },
+  { name: "Guru Nanak Jayanti", from: "2026-11-24", to: "2026-11-24" },
+  { name: "Christmas & winter break", from: "2026-12-25", to: "2027-01-04" },
+];

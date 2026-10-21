@@ -25,6 +25,7 @@ import { Tour } from "@/components/tour";
 import { AutoReplan } from "@/components/auto-replan";
 import { Flame } from "lucide-react";
 import { studyStreak } from "@/lib/streak";
+import { holidayOn } from "@/lib/holidays";
 import { fmtDuration } from "@/lib/utils";
 import { FirstRun } from "@/components/first-run";
 import { getGoals, getInboxFiles } from "@/lib/queries";
@@ -75,9 +76,12 @@ export default async function Dashboard() {
   const plan = planDays.find((d) => d.date === today);
   const countdown = examCountdown();
 
-  const todaySlots = slots
-    .filter((s) => s.day === weekday && (s.lab_group === null || s.lab_group === group))
-    .sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
+  const holiday = holidayOn(today);
+  const todaySlots = holiday
+    ? []
+    : slots
+        .filter((s) => s.day === weekday && (s.lab_group === null || s.lab_group === group))
+        .sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
 
   const subjectById = Object.fromEntries(subjects.map((s) => [s.id, s]));
 
@@ -455,7 +459,7 @@ export default async function Dashboard() {
               </ul>
             ) : (
               <p className="px-4 py-6 text-[length:var(--text-small)] text-muted text-center">
-                No classes today. Full day for study.
+                {holiday ? `${holiday.name} — college is closed today.` : "No classes today. Full day for study."}
               </p>
             )}
 

@@ -5,6 +5,7 @@ import type { Streak } from "@/lib/streak";
 import { TaskList } from "@/components/task-list";
 import { Badge, Bar, Card } from "@/components/ui";
 import { cn, fmtDuration } from "@/lib/utils";
+import { holidayOn } from "@/lib/holidays";
 
 export type PhaseMeta = Record<string, { name: string; goal: string }>;
 
@@ -195,6 +196,7 @@ function DayRow({
   const est = list.reduce((a, t) => a + (t.minutes ?? 0), 0);
   const logged = list.reduce((a, t) => a + (spent[t.id] ?? 0), 0);
   const s = STATUS[status];
+  const holiday = holidayOn(day.date);
   return (
     <details
       open={open}
@@ -211,6 +213,7 @@ function DayRow({
         )}
         <span className="text-[length:var(--text-small)] font-semibold tabular-nums">Day {n}</span>
         <span className="text-[length:var(--text-small)] tabular-nums text-muted">{date}</span>
+        {holiday ? <Badge tone="good">{holiday.name}</Badge> : null}
         <span className="hidden min-w-0 flex-1 truncate text-[length:var(--text-small)] text-subtle sm:block">
           {day.headline ?? ""}
         </span>

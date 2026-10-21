@@ -1,4 +1,5 @@
 import type { Note, Resource, Subject, Task, Topic, Unit } from "@/lib/db-types";
+import { sprints } from "@/data/sprints";
 
 export interface TaskLink {
   label: string;
@@ -24,6 +25,9 @@ const REPOS: Record<string, string> = {
 };
 
 const yt = (q: string) => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+
+/** Route steps by id ("calc-u1-mvt"), so a plan block tagged route:<id> links its own videos. */
+const ROUTE = new Map(sprints.flatMap((sp) => sp.groups.flatMap((g) => g.steps)).map((st) => [st.id, st]));
 
 /**
  * Where to go from a plan block: its topic page (slides, notes, questions),
@@ -63,8 +67,17 @@ export function taskLinks(
       if (tp && sub && u) {
         links.push({ label: "Topic", href: `/subjects/${sub.slug}/unit-${u.number}/${tp.code}`, kind: "topic" });
       }
+      const step = codes.filter((c) => c.startsWith("route:")).map((c) => ROUTE.get(c.slice(6))).find(Boolean);
       const picked = (tp && videos.find((r) => r.topic_id === tp.id)) || null;
-      if (picked) {
+      if (step?.videos?.length) {
+        // the route's own picks, in watching order: "▶ GP Sir · 16m"
+        for (const v of step.videos) {
+          const who = v.title.split(" — ").pop() ?? "Video";
+          links.push({ label: `${who.replace(/^Dr\. Gajendra Purohit$/, "GP Sir")}${v.dur ? ` · ${v.dur}` : ""}`, href: v.url, kind: "video" });
+        }
+      } else if (step) {
+        // a practice block: no video, the topic page has the questions
+      } else if (picked) {
         links.push({ label: "Video", href: picked.url, kind: "video" });
       } else if (sub && t.kind !== "mock" && t.kind !== "admin") {
         // "Basics 3 — trigonometry you need" → "trigonometry you need"; "U1 — Rolle + LMVT problems" → "Rolle + LMVT"

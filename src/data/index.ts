@@ -219,7 +219,7 @@ export const exams: SeedExam[] = [
     window: "Fri 4 Dec 2026 · 10:00 AM–1:00 PM · CONFIRMED",
     maxMarks: 100,
     weightage: 50,
-    scope: "Whole syllabus — Units I–V: number systems and codes, combinational design, synchronous sequential circuits, structure of computers, processor and memory.",
+    scope: "Whole syllabus — Units I–V: number systems and codes, combinational design, synchronous sequential circuits, structure of computers, processor and memory. Paper: Section A 5 × 4 = 20 · Section B 4 × 10 = 40 · Section C 2 × 20 = 40 (100 marks, 3 h ≈ 1.8 min a mark: A ~30 min, B ~70, C ~70, 10 to check). Pattern ASSUMED from Applied Calculus — confirm with the teacher.",
   },
   {
     key: "ese-calculus",
@@ -230,7 +230,7 @@ export const exams: SeedExam[] = [
     window: "Mon 7 Dec 2026 · 10:00 AM–1:00 PM · CONFIRMED",
     maxMarks: 100,
     weightage: 50,
-    scope: "Whole syllabus — Units I–V: one-variable calculus, two-variable calculus, applications (maxima/minima, Lagrange, gradient descent, regression), integral calculus, vector calculus.",
+    scope: "Whole syllabus — Units I–V: one-variable calculus, two-variable calculus, applications (maxima/minima, Lagrange, gradient descent, regression), integral calculus, vector calculus. Paper: Section A 5 × 4 = 20 · Section B 4 × 10 = 40 · Section C 2 × 20 = 40 (100 marks, 3 h ≈ 1.8 min a mark: A ~30 min, B ~70, C ~70, 10 to check). CONFIRMED; one of the two Section C questions has an internal choice.",
   },
   {
     key: "ese-ai",
@@ -241,7 +241,7 @@ export const exams: SeedExam[] = [
     window: "Wed 9 Dec 2026 · 10:00 AM–1:00 PM · CONFIRMED",
     maxMarks: 100,
     weightage: 50,
-    scope: "Whole syllabus — Units I–IV: introduction to AI, intelligent agents and search, machine learning, robotics and automation.",
+    scope: "Whole syllabus — Units I–IV: introduction to AI, intelligent agents and search, machine learning, robotics and automation. Paper: Section A 5 × 4 = 20 · Section B 4 × 10 = 40 · Section C 2 × 20 = 40 (100 marks, 3 h ≈ 1.8 min a mark: A ~30 min, B ~70, C ~70, 10 to check). Pattern ASSUMED from Applied Calculus — confirm with the teacher.",
   },
   {
     key: "ese-c",
@@ -252,7 +252,7 @@ export const exams: SeedExam[] = [
     window: "Fri 11 Dec 2026 · 10:00 AM–1:00 PM · CONFIRMED",
     maxMarks: 100,
     weightage: 50,
-    scope: "Whole syllabus — Units 1–8: fundamentals through functions, arrays and strings, pointers and dynamic memory, structures/unions/enums, file handling.",
+    scope: "Whole syllabus — Units 1–8: fundamentals through functions, arrays and strings, pointers and dynamic memory, structures/unions/enums, file handling. Paper: Section A 5 × 4 = 20 · Section B 4 × 10 = 40 · Section C 2 × 20 = 40 (100 marks, 3 h ≈ 1.8 min a mark: A ~30 min, B ~70, C ~70, 10 to check). Pattern ASSUMED from Applied Calculus — confirm with the teacher.",
   },
 ];
 

@@ -3,7 +3,7 @@
 import { config } from "dotenv";
 config({ path: [".env.local", ".env"] });
 import { createClient } from "@supabase/supabase-js";
-import { exams } from "../src/data/index.ts";
+import { exams } from "../src/data";
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 const ese = exams.filter((e) => e.kind === "ese");
 const { data: subs, error } = await db.from("subjects").select("id, slug, user_id, semester_id");

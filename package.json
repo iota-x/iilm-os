@@ -13,6 +13,7 @@
     "intake": "tsx scripts/intake.ts",
     "onboard": "tsx scripts/onboard.ts",
     "reseed": "tsx scripts/reseed.ts",
+    "stats": "tsx --env-file=.env.local scripts/stats.mts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

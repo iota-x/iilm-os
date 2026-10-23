@@ -30,7 +30,7 @@ const sans = Inter({
   display: "swap",
 });
 
-const SITE = "https://semwise.vercel.app";
+const SITE = "https://semwise-app.vercel.app";
 const DESCRIPTION =
   "Your semester, planned: your college's syllabus, timetable and exam dates loaded for your class, a plan to every paper in one tap, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
 

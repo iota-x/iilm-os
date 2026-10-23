@@ -96,7 +96,7 @@ export default async function OpenGraphImage() {
         </svg>
 
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 20, color: "#9a948a" }}>
-          <span>semwise.vercel.app</span>
+          <span>semwise-app.vercel.app</span>
           <span>Live at IILM University, Gurugram</span>
         </div>
       </div>

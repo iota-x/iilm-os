@@ -14,7 +14,10 @@ const sinceIso = since.toISOString();
 const sinceDay = sinceIso.slice(0, 10);
 
 const { data: auth } = await db.auth.admin.listUsers({ perPage: 1000 });
-const users = auth?.users ?? [];
+// the demo student (scripts/demo-account.mts) is made-up data: never counted
+const DEMO = "demo.student.26@gg.iilm.edu";
+const users = (auth?.users ?? []).filter((u) => u.email !== DEMO);
+const demoId = auth?.users.find((u) => u.email === DEMO)?.id;
 const newUsers = users.filter((u) => u.created_at >= sinceIso).length;
 
 const [done, sessions, marks, goals] = await Promise.all([
@@ -25,16 +28,17 @@ const [done, sessions, marks, goals] = await Promise.all([
 ]);
 
 const active = new Set<string>();
-for (const r of [...(done.data ?? []), ...(sessions.data ?? []), ...(marks.data ?? [])]) active.add(r.user_id);
-const minutes = (sessions.data ?? []).reduce((n, s) => n + (s.minutes ?? 0), 0);
-const planned = new Set((goals.data ?? []).map((g) => g.user_id)).size;
+for (const r of [...(done.data ?? []), ...(sessions.data ?? []), ...(marks.data ?? [])]) if (r.user_id !== demoId) active.add(r.user_id);
+const real = <T extends { user_id: string }>(rows: T[] | null) => (rows ?? []).filter((r) => r.user_id !== demoId);
+const minutes = real(sessions.data).reduce((n, s) => n + (s.minutes ?? 0), 0);
+const planned = new Set(real(goals.data).map((g) => g.user_id)).size;
 
 // shared-key Ask questions, from the daily counters in vault/_usage/<day>/
 let asks = 0;
 for (let i = 0; i < days; i++) {
   const day = new Date(Date.now() + 330 * 60_000 - i * 86_400_000).toISOString().slice(0, 10);
   const { data: files } = await db.storage.from("vault").list(`_usage/${day}`);
-  for (const f of files ?? []) {
+  for (const f of (files ?? []).filter((f) => f.name !== `${demoId}.json`)) {
     const { data } = await db.storage.from("vault").download(`_usage/${day}/${f.name}`);
     if (data) asks += Number((JSON.parse(await data.text()) as { used?: number }).used) || 0;
   }
@@ -44,7 +48,7 @@ console.log(`last ${days} days`);
 console.log(`  accounts           ${users.length} (${newUsers} new)`);
 console.log(`  active students    ${active.size}`);
 console.log(`  with an exam plan  ${planned}`);
-console.log(`  blocks ticked      ${done.data?.length ?? 0}`);
+console.log(`  blocks ticked      ${real(done.data).length}`);
 console.log(`  study minutes      ${minutes}`);
-console.log(`  classes marked     ${marks.data?.length ?? 0}`);
+console.log(`  classes marked     ${real(marks.data).length}`);
 console.log(`  Ask questions      ${asks} (shared key only)`);

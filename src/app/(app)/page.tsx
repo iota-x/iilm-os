@@ -1,17 +1,6 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight, Clock, MapPin } from "lucide-react";
-import {
-  getProfile,
-  getSubjects,
-  getTopics,
-  getTasks,
-  getPlanDays,
-  getSlots,
-  getNotes,
-  getExperiments,
-  getActivityDays,
-  getStudySessions,
-} from "@/lib/queries";
+import { getProfile, getSubjects, getTopics, getTasks, getPlanDays, getSlots, getNotes, getExperiments, getActivityDays, getStudySessions, getTenant } from "@/lib/queries";
 import { attendanceBySubject } from "@/lib/attendance";
 import { AttendanceToday } from "@/components/attendance-today";
 import { getAttendance, getClassMarks } from "@/lib/queries";
@@ -45,6 +34,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
   const [profile, subjects, topics, experiments, planDays, slots, notes] = await Promise.all([
     getProfile(),
     getSubjects(),
@@ -60,7 +51,7 @@ export default async function Dashboard() {
   const now = istNowMinutes();
   const group = profile?.lab_group ?? 2;
 
-  const due = dueForReview(topics);
+  const due = dueForReview(topics, cal);
   const soon = topics.filter((t) => reviewStateOf(t).bucket === "soon").length;
 
   const [classMarks, attendanceBaseline] = await Promise.all([getClassMarks(), getAttendance()]);
@@ -74,9 +65,9 @@ export default async function Dashboard() {
   );
 
   const plan = planDays.find((d) => d.date === today);
-  const countdown = examCountdown();
+  const countdown = examCountdown(cal);
 
-  const holiday = holidayOn(today);
+  const holiday = holidayOn(today, cal.holidays);
   const todaySlots = holiday
     ? []
     : slots
@@ -89,7 +80,7 @@ export default async function Dashboard() {
   // all — its syllabus is the experiment list — so measure whichever of the two
   // the course actually has.
   const midsemStats = subjects.map((s) => {
-    const own = topics.filter((t) => t.subject_id === s.id && inScope(t));
+    const own = topics.filter((t) => t.subject_id === s.id && inScope(t, cal));
     if (own.length) {
       return {
         subject: s,
@@ -109,7 +100,7 @@ export default async function Dashboard() {
     };
   });
 
-  const overallMidsem = progressOf(topics.filter(inScope).map((t) => t.status));
+  const overallMidsem = progressOf(topics.filter((x) => inScope(x, cal)).map((t) => t.status));
 
   const doneToday = todayTasks.filter((t) => t.status === "done").length;
   const plannedMin = todayTasks.reduce((a, t) => a + (t.minutes ?? 0), 0);
@@ -220,6 +211,18 @@ export default async function Dashboard() {
       {/* new account = nothing touched yet; the tour shows itself once */}
       <Tour isNew={!topics.some((t) => t.status !== "not_started") && !classMarks.length} />
       <AutoReplan today={today} />
+      {!tenant.cohort.catalog ? (
+        <Card className="p-5">
+          <p className="text-[length:var(--text-small)] font-medium">Your syllabus isn&rsquo;t in Semwise yet</p>
+          <p className="mt-1 max-w-[62ch] text-[length:var(--text-small)] leading-relaxed text-muted">
+            You&rsquo;re in {tenant.label} at {tenant.university.name}. We load a class&rsquo;s course
+            plans, timetable and exam dates once, for everyone in it — until then you can still
+            add notes, use Ask and keep the class board going. Share your course plan on the
+            board and it gets in faster.
+          </p>
+        </Card>
+      ) : null}
+
       <FirstRun steps={firstRun} />
 
       {/* ── the four numbers worth glancing at ─────────────── */}
@@ -233,8 +236,8 @@ export default async function Dashboard() {
         />
         <Figure
           value={`${Math.round(overallMidsem * 100)}%`}
-          label={`of the ${paperLabel()} syllabus`}
-          note={`${topics.filter((t) => inScope(t) && t.status !== "not_started").length} of ${topics.filter(inScope).length} topics started`}
+          label={`of the ${paperLabel(cal)} syllabus`}
+          note={`${topics.filter((t) => inScope(t, cal) && t.status !== "not_started").length} of ${topics.filter((x) => inScope(x, cal)).length} topics started`}
           href="/subjects"
         />
         <Figure
@@ -345,8 +348,8 @@ export default async function Dashboard() {
 
           <Card>
             <CardHead
-              title={nextPaper() === "endsem" ? "End-sem readiness" : "Mid-sem readiness"}
-              sub={nextPaper() === "endsem" ? "Whole syllabus" : "Units in scope only"}
+              title={nextPaper(cal) === "endsem" ? "End-sem readiness" : "Mid-sem readiness"}
+              sub={nextPaper(cal) === "endsem" ? "Whole syllabus" : "Units in scope only"}
             />
             <ul className="divide-y divide-[var(--border)]">
               {midsemStats

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PracticeDeck, type DeckItem } from "@/components/practice-deck";
-import { getAttempts, getQuestions, getSubjects, getTopics, getUnits } from "@/lib/queries";
+import { getAttempts, getQuestions, getSubjects, getTopics, getUnits, getTenant } from "@/lib/queries";
 import { accuracyOf, drillScore, statsFor } from "@/lib/questions";
 import { cn, inScope, nextPaper } from "@/lib/utils";
 
@@ -11,6 +11,8 @@ export default async function PracticePage({
 }: {
   searchParams: Promise<{ subject?: string; scope?: string; topics?: string }>;
 }) {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
   const { subject: subjectSlug, scope, topics: topicsParam } = await searchParams;
   // a goal's week review links here with the week's topic codes
   const onlyCodes = new Set((topicsParam ?? "").split(",").map((c) => c.trim()).filter(Boolean));
@@ -36,7 +38,7 @@ export default async function PracticePage({
     if (onlyCodes.size && !(q.topic_id && onlyIds.has(q.topic_id))) return false;
     if (midsemOnly) {
       const t = q.topic_id ? topicById.get(q.topic_id) : null;
-      if (!t || !inScope(t)) return false;
+      if (!t || !inScope(t, cal)) return false;
     }
     return true;
   });
@@ -97,7 +99,7 @@ export default async function PracticePage({
           href={`/practice?${new URLSearchParams({ ...(subjectSlug ? { subject: subjectSlug } : {}), scope: "midsem" })}`}
           active={midsemOnly}
         >
-          {nextPaper() === "endsem" ? "End-sem syllabus" : "Mid-sem only"}
+          {nextPaper(cal) === "endsem" ? "End-sem syllabus" : "Mid-sem only"}
         </Chip>
         {subjects.map((s) => (
           <Chip

@@ -5,15 +5,28 @@ import { ThemeToggle } from "@/components/theme";
 import { LandingWeek } from "@/components/landing-week";
 import { LandingGoal } from "@/components/landing-goal";
 import { LandingFile } from "@/components/landing-file";
-import { subjects as seedSubjects, exams as seedExams } from "@/data";
-import { slots as seedSlots } from "@/data/timetable";
+import { catalogOf, timetableOf } from "@/data/catalogs";
 import type { Slot, Subject } from "@/lib/db-types";
-import { ACCENT_CLASS, cn, ENDSEM_START, examCountdown, MIDSEM_START, nextPaper } from "@/lib/utils";
+import { calendarOf, cohortById, cohortLabel, DEFAULT_COHORT_ID, UNIVERSITIES, universityById } from "@/lib/universities";
+import { ACCENT_CLASS, cn, defaultDeadline, examCountdown, nextPaper } from "@/lib/utils";
+
+// The countdown and "coming up" are about today; rendered at build time they
+// went stale and the browser's render disagreed with the server's (React #418).
+export const dynamic = "force-dynamic";
+
+// The front page shows the class Semwise started in, with its real data.
+const SHOWCASE = cohortById(DEFAULT_COHORT_ID)!;
+const SHOWCASE_UNI = universityById(SHOWCASE.universityId)!;
+const SHOWCASE_CATALOG = catalogOf(SHOWCASE.catalog)!;
+const seedSubjects = SHOWCASE_CATALOG.subjects;
+const seedExams = SHOWCASE_CATALOG.exams;
+const seedSlots = timetableOf(SHOWCASE.timetable);
+const cal = calendarOf(SHOWCASE, SHOWCASE_UNI);
 
 /**
- * The front door. Everything on it is the real data the app runs on — the
- * section's timetable, the six syllabuses, the dated tests — so what you
- * see before signing up is what you get after.
+ * The front door. The demo on it is the real data the app runs on at the
+ * first class it served (IILM B.Tech CSE, Section E) — its timetable,
+ * syllabuses and dated tests — so what you see is what a class gets.
  */
 export default function LandingPage() {
   const subjects = seedSubjects.map(
@@ -40,7 +53,7 @@ export default function LandingPage() {
   const topicCount = seedSubjects.reduce((n, s) => n + topicsOf(s), 0);
   const experimentCount = seedSubjects.reduce((n, s) => n + s.experiments.length, 0);
   const maxLoad = Math.max(...seedSubjects.map((s) => topicsOf(s) + s.experiments.length));
-  const countdown = examCountdown();
+  const countdown = examCountdown(cal);
   const bySlug = new Map(seedSubjects.map((s) => [s.slug, s]));
 
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -63,14 +76,13 @@ export default function LandingPage() {
 
   // The Goals demo works from the real Calculus syllabus for the next paper —
   // the mid-sem units before mid-sems, the whole course after — up to the day before it.
-  const endsem = nextPaper() === "endsem";
+  const endsem = nextPaper(cal) === "endsem";
   const calc = seedSubjects.find((x) => x.slug === "applied-calculus")!;
   const calcTopics = calc.units
     .flatMap((u) => u.topics)
     .filter((t) => endsem || t.inMidsem)
     .map((t, i) => ({ weight: t.weight, sort_order: i }));
-  const paperStart = endsem && ENDSEM_START ? ENDSEM_START : MIDSEM_START;
-  const goalEndIso = new Date(paperStart.getTime() - 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  const goalEndIso = defaultDeadline(cal) ?? today;
 
   const cta =
     "inline-flex items-center gap-2 rounded-[var(--radius-control)] bg-[var(--accent)] px-4 py-2.5 text-[length:var(--text-body)] font-medium text-[var(--accent-fg)] hover:opacity-90 focus-ring";
@@ -84,7 +96,7 @@ export default function LandingPage() {
             <Mark size={30} />
             <span className="whitespace-nowrap font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
               Semwise
-              <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+              <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">Live at {SHOWCASE_UNI.shortName}</span>
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -111,32 +123,32 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] [&>*]:min-w-0">
             <div>
               <p className="reveal text-[length:var(--text-small)] text-muted" style={{ "--i": 0 } as React.CSSProperties}>
-                B.Tech CSE · Semester I · Section E
+                Live at {SHOWCASE_UNI.name}
               </p>
               <h1 style={{ "--i": 1 } as React.CSSProperties} className="reveal mt-4 font-serif text-[2.1rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.6rem] lg:text-[3.4rem]">
-                <span className="tabular-nums">{countdown.headline}</span>
+                Your semester, planned.
                 <br />
-                {countdown.phase === "after"
-                  ? "Everything from this semester, still in one place."
-                  : "This already knows what\u2019s on them."}
+                It already knows what&rsquo;s on your papers.
               </h1>
               <p className="reveal mt-6 max-w-[46ch] text-[length:var(--text-lead)] leading-relaxed text-muted" style={{ "--i": 2 } as React.CSSProperties}>
-                Every syllabus from the course plans. Board photos that file themselves to the
-                lecture they came from. An assistant that has read all of it. Built by a classmate,
-                for this section.
+                Your syllabus, timetable and exam dates, loaded for your class. A plan to every
+                paper in one tap. Board photos that file themselves to the lecture they came from,
+                and an assistant that has read all of it. Built by a student, for students.
               </p>
               <div className="reveal mt-8 flex flex-wrap items-center gap-4" style={{ "--i": 3 } as React.CSSProperties}>
                 <Link href="/login?mode=up" className={cta}>
                   Create your account <ArrowRight size={16} />
                 </Link>
                 <p className="text-[length:var(--text-small)] text-subtle">
-                  Free. College email, a password, your lab group.
+                  Free. Sign up with your college email.
                 </p>
               </div>
 
               {soon.length ? (
                 <div className="reveal mt-10" style={{ "--i": 4 } as React.CSSProperties}>
-                  <p className="text-[length:var(--text-micro)] text-subtle">Coming up</p>
+                  <p className="text-[length:var(--text-micro)] text-subtle">
+                    Coming up at {SHOWCASE_UNI.shortName}, {cohortLabel(SHOWCASE)} · {countdown.headline}
+                  </p>
                   <ul className="mt-2 space-y-1.5">
                     {soon.map((e) => (
                       <li
@@ -189,7 +201,7 @@ export default function LandingPage() {
                 ["Know the paper before you sit it", "Each subject shows exactly what the next paper covers, straight from the course plan, with its date and question pattern — unconfirmed details flagged rather than guessed."],
                 ["Practice that comes back", "Questions per topic, the viva set for next week's C lab, and spaced review that brings a topic back before you forget it, not after."],
                 ["Attendance you can act on", "Tick the classes you went to. It tells you your percentage against the 75% bar, how many you can still miss, and which subject is closest to the line."],
-                ["The class, in one place", "A board for the section: ask what you didn't ask in class, share the link that actually helped, mark what was useful."],
+                ["The class, in one place", "A board for your class only: ask what you didn't ask in class, share the link that actually helped, mark what was useful."],
               ].map(([h, b]) => (
                 <li key={h} className="grid gap-1 py-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
                   <p className="font-serif text-[length:var(--text-lead)] font-semibold leading-snug">{h}</p>
@@ -341,7 +353,7 @@ export default function LandingPage() {
               What&rsquo;s loaded.
             </h2>
             <p className="text-[length:var(--text-small)] text-muted">
-              {topicCount} topics and {experimentCount} lab experiments, from the course plans as handed out.
+              {cohortLabel(SHOWCASE)} at {SHOWCASE_UNI.shortName}: {topicCount} topics and {experimentCount} lab experiments, from the course plans as handed out.
             </p>
           </div>
           <ul className="mt-6 divide-y divide-[var(--border)] border-y border-line">
@@ -393,7 +405,8 @@ export default function LandingPage() {
                   Create your account <ArrowRight size={16} />
                 </Link>
                 <p className="text-[length:var(--text-small)] text-subtle lg:text-right">
-                  Free, for Section E. Bugs and questions — post on the class board.
+                  Free. Not at {SHOWCASE_UNI.shortName}? Sign up with your college email and we&rsquo;ll
+                  tell you when your college is in.
                 </p>
               </div>
             </div>
@@ -409,15 +422,15 @@ export default function LandingPage() {
                 <Mark size={30} />
                 <span className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
                   Semwise
-                  <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+                  <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">Your semester, planned</span>
                 </span>
               </div>
               <p className="mt-4 max-w-[38ch] text-[length:var(--text-small)] leading-relaxed text-muted">
-                One semester of B.Tech CSE, Section E, as a working system — the course plans,
-                the timetable, what happened on the board, and where you stand.
+                A college semester as a working system — the course plans, the timetable, what
+                happened on the board, and where you stand.
               </p>
               <p className="mt-4 text-[length:var(--text-micro)] text-subtle">
-                IILM University, Gurugram · School of Computer Science &amp; Engineering · Batch 2026–30
+                Live at {UNIVERSITIES.map((u) => u.name).join(" · ")}
               </p>
             </div>
 
@@ -448,7 +461,7 @@ export default function LandingPage() {
             <div>
               <p className="text-[length:var(--text-micro)] font-medium text-muted">Made by</p>
               <p className="mt-3 text-[length:var(--text-small)] font-medium">Ankit Pandey</p>
-              <p className="text-[length:var(--text-micro)] text-muted">B.Tech CSE &rsquo;30 · Section E</p>
+              <p className="text-[length:var(--text-micro)] text-muted">B.Tech CSE &rsquo;30 · IILM University</p>
               <ul className="mt-3 space-y-2 text-[length:var(--text-small)]">
                 <li>
                   <a href="https://x.com/iota_xx" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-[var(--accent)]">
@@ -465,7 +478,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-12 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-5 text-[length:var(--text-micro)] text-subtle">
-            <p>Built with the course plans as handed out. Bugs and questions go on the class board.</p>
+            <p>Built with each college&rsquo;s course plans as handed out. Bugs and questions go on the class board.</p>
             <p>&copy; {new Date().getFullYear()} Ankit Pandey</p>
           </div>
         </div>

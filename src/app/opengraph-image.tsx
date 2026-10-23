@@ -7,7 +7,7 @@ import { MARK_BLOCKS, CREAM, CREAM_DIM } from "@/components/mark";
  * variables, and the serif has to be fetched as a TTF.
  */
 export const runtime = "nodejs";
-export const alt = "Semwise for IILM University — your semester, planned";
+export const alt = "Semwise — your semester, planned";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -53,14 +53,14 @@ export default async function OpenGraphImage() {
           </svg>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.5 }}>Semwise</div>
-            <div style={{ fontSize: 22, opacity: 0.7 }}>for IILM University</div>
+            <div style={{ fontSize: 22, opacity: 0.7 }}>Your semester, planned</div>
           </div>
         </div>
 
         {/* the pitch */}
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <div style={{ fontSize: 76, fontWeight: 600, lineHeight: 1.02, letterSpacing: -2, maxWidth: 800 }}>
-            Section E&rsquo;s semester, in one place.
+            Open it, and it tells you what to study today.
           </div>
           <div
             style={{
@@ -71,7 +71,7 @@ export default async function OpenGraphImage() {
             }}
           >
             Every syllabus from the course plans. Board photos that file themselves. An assistant
-            that has read all of it. Free, for B.Tech CSE Semester I.
+            that has read all of it. Free, for college students.
           </div>
         </div>
 
@@ -96,8 +96,8 @@ export default async function OpenGraphImage() {
         </svg>
 
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 20, color: "#9a948a" }}>
-          <span>iilm-os.vercel.app</span>
-          <span>IILM University, Gurugram · Batch 2026–30</span>
+          <span>semwise.vercel.app</span>
+          <span>Live at IILM University, Gurugram</span>
         </div>
       </div>
     ),

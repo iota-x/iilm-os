@@ -30,14 +30,14 @@ const sans = Inter({
   display: "swap",
 });
 
-const SITE = "https://iilm-os.vercel.app";
+const SITE = "https://semwise.vercel.app";
 const DESCRIPTION =
-  "Section E's semester in one place: every syllabus from the course plans, each paper's date, pattern and scope, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
+  "Your semester, planned: your college's syllabus, timetable and exam dates loaded for your class, a plan to every paper in one tap, board photos that file themselves to the lecture they came from, and an assistant that has read all of it.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: "Semwise · IILM University",
+    default: "Semwise — your semester, planned",
     template: "%s · Semwise",
   },
   description: DESCRIPTION,
@@ -45,14 +45,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Semwise",
-    title: "Semwise for IILM University — your semester, planned",
+    title: "Semwise — your semester, planned",
     description: DESCRIPTION,
     url: SITE,
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Semwise for IILM University — your semester, planned",
+    title: "Semwise — your semester, planned",
     description: DESCRIPTION,
     creator: "@iota_xx",
   },

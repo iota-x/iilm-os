@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { tenantOf } from "@/lib/universities";
 import { createClient } from "@/lib/supabase/server";
 import { DRILL_MINUTES, fitBy, minutesFor, remaining, reviewMinutes, sprintEnds, sprintOf, studyDays, type Level } from "@/lib/goals";
 import { istDay } from "@/lib/streak";
@@ -224,8 +225,10 @@ export async function setAttendance(subjectId: string, held: number, attended: n
 }
 
 /* ─── profile ───────────────────────────────────────────────── */
-export async function setLabGroup(group: 1 | 2) {
+export async function setLabGroup(group: number) {
   const { db, userId } = await uid();
+  const { data: p } = await db.from("profiles").select("*").eq("id", userId).maybeSingle();
+  if (!tenantOf(p).cohort.labGroups.includes(group)) throw new Error("Your class has no such lab group.");
   await db.from("profiles").update({ lab_group: group }).eq("id", userId);
   revalidatePath("/", "layout");
 }

@@ -16,13 +16,19 @@ export function SettingsForm({
   profile,
   subjects,
   attendance,
+  labGroups,
+  labLines,
 }: {
+  /** the class's lab groups; [] hides the picker */
+  labGroups: number[];
+  /** each group's labs in one line, from the timetable */
+  labLines: Record<number, string>;
   profile: Profile;
   subjects: Subject[];
   attendance: Attendance[];
 }) {
   const [name, setName] = useState(profile.display_name ?? "");
-  const [group, setGroup] = useState<1 | 2>(profile.lab_group);
+  const [group, setGroup] = useState<number>(profile.lab_group);
   const [pending, start] = useTransition();
 
   return (
@@ -61,6 +67,7 @@ export function SettingsForm({
             </div>
           </div>
 
+          {labGroups.length ? (
           <div>
             <p className="text-[length:var(--text-small)] font-medium">Lab group</p>
             <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
@@ -68,7 +75,7 @@ export function SettingsForm({
               to mark.
             </p>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {([1, 2] as const).map((g) => (
+              {labGroups.map((g) => (
                 <button
                   key={g}
                   onClick={() => {
@@ -91,14 +98,13 @@ export function SettingsForm({
                     {group === g ? <Check size={13} className="text-[var(--accent)]" /> : null}
                   </p>
                   <p className="mt-0.5 text-[length:var(--text-micro)] leading-snug text-muted">
-                    {g === 1
-                      ? "Mon Linux · Tue Calculus lab · Wed DE+CO lab · Thu & Fri C lab"
-                      : "Mon Calculus lab · Tue & Wed C lab · Thu DE+CO lab · Fri Linux"}
+                    {labLines[g] || "Your timetable for this group isn't loaded yet"}
                   </p>
                 </button>
               ))}
             </div>
           </div>
+          ) : null}
         </div>
       </Card>
 

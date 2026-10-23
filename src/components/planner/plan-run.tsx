@@ -6,7 +6,7 @@ import type { TaskLink } from "@/lib/task-links";
 import { TaskList } from "@/components/task-list";
 import { Badge, Bar, Card } from "@/components/ui";
 import { cn, fmtDuration } from "@/lib/utils";
-import { holidayOn } from "@/lib/holidays";
+import { holidayOn, type Holiday } from "@/lib/holidays";
 
 export type PhaseMeta = Record<string, { name: string; goal: string }>;
 
@@ -38,6 +38,7 @@ export function PlanRun({
   streak,
   phases,
   links = {},
+  holidays = [],
 }: {
   /** the run's plan days in date order, the first one is Day 1 */
   days: PlanDay[];
@@ -50,6 +51,8 @@ export function PlanRun({
   phases: PhaseMeta;
   /** topic page / video / notes per task id */
   links?: Record<string, TaskLink[]>;
+  /** the student's holiday calendar, to badge days off */
+  holidays?: Holiday[];
 }) {
   const byDate = new Map<string, Task[]>();
   for (const t of tasks) {
@@ -123,7 +126,7 @@ export function PlanRun({
               ) : null}
               <div className="space-y-2">
                 {items.map((x) => (
-                  <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} open={x.status === "today"} />
+                  <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} holidays={holidays} open={x.status === "today"} />
                 ))}
               </div>
             </section>
@@ -140,7 +143,7 @@ export function PlanRun({
             </div>
             <div className="space-y-2">
               {[...behind].reverse().map((x) => (
-                <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} open={false} />
+                <DayRow key={x.day.id} {...x} subjects={subjects} spent={spent} links={links} holidays={holidays} open={false} />
               ))}
             </div>
           </section>
@@ -179,8 +182,10 @@ function DayRow({
   subjects,
   spent,
   links,
+  holidays,
   open,
 }: {
+  holidays: Holiday[];
   day: PlanDay;
   n: number;
   list: Task[];
@@ -202,7 +207,7 @@ function DayRow({
   const est = list.reduce((a, t) => a + (t.minutes ?? 0), 0);
   const logged = list.reduce((a, t) => a + (spent[t.id] ?? 0), 0);
   const s = STATUS[status];
-  const holiday = holidayOn(day.date);
+  const holiday = holidayOn(day.date, holidays);
   return (
     <details
       open={open}

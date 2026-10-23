@@ -109,7 +109,7 @@ export interface SeedSubject {
   strategies: SeedStrategy[];
   textbooks: SeedBook[];
   references: SeedBook[];
-  /** files already sitting in the user's iilm folder */
+  /** files the student already has on their computer */
   localFiles: string[];
   /** what's missing, shown as a prompt in the UI */
   gaps: string[];

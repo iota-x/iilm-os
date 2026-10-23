@@ -1,47 +1,57 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { AcademicCalendar } from "@/lib/universities";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const MIDSEM_START = new Date("2026-10-05T00:00:00+05:30");
-/** Last day of the mid-sem window (they ran 5–8 Oct 2026 for Section E). */
-export const MIDSEM_END = new Date("2026-10-11T00:00:00+05:30");
-/** First end-sem paper (DE+CO, Fri 4 Dec 2026). Confirmed on 2026-10-21. */
-export const ENDSEM_START: Date | null = new Date("2026-12-04T00:00:00+05:30");
+/** "YYYY-MM-DD" → that day's midnight in IST */
+export function istDate(day: string): Date {
+  return new Date(day + "T00:00:00+05:30");
+}
 
-export type ExamPhase = "before" | "today" | "during" | "after";
+export type ExamPhase = "before" | "today" | "during" | "after" | "unknown";
 
 /**
- * Which paper is next. Once the mid-sem window has closed it's the end-sem,
- * and that covers the whole syllabus — so every "in scope" check, badge and
- * filter in the app reads from here instead of the mid-sem flag directly.
+ * Which paper is next, from the student's own calendar (lib/universities).
+ * Once the mid-sem window has closed it's the end-sem, and that covers the
+ * whole syllabus — so every "in scope" check, badge and filter in the app
+ * reads from here instead of the mid-sem flag directly. A calendar with no
+ * mid-sem dates is treated as heading for the end-sem.
  */
-export function nextPaper(): "midsem" | "endsem" {
-  return Date.now() >= MIDSEM_END.getTime() + 86_400_000 ? "endsem" : "midsem";
+export function nextPaper(cal: AcademicCalendar): "midsem" | "endsem" {
+  if (!cal.midsemEnd) return "endsem";
+  return Date.now() >= istDate(cal.midsemEnd).getTime() + 86_400_000 ? "endsem" : "midsem";
 }
 
 /** Is this topic or unit on the next paper? Everything is, for the end-sem. */
-export function inScope(x: { in_midsem: boolean }): boolean {
-  return nextPaper() === "endsem" || x.in_midsem;
+export function inScope(x: { in_midsem: boolean }, cal: AcademicCalendar): boolean {
+  return nextPaper(cal) === "endsem" || x.in_midsem;
 }
 
 /** Show a "mid-sem" badge only while the mid-sem is the next paper. */
-export function midsemBadge(x: { in_midsem: boolean }): boolean {
-  return nextPaper() === "midsem" && x.in_midsem;
+export function midsemBadge(x: { in_midsem: boolean }, cal: AcademicCalendar): boolean {
+  return nextPaper(cal) === "midsem" && x.in_midsem;
 }
 
 /** "mid-sem" / "end-sem", for labels. */
-export function paperLabel(): string {
-  return nextPaper() === "endsem" ? "end-sem" : "mid-sem";
+export function paperLabel(cal: AcademicCalendar): string {
+  return nextPaper(cal) === "endsem" ? "end-sem" : "mid-sem";
+}
+
+/** The day before the first end-sem paper (or, before the mid-sems, the mid-sem start) — a goal's natural deadline. */
+export function defaultDeadline(cal: AcademicCalendar): string | null {
+  const day = nextPaper(cal) === "endsem" ? cal.endsemStart : cal.midsemStart;
+  if (!day) return null;
+  return new Date(istDate(day).getTime() - 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 }
 
 /**
  * What the countdown should say right now. One place, so the chip in the
  * top bar, the dashboard figure and the landing headline can't disagree.
  */
-export function examCountdown(): {
+export function examCountdown(cal: AcademicCalendar): {
   phase: ExamPhase;
   days: number;
   /** "Mid-sems in 17 days." — a full sentence for the landing hero */
@@ -51,31 +61,33 @@ export function examCountdown(): {
   /** the second line under the figure */
   note: string;
 } {
-  const toMid = daysUntil(MIDSEM_START);
-  const toEnd = daysUntil(MIDSEM_END);
-  if (toMid > 0) {
-    return {
-      phase: "before",
-      days: toMid,
-      headline: `Mid-sems in ${toMid} day${toMid === 1 ? "" : "s"}.`,
-      chip: { n: String(toMid), label: `day${toMid === 1 ? "" : "s"} to mid-sems (est.)` },
-      note: "5–11 Oct expected — dates not announced yet",
-    };
+  if (cal.midsemStart && cal.midsemEnd) {
+    const toMid = daysUntil(istDate(cal.midsemStart));
+    const toEnd = daysUntil(istDate(cal.midsemEnd));
+    if (toMid > 0) {
+      return {
+        phase: "before",
+        days: toMid,
+        headline: `Mid-sems in ${toMid} day${toMid === 1 ? "" : "s"}.`,
+        chip: { n: String(toMid), label: `day${toMid === 1 ? "" : "s"} to mid-sems${cal.midsemNote ? " (est.)" : ""}` },
+        note: cal.midsemNote ?? "the mid-sem window",
+      };
+    }
+    if (toMid === 0) {
+      return { phase: "today", days: 0, headline: "Mid-sems start today.", chip: { n: "Today", label: "mid-sems begin" }, note: "the mid-sem window" };
+    }
+    if (toEnd >= 0) {
+      return {
+        phase: "during",
+        days: toEnd,
+        headline: "Mid-sem week.",
+        chip: { n: String(toEnd + 1), label: `day${toEnd === 0 ? "" : "s"} of mid-sems left` },
+        note: "revise tomorrow's paper only",
+      };
+    }
   }
-  if (toMid === 0) {
-    return { phase: "today", days: 0, headline: "Mid-sems start today.", chip: { n: "Today", label: "mid-sems begin" }, note: "5–11 Oct" };
-  }
-  if (toEnd >= 0) {
-    return {
-      phase: "during",
-      days: toEnd,
-      headline: "Mid-sem week.",
-      chip: { n: String(toEnd + 1), label: `day${toEnd === 0 ? "" : "s"} of mid-sems left` },
-      note: "revise tomorrow's paper only",
-    };
-  }
-  if (ENDSEM_START) {
-    const n = daysUntil(ENDSEM_START);
+  if (cal.endsemStart) {
+    const n = daysUntil(istDate(cal.endsemStart));
     return {
       phase: "after",
       days: n,
@@ -84,13 +96,10 @@ export function examCountdown(): {
       note: "the whole syllabus, one paper",
     };
   }
-  return {
-    phase: "after",
-    days: 0,
-    headline: "Mid-sems done. End-sems next.",
-    chip: null,
-    note: "end-sem dates not announced yet",
-  };
+  if (cal.midsemEnd) {
+    return { phase: "after", days: 0, headline: "Mid-sems done. End-sems next.", chip: null, note: "end-sem dates not announced yet" };
+  }
+  return { phase: "unknown", days: 0, headline: "Exam dates not added yet.", chip: null, note: "exam dates not added yet" };
 }
 
 /** Whole days from today (IST) until the given date. */

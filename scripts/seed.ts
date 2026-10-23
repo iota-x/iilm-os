@@ -11,6 +11,7 @@ import { config } from "dotenv";
 config({ path: [".env.local", ".env"] });
 import { createClient } from "@supabase/supabase-js";
 import { ensureProfile, seedUser } from "../src/lib/seed";
+import { tenantOf } from "../src/lib/universities";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -64,7 +65,7 @@ async function main() {
     console.error("Missing SEED_EMAIL in .env.local");
     process.exit(1);
   }
-  console.log("\n\x1b[1mSeeding IILM OS\x1b[0m\n");
+  console.log("\n\x1b[1mSeeding Semwise\x1b[0m\n");
   const userId = await getOrCreateUser();
   const name = await ensureProfile(db, userId, {
     display_name: process.env.SEED_DISPLAY_NAME?.trim() || EMAIL.split("@")[0],
@@ -73,7 +74,9 @@ async function main() {
   ok(`profile (${name})`);
   // The plan in the database has been re-planned by hand since plan.ts was
   // written; rewriting it from the file would undo that. Opt in explicitly.
-  await seedUser(db, userId, { plan: process.argv.includes("--with-plan"), personal: true }, ok);
+  const { data: profile } = await db.from("profiles").select("*").eq("id", userId).maybeSingle();
+  const { cohort } = tenantOf(profile);
+  await seedUser(db, userId, { plan: process.argv.includes("--with-plan"), personal: true, cohort }, ok);
   console.log("\n\x1b[1m\x1b[32mDone.\x1b[0m Run `npm run dev` and sign in as " + EMAIL + "\n");
 }
 

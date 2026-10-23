@@ -1,4 +1,5 @@
 import { midsemBadge } from "@/lib/utils";
+import { tenantOf, type Tenant } from "@/lib/universities";
 import { createClient } from "@/lib/supabase/server";
 import { istDay } from "@/lib/streak";
 import type {
@@ -29,6 +30,11 @@ import type {
   Topic,
   Unit,
 } from "@/lib/db-types";
+
+/** The signed-in student's university, class and calendar (lib/universities). */
+export async function getTenant(): Promise<Tenant> {
+  return tenantOf(await getProfile());
+}
 
 export async function getProfile(): Promise<Profile | null> {
   const db = await createClient();
@@ -441,6 +447,7 @@ export interface SearchDoc {
 }
 
 export async function getSearchIndex(): Promise<SearchDoc[]> {
+  const cal = (await getTenant()).calendar;
   const db = await createClient();
   const [subjectsRes, topicsRes, notesRes, resourcesRes] = await Promise.all([
     db.from("subjects").select("slug, name, short_name, code").order("sort_order"),
@@ -493,7 +500,7 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
       href: n
         ? `/subjects/${s.slug}/unit-${n}/${t.code}`
         : `/subjects/${s.slug}#topic-${t.code}`,
-      meta: midsemBadge(t) ? "mid-sem" : undefined,
+      meta: midsemBadge(t, cal) ? "mid-sem" : undefined,
     });
   }
   for (const n of notesRes.data ?? []) {

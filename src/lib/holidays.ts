@@ -1,15 +1,15 @@
-import { HOLIDAYS } from "@/data";
+import type { Holiday } from "@/lib/universities";
 
-export type Holiday = (typeof HOLIDAYS)[number];
+export type { Holiday };
 
-/** The holiday covering a date (YYYY-MM-DD), if any. */
-export function holidayOn(date: string): Holiday | null {
-  return HOLIDAYS.find((h) => h.from <= date && date <= h.to) ?? null;
+/** The holiday covering a date (YYYY-MM-DD), if any, from the student's calendar. */
+export function holidayOn(date: string, holidays: Holiday[]): Holiday | null {
+  return holidays.find((h) => h.from <= date && date <= h.to) ?? null;
 }
 
 /** Holidays that haven't ended yet, soonest first. */
-export function upcomingHolidays(today: string): Holiday[] {
-  return HOLIDAYS.filter((h) => h.to >= today).sort((a, b) => a.from.localeCompare(b.from));
+export function upcomingHolidays(today: string, holidays: Holiday[]): Holiday[] {
+  return holidays.filter((h) => h.to >= today).sort((a, b) => a.from.localeCompare(b.from));
 }
 
 /** "Sat 7 – Wed 11 Nov" / "Tue 24 Nov" */

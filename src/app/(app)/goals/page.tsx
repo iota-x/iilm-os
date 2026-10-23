@@ -1,14 +1,16 @@
 import { Target } from "lucide-react";
-import { getExams, getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits } from "@/lib/queries";
+import { getExams, getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits, getTenant } from "@/lib/queries";
 import { NewGoal } from "@/components/goals/new-goal";
 import { GoalCard } from "@/components/goals/goal-card";
 import { PlanEndsems } from "@/components/goals/plan-endsems";
 import { Card, Empty } from "@/components/ui";
-import { istToday, MIDSEM_START, ENDSEM_START, nextPaper } from "@/lib/utils";
+import { defaultDeadline, istToday, nextPaper } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function GoalsPage() {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
   const [goals, subjects, units, topics, tasks, minutesByGoal, exams] = await Promise.all([
     getGoals(),
     getSubjects(),
@@ -43,7 +45,7 @@ export default async function GoalsPage() {
             subjects={subjects}
             units={units}
             topics={topics}
-            defaultDeadline={(ENDSEM_START && nextPaper() === "endsem" ? new Date(ENDSEM_START.getTime() - 86_400_000) : MIDSEM_START).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" })}
+            defaultDeadline={defaultDeadline(cal) ?? ""}
           />
         </div>
       </div>
@@ -67,7 +69,7 @@ export default async function GoalsPage() {
           <Empty
             icon={<Target size={26} strokeWidth={1.5} />}
             title="No goal yet"
-            body={nextPaper() === "endsem" ? "Try “Calculus, whole subject, by 6 December”. You'll see the daily load before you commit." : "Try “Calculus mid-sem scope by 4 October”. You'll see the daily load before you commit."}
+            body={nextPaper(cal) === "endsem" ? "Try one subject, the whole syllabus, by the day before its paper. You'll see the daily load before you commit." : "Try one subject's mid-sem scope by the day before the mid-sems. You'll see the daily load before you commit."}
           />
         </Card>
       )}

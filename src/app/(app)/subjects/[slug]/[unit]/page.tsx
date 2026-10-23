@@ -9,15 +9,9 @@ import {
   Target,
 } from "lucide-react";
 import { TopicRow } from "@/components/subject/topic-row";
-import { notesGapOf } from "@/data/coverage";
+import { contentOf } from "@/data/catalogs";
 import { Badge, Bar, Card, Empty, SectionTitle } from "@/components/ui";
-import {
-  getNotes,
-  getResources,
-  getSubjectBySlug,
-  getTopics,
-  getUnits,
-} from "@/lib/queries";
+import { getNotes, getResources, getSubjectBySlug, getTopics, getUnits, getTenant } from "@/lib/queries";
 import { cn, midsemBadge } from "@/lib/utils";
 
 /** URLs look like /subjects/applied-calculus/unit-2 */
@@ -31,6 +25,9 @@ export default async function UnitPage({
 }: {
   params: Promise<{ slug: string; unit: string }>;
 }) {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
+  const { notesGapOf } = contentOf(tenant.cohort.catalog);
   const { slug, unit: unitSegment } = await params;
   const number = parseUnit(unitSegment);
   if (number === null) notFound();
@@ -94,7 +91,7 @@ export default async function UnitPage({
           <h1 className="text-[length:var(--text-page)]">
             Unit {unit.number} — {unit.title}
           </h1>
-          {midsemBadge(unit) ? <Badge tone="accent">in mid-sem</Badge> : null}
+          {midsemBadge(unit, cal) ? <Badge tone="accent">in mid-sem</Badge> : null}
         </div>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
           <span className="flex flex-wrap items-baseline gap-x-5 gap-y-1">

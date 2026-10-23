@@ -124,7 +124,7 @@ export const APP_MAP: AppGroup[] = [
       {
         href: "/class",
         label: "Class",
-        blurb: "Section E's board — questions, resources, notices. Reply, mark helpful, accept an answer, attach an image.",
+        blurb: "Your class's board — questions, resources, notices. Reply, mark helpful, accept an answer, attach an image.",
         when: "When you didn't want to ask in class, or you found something worth sharing.",
         keywords: ["forum", "board", "discussion", "section", "posts", "questions", "community"],
       },

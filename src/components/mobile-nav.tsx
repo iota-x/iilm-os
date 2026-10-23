@@ -1,6 +1,7 @@
 "use client";
 
 import { Mark } from "@/components/mark";
+import { useTenant } from "@/components/tenant";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,7 +43,7 @@ const LINKS = [
 
 export function MobileNav() {
   const pathname = usePathname();
-  const countdown = examCountdown();
+  const countdown = examCountdown(useTenant().calendar);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-[var(--bg)]/85 backdrop-blur-xl md:hidden">

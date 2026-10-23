@@ -1,7 +1,9 @@
-# IILM OS
+# Semwise
 
-A study platform for B.Tech CSE Semester I at IILM University, Gurugram.
-Built around the actual course plans — not a generic todo app with subjects bolted on.
+Your semester, planned. A study platform built around each class's actual course
+plans, timetable and exam dates — not a generic todo app with subjects bolted on.
+Live at IILM University, Gurugram (B.Tech CSE Semester I), built to take more
+universities.
 
 ---
 
@@ -108,10 +110,33 @@ truth — anything you add in the app gets kept, but won't survive a schema rebu
 
 ---
 
+## Universities and classes
+
+Every account belongs to a **university** and a **class (cohort)** in it — a
+programme, semester and section. `src/lib/universities.ts` is the one list:
+
+- a university has its email **domains** (who may sign up), an optional rule for
+  the address, its **calendar** (mid-sem window, first end-sem paper, holidays)
+  and a **grading** pack;
+- a cohort points at a **syllabus pack** (`catalog`) and a **timetable** pack, both
+  in `src/data/catalogs.ts`, and lists its lab groups.
+
+Sign-up reads the domain from the email, offers that university's classes, and
+seeds the chosen one's packs. An unknown domain goes on the `waitlist` table with
+the college name typed. A class with no syllabus pack is still joinable — the
+account starts empty and Today says so. The class board is per cohort (RLS in
+migration 012), and the notes coverage, page explainers and video sprints only
+show for the catalog they were written for.
+
+**Adding a university:** add it and its cohorts to `src/lib/universities.ts`;
+write its subjects under `src/data/<university>/` like `src/data/subjects/`;
+register the syllabus, timetable and grading packs in `src/data/catalogs.ts`;
+then `npm run tenants` (mirrors the list into the database) and deploy.
+
 ## Next semester
 
-The schema is built around semesters, not this one semester. Add new files under
-`src/data/subjects/`, bump `SEMESTER.number` in `src/data/index.ts`, and seed again.
+The schema is built around semesters, not this one semester. Add a new syllabus
+pack, point the cohorts at it in `src/lib/universities.ts`, and `npm run reseed`.
 Semester I's notes, marks and screenshots stay exactly where they are.
 
 ---
@@ -121,7 +146,10 @@ Semester I's notes, marks and screenshots stay exactly where they are.
 ```bash
 npm run dev         # dev server
 npm run build       # production build
-npm run seed        # push src/data/* into Supabase (idempotent)
+npm run seed        # push the owner's class's packs into Supabase (idempotent)
+npm run reseed      # the same for every account, each from its own class
+npm run tenants     # mirror src/lib/universities.ts into the universities/cohorts tables
+npm run stats       # section-wide counts for a pitch (numbers only)
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint
 npx tsx scripts/verify.ts   # dry-run check of the seed data, no network needed

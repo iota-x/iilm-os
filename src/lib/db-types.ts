@@ -13,9 +13,12 @@ export type ResourceKind =
 export interface Profile {
   id: string;
   display_name: string | null;
-  lab_group: 1 | 2;
+  lab_group: number;
   theme: string;
   section: string | null;
+  /** lib/universities ids; null on accounts from before migration 012 */
+  university_id?: string | null;
+  cohort_id?: string | null;
   must_change_password: boolean;
   is_admin: boolean;
   /** the student's own Gemini key for /ask; null means the shared one */

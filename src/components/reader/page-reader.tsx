@@ -23,7 +23,8 @@ import {
   Undo2,
   X,
 } from "lucide-react";
-import { pageNoteOf } from "@/data/page-notes";
+import { PAGE_NOTES_CATALOG, pageNoteOf } from "@/data/page-notes";
+import { useTenant } from "@/components/tenant";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -79,6 +80,7 @@ export function PageReader({
   boardsKey?: string;
   onClose: () => void;
 }) {
+  const explainers = useTenant().catalog === PAGE_NOTES_CATALOG;
   const [db] = useState(() => createClient());
   const [boards, setBoards] = useState(0);
   const pages: ReaderPage[] = [
@@ -103,7 +105,7 @@ export function PageReader({
   const [panel, setPanel] = useState(true);
 
   // the reader's own explainer for this page (mine), and the user's own notes
-  const note = pageNoteOf(page.key);
+  const note = (explainers ? pageNoteOf(page.key) : null);
   const [myNotes, setMyNotes] = useState<Record<string, string>>({});
   const myNote = myNotes[page.key];
   const [noteSave, setNoteSave] = useState<SaveState>("idle");

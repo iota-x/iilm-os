@@ -1,9 +1,10 @@
 /**
  * npm run reseed
  *
- * Push the current curriculum into every account. Run it after editing
+ * Push the current curriculum into every account — each from its own
+ * class's packs (lib/universities → src/data/catalogs). Run it after editing
  * anything under src/data/ — a course plan arriving, a corrected scope —
- * so the whole section sees it, not just the account `npm run seed` uses.
+ * so every class sees it, not just the account `npm run seed` uses.
  *
  * Never touches notes, marks, photos, attendance, goals or the class board:
  * the seed only upserts curriculum rows by their natural keys. The strategies
@@ -17,6 +18,7 @@ import { config } from "dotenv";
 config({ path: [".env.local", ".env"] });
 import { createClient } from "@supabase/supabase-js";
 import { seedUser, SeedError } from "../src/lib/seed";
+import { tenantOf } from "../src/lib/universities";
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -36,7 +38,10 @@ async function main() {
     const mine = u.email!.toLowerCase() === OWNER;
     const t0 = Date.now();
     try {
-      await seedUser(db, u.id, { plan: mine && WITH_PLAN, personal: mine });
+      // each account gets its own class's packs (lib/universities)
+      const { data: profile } = await db.from("profiles").select("*").eq("id", u.id).maybeSingle();
+      const { cohort } = tenantOf(profile);
+      await seedUser(db, u.id, { plan: mine && WITH_PLAN, personal: mine, cohort });
       ok++;
       console.log(`  ✓ ${u.email!.padEnd(38)} ${((Date.now() - t0) / 1000).toFixed(1)}s${mine ? `  (owner: personal${WITH_PLAN ? " + plan" : ""})` : ""}`);
     } catch (e) {

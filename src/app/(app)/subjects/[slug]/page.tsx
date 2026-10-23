@@ -8,25 +8,9 @@ import {
   Folder,
   Target,
 } from "lucide-react";
-import {
-  getBooks,
-  getComponents,
-  getExperiments,
-  getNotes,
-  getOutcomes,
-  getResources,
-  getStrategies,
-  getSubjectBySlug,
-  getSubjects,
-  getSlots,
-  getInboxFiles,
-  getTopics,
-  getUnits,
-  getProfile,
-  getExams,
-} from "@/lib/queries";
+import { getBooks, getComponents, getExperiments, getNotes, getOutcomes, getResources, getStrategies, getSubjectBySlug, getSubjects, getSlots, getInboxFiles, getTopics, getUnits, getProfile, getExams, getTenant } from "@/lib/queries";
 import { TopicRow } from "@/components/subject/topic-row";
-import { coverage, notesGapOf, unitGaps } from "@/data/coverage";
+import { contentOf } from "@/data/catalogs";
 import { ExperimentRow } from "@/components/subject/experiment-row";
 import { MarksTable } from "@/components/subject/marks-table";
 import { PhotoWall } from "@/components/subject/photo-wall";
@@ -51,6 +35,9 @@ export default async function SubjectPage({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
+  const { coverage, notesGapOf, unitGaps } = contentOf(tenant.cohort.catalog);
   const { slug } = await params;
   const { tab: rawTab } = await searchParams;
 
@@ -115,11 +102,11 @@ export default async function SubjectPage({
   // A pure lab course has no syllabus to sit, so open it on the lab list —
   // even when it has theory topics for the quizzes (Linux).
   const defaultTab: Tab = hasLab && topics.every((t) => !t.in_midsem) ? "lab" : "syllabus";
-  const endsem = nextPaper() === "endsem";
+  const endsem = nextPaper(cal) === "endsem";
   const ese = (await getExams()).find((e) => e.subject_id === subject.id && e.kind === "ese");
   const tab: Tab = (TABS.includes(rawTab as Tab) ? rawTab : defaultTab) as Tab;
 
-  const midTopics = topics.filter(inScope);
+  const midTopics = topics.filter((x) => inScope(x, cal));
   // Topics the class notes skip or only half cover, in syllabus order.
   const unitNumberById = new Map(units.map((u) => [u.id, u.number]));
   const notesGaps = topics
@@ -181,7 +168,7 @@ export default async function SubjectPage({
             <div className="flex items-center gap-5">
               <div className="text-center">
                 <Ring value={midProgress} size={48} />
-                <p className="text-[length:var(--text-micro)] text-muted mt-1">{paperLabel()}</p>
+                <p className="text-[length:var(--text-micro)] text-muted mt-1">{paperLabel(cal)}</p>
               </div>
               <div className="text-center">
                 <Ring value={allProgress} size={48} />
@@ -344,7 +331,7 @@ export default async function SubjectPage({
                         >
                           Unit {u.number} — {u.title}
                         </Link>
-                        {midsemBadge(u) ? <Badge tone="accent">in mid-sem</Badge> : null}
+                        {midsemBadge(u, cal) ? <Badge tone="accent">in mid-sem</Badge> : null}
                       </span>
                     }
                     sub={[
@@ -429,7 +416,7 @@ export default async function SubjectPage({
           {subject.local_files.length ? (
             <Card>
               <CardHead
-                title="Files in your iilm folder"
+                title="Files you already have"
                 sub="Already on your Mac — these are what the syllabus above was built from"
               />
               <ul className="px-4 py-3 space-y-1">

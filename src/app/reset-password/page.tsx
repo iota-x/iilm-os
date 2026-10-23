@@ -16,7 +16,7 @@ export default async function ResetPasswordPage() {
           <Mark size={32} />
           <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
             Semwise
-            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">Your semester, planned</span>
           </p>
         </div>
         <h1 className="text-[length:var(--text-page)]">New password</h1>

@@ -1,4 +1,5 @@
 import { inScope } from "@/lib/utils";
+import type { AcademicCalendar } from "@/lib/universities";
 import type { Topic } from "@/lib/db-types";
 
 /**
@@ -62,7 +63,7 @@ export function reviewStateOf(topic: Topic, now: Date = new Date()): ReviewState
 }
 
 /** Everything that wants attention now, worst first. */
-export function dueForReview(topics: Topic[], now: Date = new Date()) {
+export function dueForReview(topics: Topic[], cal: AcademicCalendar, now: Date = new Date()) {
   return topics
     .map((t) => ({ topic: t, review: reviewStateOf(t, now) }))
     .filter((x) => x.review.bucket === "overdue" || x.review.bucket === "today")
@@ -71,7 +72,7 @@ export function dueForReview(topics: Topic[], now: Date = new Date()) {
       const d = (a.review.daysUntilDue ?? 0) - (b.review.daysUntilDue ?? 0);
       if (d !== 0) return d;
       if (a.topic.weight !== b.topic.weight) return b.topic.weight - a.topic.weight;
-      return Number(inScope(b.topic)) - Number(inScope(a.topic));
+      return Number(inScope(b.topic, cal)) - Number(inScope(a.topic, cal));
     });
 }
 

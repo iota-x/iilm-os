@@ -33,7 +33,7 @@ export function GeminiKeyForm({ current }: { current: string | null }) {
     <Card>
       <CardHead
         title="Your AI key"
-        sub="Ask reads your board photos and answers questions with Google's Gemini. It's free, but the free allowance is per key — so everyone brings their own."
+        sub="Ask reads your board photos and answers questions with Google's Gemini. It works without one (20 questions a day on the shared key); your own free key removes the limit."
       />
       <div className="space-y-4 p-5">
         <ol className="space-y-2 text-[length:var(--text-small)] leading-relaxed text-muted">

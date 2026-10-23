@@ -1,4 +1,5 @@
-import { getAttendance, getProfile, getSubjects } from "@/lib/queries";
+import { getAttendance, getProfile, getSlots, getSubjects } from "@/lib/queries";
+import { tenantOf } from "@/lib/universities";
 import { SettingsForm } from "@/components/settings-form";
 import { ThemeToggle } from "@/components/theme";
 import { GeminiKeyForm } from "@/components/gemini-key-form";
@@ -8,22 +9,45 @@ import { Card, CardHead } from "@/components/ui";
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const [profile, subjects, attendance] = await Promise.all([
+  const [profile, subjects, attendance, slots] = await Promise.all([
     getProfile(),
     getSubjects(),
     getAttendance(),
+    getSlots(),
   ]);
 
   if (!profile) return null;
+  const tenant = tenantOf(profile);
+  // "Mon Linux · Tue Calculus lab" — each group's labs, from the timetable itself
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const shortOf = new Map(subjects.map((s) => [s.id, s.short_name]));
+  const labLines = Object.fromEntries(
+    tenant.cohort.labGroups.map((g) => [
+      g,
+      slots
+        .filter((sl) => sl.kind === "lab" && sl.lab_group === g)
+        .sort((a, b) => DAYS.indexOf(a.day) - DAYS.indexOf(b.day))
+        .map((sl) => `${sl.day} ${shortOf.get(sl.subject_id ?? "") ?? "lab"}`)
+        .join(" · "),
+    ]),
+  );
 
   return (
     <div className="mx-auto max-w-[620px] space-y-5">
       <div>
         <h1 className="text-[length:var(--text-page)]">Settings</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Four things, and then you&rsquo;re done.
+          A few things, and then you&rsquo;re done.
         </p>
       </div>
+
+      <Card>
+        <CardHead title="Your university" sub="Set when you signed up, from your college email." />
+        <div className="space-y-1 p-5 text-[length:var(--text-small)]">
+          <p className="font-medium">{tenant.university.name}</p>
+          <p className="text-muted">{tenant.label}</p>
+        </div>
+      </Card>
 
       <Card>
         <CardHead title="Appearance" />
@@ -34,15 +58,16 @@ export default async function SettingsPage() {
 
       <GeminiKeyForm current={decrypt(profile.gemini_key)} />
 
-      <SettingsForm profile={profile} subjects={subjects} attendance={attendance} />
+      <SettingsForm profile={profile} subjects={subjects} attendance={attendance} labGroups={tenant.cohort.labGroups} labLines={labLines} />
 
       {profile.is_admin ? (
       <Card className="p-5">
         <h2 className="text-[length:var(--text-small)] font-semibold">Adding next semester</h2>
         <p className="mt-1.5 text-[length:var(--text-small)] leading-relaxed text-muted">
           The database is built around semesters, not this one semester. When Sem 2 starts, add new
-          subject files under <Code>src/data/subjects/</Code>, bump the semester number in{" "}
-          <Code>src/data/index.ts</Code>, and run <Code>npm run seed</Code> again. Your notes,
+          subject files under <Code>src/data/subjects/</Code>, register the pack in{" "}
+          <Code>src/data/catalogs.ts</Code>, point the cohort at it in{" "}
+          <Code>src/lib/universities.ts</Code>, and run <Code>npm run seed</Code> again. Your notes,
           marks and screenshots from Sem 1 stay exactly where they are. Then{" "}
           <Code>npm run reseed</Code> to push the new curriculum into every account.
         </p>

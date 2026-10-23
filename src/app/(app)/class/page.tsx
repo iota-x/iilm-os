@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ImageIcon, MessageSquare, Pin } from "lucide-react";
-import { getPosts, getSubjects } from "@/lib/queries";
+import { getPosts, getSubjects, getTenant } from "@/lib/queries";
 import { NewPost } from "@/components/class/new-post";
 import { Helpful } from "@/components/class/helpful";
 import { NewSince } from "@/components/class/seen";
@@ -28,6 +28,7 @@ export default async function ClassPage({
 }: {
   searchParams: Promise<{ subject?: string; sort?: string }>;
 }) {
+  const tenant = await getTenant();
   const { subject, sort: rawSort } = await searchParams;
   const sort = rawSort === "helpful" ? "helpful" : "new";
   const [posts, subjects] = await Promise.all([getPosts(subject, sort), getSubjects()]);
@@ -48,8 +49,8 @@ export default async function ClassPage({
         <div>
           <h1 className="text-[length:var(--text-page)]">Class</h1>
           <p className="mt-1 text-[length:var(--text-small)] text-muted">
-            Section E, all of it. Questions, links worth sharing, and anything a teacher said
-            that the rest of the room should know.
+            {tenant.label}, all of it. Questions, links worth sharing, and anything a teacher said
+            that the rest of the room should know. Only your class sees it.
           </p>
         </div>
         <NewPost subjects={subjects} defaultSubject={subject ?? ""} />

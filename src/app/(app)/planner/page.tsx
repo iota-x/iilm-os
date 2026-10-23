@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-  getProfile,
-  getSlots,
-  getSubjects,
-  getTasks,
-} from "@/lib/queries";
+import { getProfile, getSlots, getSubjects, getTasks, getTenant } from "@/lib/queries";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
 import { WeekGrid } from "@/components/planner/week-grid";
@@ -17,6 +12,8 @@ export const dynamic = "force-dynamic";
 
 
 export default async function PlannerPage() {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
   const [profile, slots, subjects] = await Promise.all([getProfile(), getSlots(), getSubjects()]);
 
   const today = istToday();
@@ -87,10 +84,10 @@ export default async function PlannerPage() {
         <CardHead
           title="Holidays"
           sub="Student holiday calendar, odd semester 2026"
-          right={holidayOn(today) ? <Badge tone="good">today</Badge> : null}
+          right={holidayOn(today, cal.holidays) ? <Badge tone="good">today</Badge> : null}
         />
         <ul className="divide-y divide-[var(--border)]">
-          {upcomingHolidays(today).map((h) => {
+          {upcomingHolidays(today, cal.holidays).map((h) => {
             const on = h.from <= today && today <= h.to;
             const days = Math.round((new Date(h.from + "T00:00:00Z").getTime() - new Date(today + "T00:00:00Z").getTime()) / 86_400_000);
             return (

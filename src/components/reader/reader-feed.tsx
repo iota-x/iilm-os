@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { Check, ChevronUp, PenLine, RotateCcw, Sparkles, X } from "lucide-react";
-import { pageNoteOf } from "@/data/page-notes";
+import { PAGE_NOTES_CATALOG, pageNoteOf } from "@/data/page-notes";
+import { useTenant } from "@/components/tenant";
 import { setTopicStatus } from "@/lib/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { TopicStatus } from "@/lib/db-types";
@@ -55,6 +56,7 @@ export function ReaderFeed({
   boardsKey?: string;
   onClose: () => void;
 }) {
+  const explainers = useTenant().catalog === PAGE_NOTES_CATALOG;
   const [db] = useState(() => createClient());
   const [index, setIndex] = useState(0);
   const [drawAt, setDrawAt] = useState<number | null>(null);
@@ -262,7 +264,7 @@ export function ReaderFeed({
       {/* the feed */}
       <div ref={scrollRef} className="min-h-0 flex-1 snap-y snap-mandatory overflow-y-auto scroll-smooth">
         {pages.map((page, i) => {
-          const note = pageNoteOf(page.key);
+          const note = (explainers ? pageNoteOf(page.key) : null);
           const got = prog.got.includes(page.key);
           const revisit = prog.revisit.includes(page.key);
           return (

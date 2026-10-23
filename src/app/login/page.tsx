@@ -8,16 +8,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Card, inputCls } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme";
+import { emailDomain, nameFromEmail, publicDirectory } from "@/lib/universities";
 
-/** "priya.sharma.26@gg.iilm.edu" → "Priya Sharma" */
-function nameFromEmail(email: string) {
-  return email
-    .split("@")[0]
-    .split(".")
-    .filter((p) => p && !/^\d+$/.test(p))
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-    .join(" ");
-}
+const DIRECTORY = publicDirectory();
 
 function LoginForm() {
   const router = useRouter();
@@ -27,10 +20,18 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"in" | "up">(params.get("mode") === "up" ? "up" : "in");
-  const [group, setGroup] = useState<1 | 2>(2);
+  const [cohortId, setCohortId] = useState("");
+  const [group, setGroup] = useState<number | null>(null);
+  const [college, setCollege] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+
+  // The college comes from the address; its classes and lab groups follow.
+  const domain = emailDomain(email);
+  const uni = DIRECTORY.find((u) => u.domains.includes(domain)) ?? null;
+  const cohort = uni?.cohorts.find((c) => c.id === cohortId) ?? null;
+  const unknownCollege = mode === "up" && domain.includes(".") && !uni;
 
   async function forgot() {
     if (!email) {
@@ -72,9 +73,14 @@ function LoginForm() {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password, group }),
+        body: JSON.stringify({ email, password, cohort: cohortId, group, college }),
       });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      const data = (await res.json().catch(() => ({}))) as { error?: string; waitlisted?: boolean };
+      if (data.waitlisted) {
+        setInfo(data.error ?? "You're on the list.");
+        setBusy(false);
+        return;
+      }
       if (!res.ok) {
         setError(data.error ?? "Couldn't create the account.");
         setBusy(false);
@@ -106,7 +112,7 @@ function LoginForm() {
             <Mark size={32} />
             <div>
               <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">Semwise</p>
-              <p className="text-[length:var(--text-micro)] text-muted leading-tight">for IILM University · B.Tech CSE, Semester I</p>
+              <p className="text-[length:var(--text-micro)] text-muted leading-tight">Your semester, planned</p>
             </div>
           </Link>
           <ThemeToggle />
@@ -126,11 +132,17 @@ function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`${inputCls} mt-1`}
-                placeholder={mode === "up" ? "first.last.26@gg.iilm.edu" : "you@gg.iilm.edu"}
+                placeholder={mode === "up" ? "you@your-college.edu" : "Your college email"}
               />
-              {mode === "up" && /@gg\.iilm\.edu$/i.test(email) ? (
+              {mode === "up" && uni ? (
                 <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
-                  You&rsquo;ll appear as <span className="text-fg">{nameFromEmail(email)}</span>.
+                  <span className="text-fg">{uni.name}</span> · you&rsquo;ll appear as{" "}
+                  <span className="text-fg">{nameFromEmail(email)}</span>.
+                </p>
+              ) : unknownCollege ? (
+                <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                  Semwise isn&rsquo;t at <span className="text-fg">{domain}</span> yet. Tell us your
+                  college and we&rsquo;ll email you when it&rsquo;s in.
                 </p>
               ) : mode === "up" ? (
                 <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
@@ -138,6 +150,7 @@ function LoginForm() {
                 </p>
               ) : null}
             </div>
+            {!unknownCollege ? (
             <div>
               <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="password">
                 Password
@@ -154,23 +167,67 @@ function LoginForm() {
                 placeholder={mode === "up" ? "At least 8 characters" : "••••••••"}
               />
             </div>
+            ) : null}
 
-            {mode === "up" ? (
-              <div className="rounded-[var(--radius-control)] border border-line bg-surface-2 px-3 py-2 text-[length:var(--text-micro)] text-muted">
-                <span className="font-medium text-fg">Section E only, for now.</span> The timetable,
-                lab groups and test dates in here are Section E&rsquo;s. Other sections can sign up
-                once their timetables are in.
+            {unknownCollege ? (
+              <div>
+                <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="college">
+                  Your college
+                </label>
+                <input
+                  id="college"
+                  value={college}
+                  onChange={(e) => setCollege(e.target.value)}
+                  className={`${inputCls} mt-1`}
+                  placeholder="e.g. Delhi Technological University"
+                />
               </div>
             ) : null}
 
-            {mode === "up" ? (
+            {mode === "up" && uni ? (
+              <div>
+                <label className="text-[length:var(--text-micro)] font-medium text-muted" htmlFor="cohort">
+                  Your class
+                </label>
+                <select
+                  id="cohort"
+                  required
+                  value={cohortId}
+                  onChange={(e) => {
+                    setCohortId(e.target.value);
+                    setGroup(null);
+                  }}
+                  className={`${inputCls} mt-1`}
+                >
+                  <option value="" disabled>
+                    Programme, semester, section
+                  </option>
+                  {uni.cohorts.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.label}
+                    </option>
+                  ))}
+                </select>
+                {cohort ? (
+                  <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                    {!cohort.ready
+                      ? "Your syllabus isn’t loaded yet — you can sign up now and it fills in when it is."
+                      : cohort.timetable
+                        ? "Syllabus, timetable and exam dates are all in."
+                        : "Syllabus and exam dates are in; your section’s timetable isn’t yet."}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {mode === "up" && cohort?.labGroups.length ? (
               <div>
                 <p className="text-[length:var(--text-micro)] font-medium text-muted">Lab group</p>
                 <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
                   Decides which lab slots your timetable shows. Changeable in Settings.
                 </p>
                 <div className="mt-1.5 grid grid-cols-2 gap-2">
-                  {([1, 2] as const).map((g) => (
+                  {cohort.labGroups.map((g) => (
                     <button
                       key={g}
                       type="button"
@@ -201,7 +258,7 @@ function LoginForm() {
             ) : null}
 
             <Button type="submit" variant="primary" className="w-full" disabled={busy}>
-              {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
+              {busy ? "…" : mode === "in" ? "Sign in" : unknownCollege ? "Tell me when it’s in" : "Create account"}
             </Button>
           </form>
 

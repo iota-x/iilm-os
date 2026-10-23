@@ -15,9 +15,13 @@ import { randomBytes } from "node:crypto";
 import { appendFileSync, readFileSync } from "node:fs";
 import { holidayOn } from "../src/lib/holidays";
 
+import { calendarOf, cohortById, DEFAULT_COHORT_ID, universityById } from "../src/lib/universities";
+
 export const DEMO_EMAIL = "demo.student.26@gg.iilm.edu";
 const FROM = "2026-09-07"; // the timetable's w.e.f. date
 const GROUP = 2;
+const COHORT = cohortById(DEFAULT_COHORT_ID)!;
+const HOLIDAYS = calendarOf(COHORT, universityById(COHORT.universityId)).holidays;
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { persistSession: false },
@@ -54,7 +58,7 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const marks: Record<string, unknown>[] = [];
 for (let d = new Date(FROM + "T00:00:00Z"); ist(d) < ist(); d = new Date(d.getTime() + 86_400_000)) {
   const date = d.toISOString().slice(0, 10);
-  if (holidayOn(date)) continue;
+  if (holidayOn(date, HOLIDAYS)) continue;
   for (const s of slots ?? []) {
     if (s.day !== DAYS[d.getUTCDay()] || (s.lab_group && s.lab_group !== GROUP)) continue;
     marks.push({ user_id: uid, on_date: date, slot_id: s.id, subject_id: s.subject_id, attended: rand() < 0.86 });

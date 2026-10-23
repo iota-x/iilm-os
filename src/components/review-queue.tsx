@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTenant } from "@/components/tenant";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Loader2, SkipForward } from "lucide-react";
@@ -28,6 +29,7 @@ const SCALE: { value: number; label: string; hint: string }[] = [
 ];
 
 export function ReviewQueue({ items }: { items: QueueItem[] }) {
+  const { calendar: cal } = useTenant();
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [reviewed, setReviewed] = useState(0);
@@ -103,7 +105,7 @@ export function ReviewQueue({ items }: { items: QueueItem[] }) {
         <div className="flex flex-wrap items-center gap-2 text-[length:var(--text-micro)] text-subtle">
           <span>{subjectShort}</span>
           {unitNumber !== null ? <span>· Unit {unitNumber}</span> : null}
-          {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
+          {midsemBadge(topic, cal) ? <Badge tone="accent">mid-sem</Badge> : null}
           <span
             className={cn(
               "ml-auto",

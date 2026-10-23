@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useTenant } from "@/components/tenant";
 import { useRouter } from "next/navigation";
 import { useUrlFlag } from "@/lib/client-hooks";
 import { Loader2, Plus, X } from "lucide-react";
@@ -23,11 +24,12 @@ export function NewGoal({
   defaultDeadline: string;
 }) {
   const router = useRouter();
+  const { calendar: cal } = useTenant();
   const [openState, setOpen] = useState<boolean | null>(null);
   const wantOpen = useUrlFlag("new");
   const open = openState ?? wantOpen;
   const [subjectId, setSubjectId] = useState(subjects[0]?.id ?? "");
-  const [scope, setScope] = useState<"midsem" | "unit" | "subject">(nextPaper() === "endsem" ? "subject" : "midsem");
+  const [scope, setScope] = useState<"midsem" | "unit" | "subject">(nextPaper(cal) === "endsem" ? "subject" : "midsem");
   const [unitId, setUnitId] = useState("");
   const [deadline, setDeadline] = useState(defaultDeadline);
   const [minutes, setMinutes] = useState(90);

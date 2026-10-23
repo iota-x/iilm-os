@@ -57,7 +57,7 @@ const STEPS = [
   {
     icon: Users,
     title: "Class is the section's board",
-    body: "Questions you didn't want to ask out loud, links worth sharing, notices. Reply, mark helpful, accept an answer. Everyone in Section E with an account sees it.",
+    body: "Questions you didn't want to ask out loud, links worth sharing, notices. Reply, mark helpful, accept an answer. Everyone in your class with an account sees it.",
     href: "/class",
     cta: "Class",
   },

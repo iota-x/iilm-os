@@ -14,6 +14,7 @@
     "onboard": "tsx scripts/onboard.ts",
     "reseed": "tsx scripts/reseed.ts",
     "stats": "tsx --env-file=.env.local scripts/stats.mts",
+    "tenants": "tsx --env-file=.env.local scripts/tenants.mts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

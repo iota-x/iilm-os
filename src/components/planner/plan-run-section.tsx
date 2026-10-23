@@ -8,6 +8,7 @@ import {
   getTopics,
   getResources,
   getNotes,
+  getTenant,
 } from "@/lib/queries";
 import { taskLinks } from "@/lib/task-links";
 import { PlanRun, type PhaseMeta } from "@/components/planner/plan-run";
@@ -57,6 +58,7 @@ export const PHASE_META: PhaseMeta = {
  * college to-dos and stay on the Planner.
  */
 export async function PlanRunSection() {
+  const { calendar } = await getTenant();
   const [subjects, planDays] = await Promise.all([getSubjects(), getPlanDays()]);
   const today = istToday();
 
@@ -97,6 +99,7 @@ export async function PlanRunSection() {
 
   return (
     <PlanRun
+      holidays={calendar.holidays}
       days={run}
       tasks={tasks}
       subjects={subjects}

@@ -1,14 +1,15 @@
 /**
- * npm run onboard [--dry]
+ * npm run onboard [--dry] [--cohort <id>]
  *
- * Creates an account for every student in scripts/roster.csv and seeds the
- * curriculum into it. Idempotent: existing accounts are left alone except
+ * Creates an account for every student in scripts/roster.csv, puts them in
+ * one class (a cohort id from src/lib/universities; default IILM B.Tech CSE
+ * Sem I, Section E) and seeds that class's curriculum into it. Idempotent: existing accounts are left alone except
  * for a curriculum re-seed (which never touches notes, marks or photos).
  *
  * roster.csv columns:  email,name,group
- *   email  — the college address, e.g. priya.sharma.26@gg.iilm.edu
+ *   email  — the college address; must be on the class's university's domain
  *   name   — optional; derived from the email when blank ("Priya Sharma")
- *   group  — lab group, 1 or 2
+ *   group  — lab group, one of the class's groups (blank: its first)
  *
  * New accounts get CLASS_DEFAULT_PASSWORD from .env.local and are flagged
  * must_change_password, so the first thing they see is a screen to set
@@ -21,27 +22,23 @@ import { createClient } from "@supabase/supabase-js";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ensureProfile, seedUser } from "../src/lib/seed";
+import { cohortById, DEFAULT_COHORT_ID, nameFromEmail, universityById, universityForEmail } from "../src/lib/universities";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const DEFAULT_PASSWORD = process.env.CLASS_DEFAULT_PASSWORD;
-const SECTION = process.env.CLASS_SECTION ?? "E";
-const DOMAIN = "@gg.iilm.edu";
+const cohortArg = process.argv.indexOf("--cohort");
+const COHORT = cohortById(cohortArg > 0 ? process.argv[cohortArg + 1] : DEFAULT_COHORT_ID);
+if (!COHORT) {
+  console.error("Unknown --cohort. The ids are in src/lib/universities.ts.");
+  process.exit(1);
+}
+const UNIVERSITY = universityById(COHORT.universityId)!;
 const dry = process.argv.includes("--dry");
 
 const db = createClient(URL, SERVICE, { auth: { autoRefreshToken: false, persistSession: false } });
 
-type Student = { email: string; name: string; group: 1 | 2 };
-
-/** "priya.sharma.26@gg.iilm.edu" → "Priya Sharma" */
-function nameFromEmail(email: string) {
-  return email
-    .split("@")[0]
-    .split(".")
-    .filter((p) => !/^\d+$/.test(p))
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-    .join(" ");
-}
+type Student = { email: string; name: string; group: number };
 
 function readRoster(): Student[] {
   const path = join(process.cwd(), "scripts", "roster.csv");
@@ -59,13 +56,13 @@ function readRoster(): Student[] {
     const [emailRaw, nameRaw, groupRaw] = line.split(",").map((c) => c.trim());
     if (i === 0 && emailRaw.toLowerCase() === "email") continue; // header
     const email = emailRaw.toLowerCase();
-    if (!email.endsWith(DOMAIN)) {
-      console.error(`  line ${i + 1}: ${email} is not a ${DOMAIN} address — skipped`);
+    if (universityForEmail(email)?.id !== UNIVERSITY.id) {
+      console.error(`  line ${i + 1}: ${email} is not a ${UNIVERSITY.domains.join(" / ")} address — skipped`);
       continue;
     }
     if (seen.has(email)) continue;
     seen.add(email);
-    const group = Number(groupRaw) === 1 ? 1 : 2;
+    const group = COHORT!.labGroups.includes(Number(groupRaw)) ? Number(groupRaw) : (COHORT!.labGroups[0] ?? 1);
     out.push({ email, name: nameRaw || nameFromEmail(email), group });
   }
   return out;
@@ -114,7 +111,9 @@ async function main() {
     await ensureProfile(db, id!, {
       display_name: s.name,
       lab_group: s.group,
-      section: SECTION,
+      section: COHORT!.section ?? undefined,
+      university_id: UNIVERSITY.id,
+      cohort_id: COHORT!.id,
       must_change_password: isNew,
     });
     if (isNew) {
@@ -122,7 +121,7 @@ async function main() {
       await db.from("profiles").update({ lab_group: s.group, display_name: s.name }).eq("id", id!);
     }
 
-    await seedUser(db, id!, { plan: false, personal: false });
+    await seedUser(db, id!, { plan: false, personal: false, cohort: COHORT! });
     seeded++;
     console.log(`  ${isNew ? "created" : "updated"}  ${s.email.padEnd(36)} ${s.name} · group ${s.group}`);
   }

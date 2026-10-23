@@ -6,40 +6,16 @@ import {
   getExperiments,
   getSubjects,
   getTopics,
+  getTenant,
 } from "@/lib/queries";
 import { MarksTable } from "@/components/subject/marks-table";
 import { SgpaCalculator } from "@/components/sgpa-calculator";
-import { CREDIT_COURSES, GRADES, PROGRESSION, SGPA_RULE } from "@/data";
+import { catalogOf, gradingOf } from "@/data/catalogs";
 import { Badge, Bar, Card, Ring } from "@/components/ui";
-import { ACCENT_CLASS, cn, daysUntil, ENDSEM_START, progressOf } from "@/lib/utils";
+import { ACCENT_CLASS, cn, daysUntil, istDate, progressOf } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-/** The three ways a theory course is marked, and what each is worth. The
- *  widths on screen are these numbers — that's the whole point of the bar. */
-const SCHEME = [
-  {
-    key: "cla",
-    name: "Continuous assessment",
-    weight: 30,
-    of: "30 marks",
-    body: "Class Test 10 · Assignment 10 · Quiz 5 · Project 15 · Innovative Practices 15. Faculty pick at least two; the total can't exceed 30.",
-  },
-  {
-    key: "mse",
-    name: "Mid-semester",
-    weight: 20,
-    of: "20 marks",
-    body: "One written paper, 5–8 Oct (done). Roughly the first two or three units; each course plan set its own scope.",
-  },
-  {
-    key: "ese",
-    name: "End-semester",
-    weight: 50,
-    of: "100 marks, halved",
-    body: "The whole syllabus in one 3-hour paper, 4–11 Dec: Section A 5×4, B 4×10, C 2×20. Marked out of 100 and scaled to half your grade.",
-  },
-] as const;
 
 export default async function ExamsPage() {
   const [subjects, exams, components, topics, experiments] = await Promise.all([
@@ -50,7 +26,10 @@ export default async function ExamsPage() {
     getExperiments(),
   ]);
 
-  const left = ENDSEM_START ? daysUntil(ENDSEM_START) : null;
+  const tenant = await getTenant();
+  const grading = gradingOf(tenant.university.grading);
+  const intro = catalogOf(tenant.cohort.catalog)?.examsIntro ?? null;
+  const left = tenant.calendar.endsemStart ? daysUntil(istDate(tenant.calendar.endsemStart)) : null;
   const subjectExams = exams.filter((e) => e.subject_id);
 
   return (
@@ -58,18 +37,22 @@ export default async function ExamsPage() {
       <div>
         <h1 className="text-[length:var(--text-page)]">Exams &amp; marking</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          End-semesters run 4&ndash;11 Dec 2026{left !== null && left > 0 ? ` — ${left} days away` : ""}:
-          DE+CO Fri 4, Calculus Mon 7, AI Wed 9, C Fri 11. Below is how the 100 marks are split,
-          how they turn into a grade and an SGPA, and where you stand in each paper.
+          {intro ?? (tenant.calendar.endsemStart ? "End-semesters are coming up." : "Exam dates aren’t in yet.")}
+          {left !== null && left > 0 ? ` ${left} days to the first paper.` : ""}{" "}
+          {grading
+            ? "Below is how the 100 marks are split, how they turn into a grade and an SGPA, and where you stand in each paper."
+            : "Below is where you stand in each paper."}
         </p>
       </div>
 
+      {grading ? (
+      <>
       {/* ── the split, drawn to scale ──────────────────────── */}
       <section className="space-y-3">
         <h2 className="text-[length:var(--text-title)]">Where the 100 marks go</h2>
 
         <div className="flex h-14 overflow-hidden rounded-[var(--radius-card)]">
-          {SCHEME.map((part) => (
+          {grading.scheme.map((part) => (
             <div
               key={part.key}
               style={{ width: `${part.weight}%` }}
@@ -96,7 +79,7 @@ export default async function ExamsPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          {SCHEME.map((part) => (
+          {grading.scheme.map((part) => (
             <div key={part.key}>
               <p className="text-[length:var(--text-small)] font-medium">
                 {part.name}
@@ -110,9 +93,7 @@ export default async function ExamsPage() {
         </div>
 
         <p className="text-[length:var(--text-small)] text-subtle">
-          Identical across every theory course in the programme, taken verbatim from your Applied
-          Calculus and Programming in C course plans. Lab courses are marked differently — see rule
-          three.
+          {grading.schemeNote}
         </p>
       </section>
 
@@ -131,7 +112,7 @@ export default async function ExamsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {GRADES.map((g) => (
+                {grading.grades.map((g) => (
                   <tr key={g.grade} className={g.grade === "F" ? "text-[var(--bad)]" : ""}>
                     <td className="px-4 py-1.5 font-semibold">{g.grade}</td>
                     <td className="px-4 py-1.5 tabular-nums">
@@ -146,15 +127,12 @@ export default async function ExamsPage() {
           </Card>
           <div className="space-y-3 text-[length:var(--text-small)] leading-relaxed">
             <p>
-              <span className="font-medium">{SGPA_RULE.formula}.</span>{" "}
-              <span className="text-muted">e.g. {SGPA_RULE.example}. {SGPA_RULE.cgpa}</span>
+              <span className="font-medium">{grading.sgpa.formula}.</span>{" "}
+              <span className="text-muted">e.g. {grading.sgpa.example}. {grading.sgpa.cgpa}</span>
             </p>
-            <p className="text-muted">
-              A pass is 40 total — a D — and it still needs 40% in internals and 40% on the paper
-              separately (rule one below).
-            </p>
+            <p className="text-muted">{grading.passNote}</p>
             <ul className="space-y-1.5">
-              {PROGRESSION.map((r) => (
+              {grading.progression.map((r) => (
                 <li key={r} className="flex gap-2 text-muted">
                   <span className="select-none text-subtle">·</span>
                   <span>{r}</span>
@@ -163,8 +141,10 @@ export default async function ExamsPage() {
             </ul>
           </div>
         </div>
-        <SgpaCalculator grades={GRADES} courses={CREDIT_COURSES} />
+        <SgpaCalculator grades={grading.grades} courses={grading.credits} />
       </section>
+      </>
+      ) : null}
 
       {/* ── readiness, per paper ───────────────────────────── */}
       <section className="space-y-3">

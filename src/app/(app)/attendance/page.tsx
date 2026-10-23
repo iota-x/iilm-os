@@ -1,12 +1,6 @@
 import { AttendanceToday } from "@/components/attendance-today";
 import { Bar, Card, CardHead } from "@/components/ui";
-import {
-  getAttendance,
-  getClassMarks,
-  getProfile,
-  getSlots,
-  getSubjects,
-} from "@/lib/queries";
+import { getAttendance, getClassMarks, getProfile, getSlots, getSubjects, getTenant } from "@/lib/queries";
 import { attendanceBySubject, slotsForDay, THRESHOLD } from "@/lib/attendance";
 import { holidayOn } from "@/lib/holidays";
 import { ACCENT_CLASS, cn, istToday, istWeekday } from "@/lib/utils";
@@ -14,6 +8,8 @@ import { ACCENT_CLASS, cn, istToday, istWeekday } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function AttendancePage() {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
   const [profile, subjects, slots, marks, baseline] = await Promise.all([
     getProfile(),
     getSubjects(),
@@ -25,7 +21,7 @@ export default async function AttendancePage() {
   const group = profile?.lab_group ?? 2;
   const today = istToday();
   const day = istWeekday();
-  const holiday = holidayOn(today);
+  const holiday = holidayOn(today, cal.holidays);
   const todaySlots = holiday ? [] : slotsForDay(slots, day, group);
   const todayMarks = marks.filter((m) => m.on_date === today);
 

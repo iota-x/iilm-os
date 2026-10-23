@@ -1,6 +1,7 @@
 "use client";
 
 import { useOptimistic, useTransition } from "react";
+import { useTenant } from "@/components/tenant";
 import Link from "next/link";
 import { Circle, CircleDashed, CircleDot, CheckCircle2, Link2, StickyNote } from "lucide-react";
 import { setTopicStatus } from "@/lib/actions";
@@ -32,6 +33,7 @@ export function TopicRow({
   /** When known, the title and the count chips open the topic's own page. */
   unitNumber?: number;
 }) {
+  const { calendar: cal } = useTenant();
   const [, start] = useTransition();
   // show the next status straight away; the write follows
   const [status, setStatusOptimistic] = useOptimistic(topic.status);
@@ -117,7 +119,7 @@ export function TopicRow({
             {topic.session ? (
               <span className="text-[length:var(--text-micro)] text-subtle font-mono">{topic.session}</span>
             ) : null}
-            {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
+            {midsemBadge(topic, cal) ? <Badge tone="accent">mid-sem</Badge> : null}
             {notesGap ? (
               <Badge tone={notesGap === "missing" ? "bad" : "warn"}>
                 {notesGap === "missing" ? "not in notes" : "gap in notes"}

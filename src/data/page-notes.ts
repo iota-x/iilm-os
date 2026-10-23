@@ -639,6 +639,9 @@ export const pageNotes: Record<string, PageNote> = {
   },
 };
 
+/** The syllabus pack these explainers belong to (src/data/catalogs) — page keys mean nothing elsewhere. */
+export const PAGE_NOTES_CATALOG = "iilm-btech-cse-s1";
+
 export function pageNoteOf(key: string): PageNote | null {
   return pageNotes[key] ?? null;
 }

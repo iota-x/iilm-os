@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTenant } from "@/components/tenant";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -80,6 +81,7 @@ export function Sidebar({
   tree: NavSubject[];
   displayName: string | null;
 }) {
+  const { universityShort } = useTenant();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -180,7 +182,7 @@ export function Sidebar({
           <Mark size={28} />
           <span className="min-w-0 truncate font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
             Semwise
-            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">{universityShort}</span>
           </span>
         </Link>
         <button

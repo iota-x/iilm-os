@@ -303,15 +303,4 @@ export const CREDIT_COURSES = [
   { slug: "linux-administration", name: "Linux Administration Lab", credits: 1, lab: true },
 ] as const;
 
-/** Student holiday calendar, odd semester 2026 (signed by the Registrar). Inclusive ranges. */
-export const HOLIDAYS = [
-  { name: "Independence Day", from: "2026-08-15", to: "2026-08-15" },
-  { name: "Raksha Bandhan", from: "2026-08-28", to: "2026-08-28" },
-  { name: "Janmashtami", from: "2026-09-04", to: "2026-09-04" },
-  { name: "Ganesh Chaturthi", from: "2026-09-14", to: "2026-09-14" },
-  { name: "Gandhi Jayanti", from: "2026-10-02", to: "2026-10-02" },
-  { name: "Dussehra", from: "2026-10-20", to: "2026-10-20" },
-  { name: "Diwali break", from: "2026-11-07", to: "2026-11-11" },
-  { name: "Guru Nanak Jayanti", from: "2026-11-24", to: "2026-11-24" },
-  { name: "Christmas & winter break", from: "2026-12-25", to: "2027-01-04" },
-];
+// The holiday calendar lives with the university's dates in src/lib/universities.ts.

@@ -15,7 +15,7 @@ export function LandingWeek({ slots, subjects }: { slots: Slot[]; subjects: Subj
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <TryIt>Live — switch your group</TryIt>
-          <p className="hidden text-[length:var(--text-small)] text-muted sm:block">Section E, this semester.</p>
+          <p className="hidden text-[length:var(--text-small)] text-muted sm:block">A real week: IILM, B.Tech CSE, Section E.</p>
         </div>
         <div className="inline-flex rounded-lg border border-line bg-surface-2 p-0.5">
           {([1, 2] as const).map((g) => (

@@ -3,14 +3,18 @@ import { CommandPalette } from "@/components/command-palette";
 import { MobileNav } from "@/components/mobile-nav";
 import { Sidebar } from "@/components/sidebar";
 import { PageTransition } from "@/components/page-transition";
+import { TenantProvider } from "@/components/tenant";
 import { getNavTree, getProfile } from "@/lib/queries";
+import { tenantInfo, tenantOf } from "@/lib/universities";
 import { examCountdown } from "@/lib/utils";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const [tree, profile] = await Promise.all([getNavTree(), getProfile()]);
-  const countdown = examCountdown();
+  const tenant = tenantOf(profile);
+  const countdown = examCountdown(tenant.calendar);
 
   return (
+    <TenantProvider value={tenantInfo(tenant)}>
     <div className="flex min-h-dvh">
       <Sidebar tree={tree} displayName={profile?.display_name ?? null} />
 
@@ -35,12 +39,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </main>
 
         <footer className="mx-auto w-full max-w-[1100px] px-4 py-6 text-[length:var(--text-micro)] text-subtle md:px-6">
-          B.Tech CSE Semester I · IILM University, Gurugram · Section E · Lab Group{" "}
-          {profile?.lab_group ?? 2}
+          {tenant.label} · {tenant.university.name}
+          {tenant.cohort.labGroups.length && profile?.lab_group ? ` · Lab Group ${profile.lab_group}` : ""}
         </footer>
       </div>
 
       <CommandPalette />
     </div>
+    </TenantProvider>
   );
 }

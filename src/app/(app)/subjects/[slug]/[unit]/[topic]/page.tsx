@@ -12,18 +12,8 @@ import {
 import { TopicChecklist } from "@/components/subject/topic-checklist";
 import { TopicQuestions } from "@/components/subject/topic-questions";
 import { Badge, Card, Empty, SectionTitle } from "@/components/ui";
-import {
-  getAttempts,
-  getCheckpoints,
-  getNotes,
-  getInboxFiles,
-  getQuestions,
-  getResources,
-  getSubjectBySlug,
-  getTopics,
-  getUnits,
-} from "@/lib/queries";
-import { coverageOf } from "@/data/coverage";
+import { getAttempts, getCheckpoints, getNotes, getInboxFiles, getQuestions, getResources, getSubjectBySlug, getTopics, getUnits, getTenant } from "@/lib/queries";
+import { contentOf } from "@/data/catalogs";
 import { reviewLabel, reviewStateOf } from "@/lib/review";
 import { cn, fmtDate, midsemBadge } from "@/lib/utils";
 
@@ -37,6 +27,9 @@ export default async function TopicPage({
 }: {
   params: Promise<{ slug: string; unit: string; topic: string }>;
 }) {
+  const tenant = await getTenant();
+  const cal = tenant.calendar;
+  const { coverageOf } = contentOf(tenant.cohort.catalog);
   const { slug, unit: unitSegment, topic: topicCode } = await params;
   const number = parseUnit(unitSegment);
   if (number === null) notFound();
@@ -100,7 +93,7 @@ export default async function TopicPage({
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-[length:var(--text-page)] leading-tight">{topic.title}</h1>
-          {midsemBadge(topic) ? <Badge tone="accent">mid-sem</Badge> : null}
+          {midsemBadge(topic, cal) ? <Badge tone="accent">mid-sem</Badge> : null}
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2.5 text-[length:var(--text-micro)] text-subtle">
           {topic.session ? <span>{topic.session}</span> : null}

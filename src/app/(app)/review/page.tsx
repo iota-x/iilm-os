@@ -1,16 +1,17 @@
 import { ReviewQueue, type QueueItem } from "@/components/review-queue";
-import { getSubjects, getTopics, getUnits } from "@/lib/queries";
+import { getSubjects, getTopics, getUnits, getTenant } from "@/lib/queries";
 import { dueForReview, reviewStateOf } from "@/lib/review";
 
 export const dynamic = "force-dynamic";
 
 export default async function ReviewPage() {
+  const cal = (await getTenant()).calendar;
   const [topics, subjects, units] = await Promise.all([getTopics(), getSubjects(), getUnits()]);
 
   const subjectById = new Map(subjects.map((s) => [s.id, s]));
   const unitById = new Map(units.map((u) => [u.id, u]));
 
-  const items: QueueItem[] = dueForReview(topics).map(({ topic, review }) => {
+  const items: QueueItem[] = dueForReview(topics, cal).map(({ topic, review }) => {
     const s = subjectById.get(topic.subject_id);
     return {
       topic,

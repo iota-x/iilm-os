@@ -7,9 +7,9 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Semwise — IILM University",
+    name: "Semwise",
     short_name: "Semwise",
-    description: "Your semester, planned. For IILM University.",
+    description: "Your semester, planned.",
     start_url: "/",
     display: "standalone",
     background_color: "#f7f5f1",

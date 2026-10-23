@@ -1,15 +1,13 @@
 /**
  * The curriculum for one account: subjects, units, topics, experiments,
- * components, strategies, books, resources, questions, timetable and exams.
+ * components, strategies, books, resources, questions, timetable and exams —
+ * from the packs its class (cohort) points at in lib/universities.
  * Shared by `npm run seed`, `npm run onboard` and the sign-up route, so it
  * takes the client it should write with and throws instead of exiting.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { subjects, SEMESTER, exams } from "@/data";
-import { slots } from "@/data/timetable";
-import { questions } from "@/data/questions";
-import { resources } from "@/data/resources";
-import { planDays } from "@/data/plan";
+import { catalogOf, timetableOf } from "@/data/catalogs";
+import { universityById, type Cohort } from "@/lib/universities";
 
 export class SeedError extends Error {
   constructor(
@@ -27,6 +25,8 @@ export class SeedError extends Error {
  * for one person's situation and shouldn't land in sixty accounts.
  */
 export interface SeedOptions {
+  /** the student's class: decides the syllabus, timetable and university */
+  cohort: Cohort;
   /** the personal 18-day plan — one person's, not the section's */
   plan: boolean;
   /** strategies written in the second person to the original student */
@@ -41,6 +41,19 @@ export async function seedUser(
 ) {
   const fail = (label: string, error: unknown): never => {
     throw new SeedError(label, error);
+  };
+  const university = universityById(opts.cohort.universityId);
+  const catalog = catalogOf(opts.cohort.catalog);
+  const slots = timetableOf(opts.cohort.timetable);
+  const SEMESTER = {
+    name: catalog?.semester.name ?? `${opts.cohort.programme} — Semester ${opts.cohort.semester}`,
+    number: opts.cohort.semester,
+    section: opts.cohort.section ? `${opts.cohort.programme} Sem ${opts.cohort.semester} ${opts.cohort.section}` : null,
+    batch: opts.cohort.batch,
+    session: catalog?.semester.session ?? null,
+    university: university?.name ?? null,
+    school: catalog?.semester.school ?? null,
+    startDate: catalog?.semester.startDate ?? null,
   };
 
   // ─── semester ─────────────────────────────────────────────────────
@@ -66,6 +79,14 @@ export async function seedUser(
   if (semErr) fail("semester", semErr);
   const semesterId = sem!.id as string;
   log("semester");
+
+  // A class whose syllabus isn't loaded yet gets the semester and nothing
+  // else; the app says so and the account fills in once the pack exists.
+  if (!catalog) {
+    log("no syllabus pack for this class yet");
+    return;
+  }
+  const { subjects, questions, resources, exams, plan: planDays } = catalog;
 
   // ─── subjects and their children ──────────────────────────────────
   const subjectIdBySlug: Record<string, string> = {};
@@ -526,23 +547,37 @@ export async function seedUser(
 export async function ensureProfile(
   db: SupabaseClient,
   userId: string,
-  defaults: { display_name: string; lab_group: 1 | 2; section?: string; must_change_password?: boolean },
+  defaults: {
+    display_name: string;
+    lab_group: number;
+    section?: string;
+    must_change_password?: boolean;
+    /** lib/universities ids; written when migration 012 is in */
+    university_id?: string;
+    cohort_id?: string;
+  },
 ) {
   const { data: existing } = await db
     .from("profiles")
     .select("display_name, lab_group")
     .eq("id", userId)
     .maybeSingle();
-  const { error } = await db.from("profiles").upsert(
-    {
-      id: userId,
-      display_name: existing?.display_name ?? defaults.display_name,
-      lab_group: existing?.lab_group ?? defaults.lab_group,
-      ...(defaults.section ? { section: defaults.section } : {}),
-      ...(existing ? {} : { must_change_password: defaults.must_change_password ?? false }),
-    },
-    { onConflict: "id" },
-  );
+  const row = {
+    id: userId,
+    display_name: existing?.display_name ?? defaults.display_name,
+    lab_group: existing?.lab_group ?? defaults.lab_group,
+    ...(defaults.section ? { section: defaults.section } : {}),
+    ...(existing ? {} : { must_change_password: defaults.must_change_password ?? false }),
+  };
+  const tenant = {
+    ...(defaults.university_id ? { university_id: defaults.university_id } : {}),
+    ...(defaults.cohort_id ? { cohort_id: defaults.cohort_id } : {}),
+  };
+  let { error } = await db.from("profiles").upsert({ ...row, ...tenant }, { onConflict: "id" });
+  // before migration 012 there are no university columns; every account then is the default class
+  if (error && /university_id|cohort_id/.test(error.message)) {
+    ({ error } = await db.from("profiles").upsert(row, { onConflict: "id" }));
+  }
   if (error) throw new SeedError("profile", error);
   return existing?.display_name ?? defaults.display_name;
 }

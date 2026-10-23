@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 /**
  * Installable on a phone, and — the point — a share target on Android: from
- * the gallery, select the day's photos, Share → IILM OS, and they land in
+ * the gallery, select the day's photos, Share → Semwise, and they land in
  * the inbox filed by the time they were taken. No transfer to a laptop.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "IILM OS",
-    short_name: "IILM OS",
-    description: "Your semester, one place.",
+    name: "Semwise — IILM University",
+    short_name: "Semwise",
+    description: "Your semester, planned. For IILM University.",
     start_url: "/",
     display: "standalone",
     background_color: "#f7f5f1",

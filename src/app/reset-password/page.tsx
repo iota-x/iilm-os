@@ -14,7 +14,10 @@ export default async function ResetPasswordPage() {
       <div className="w-full max-w-[400px]">
         <div className="mb-6 flex items-center gap-2.5">
           <Mark size={32} />
-          <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">IILM OS</p>
+          <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
+            Semwise
+            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+          </p>
         </div>
         <h1 className="text-[length:var(--text-page)]">New password</h1>
         <p className="mt-2 text-[length:var(--text-small)] leading-relaxed text-muted">

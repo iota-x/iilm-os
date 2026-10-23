@@ -19,8 +19,9 @@ export default async function WelcomePage() {
       <div className="w-full max-w-[400px]">
         <div className="mb-6 flex items-center gap-2.5">
           <Mark size={32} />
-          <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">
-            IILM OS
+          <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
+            Semwise
+            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
           </p>
         </div>
         <h1 className="text-[length:var(--text-page)]">

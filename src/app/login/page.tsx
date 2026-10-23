@@ -105,8 +105,8 @@ function LoginForm() {
           <Link href="/landing" className="flex items-center gap-2.5 rounded focus-ring">
             <Mark size={32} />
             <div>
-              <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">IILM OS</p>
-              <p className="text-[length:var(--text-micro)] text-muted leading-tight">B.Tech CSE, Semester I</p>
+              <p className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">Semwise</p>
+              <p className="text-[length:var(--text-micro)] text-muted leading-tight">for IILM University · B.Tech CSE, Semester I</p>
             </div>
           </Link>
           <ThemeToggle />

@@ -82,8 +82,9 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-3.5">
           <div className="flex min-w-0 items-center gap-2.5">
             <Mark size={30} />
-            <span className="whitespace-nowrap font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">
-              IILM OS
+            <span className="whitespace-nowrap font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
+              Semwise
+              <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -406,7 +407,10 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center gap-2.5">
                 <Mark size={30} />
-                <span className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">IILM OS</span>
+                <span className="font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
+                  Semwise
+                  <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+                </span>
               </div>
               <p className="mt-4 max-w-[38ch] text-[length:var(--text-small)] leading-relaxed text-muted">
                 One semester of B.Tech CSE, Section E, as a working system — the course plans,

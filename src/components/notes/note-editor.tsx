@@ -696,7 +696,7 @@ export function NoteEditor({
       >
         <h1 className="mb-1 text-2xl font-semibold tracking-tight text-[#1b1915]">{title || "Untitled"}</h1>
         <p className="mb-4 border-b border-[#e6e1d7] pb-3 text-[13px] text-[#6b665c]">
-          {(subjects.find((s) => s.id === subjectId)?.name ?? "") + (subjectId ? " · " : "")}IILM OS notes
+          {(subjects.find((s) => s.id === subjectId)?.name ?? "") + (subjectId ? " · " : "")}Semwise notes
         </p>
         {content.trim() ? <Markdown>{content}</Markdown> : null}
       </div>

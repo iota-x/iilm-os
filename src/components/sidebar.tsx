@@ -178,7 +178,10 @@ export function Sidebar({
       <div className="flex h-14 shrink-0 items-center gap-2 px-3">
         <Link href="/" className="flex min-w-0 items-center gap-2 focus-ring rounded">
           <Mark size={28} />
-          <span className="truncate font-serif text-[length:var(--text-lead)] font-semibold tracking-tight">IILM OS</span>
+          <span className="min-w-0 truncate font-serif text-[length:var(--text-lead)] font-semibold tracking-tight leading-tight">
+            Semwise
+            <span className="block text-[length:var(--text-micro)] font-sans font-normal tracking-normal text-muted leading-tight">for IILM University</span>
+          </span>
         </Link>
         <button
           onClick={() => setCollapsed(true)}

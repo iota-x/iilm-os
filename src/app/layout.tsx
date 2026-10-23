@@ -37,22 +37,22 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: "IILM OS",
-    template: "%s · IILM OS",
+    default: "Semwise · IILM University",
+    template: "%s · Semwise",
   },
   description: DESCRIPTION,
-  applicationName: "IILM OS",
+  applicationName: "Semwise",
   openGraph: {
     type: "website",
-    siteName: "IILM OS",
-    title: "IILM OS — Section E's semester, in one place",
+    siteName: "Semwise",
+    title: "Semwise for IILM University — your semester, planned",
     description: DESCRIPTION,
     url: SITE,
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "IILM OS — Section E's semester, in one place",
+    title: "Semwise for IILM University — your semester, planned",
     description: DESCRIPTION,
     creator: "@iota_xx",
   },

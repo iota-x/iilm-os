@@ -1,5 +1,5 @@
 /**
- * The IILM OS mark: a week, drawn to scale — three days of blocks, with the
+ * The Semwise mark: a week, drawn to scale — three days of blocks, with the
  * class that's on right now lit. It's the planner's timetable reduced to an
  * icon, which is the one picture this product owns.
  *

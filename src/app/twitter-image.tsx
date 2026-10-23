@@ -7,7 +7,7 @@ import { MARK_BLOCKS, CREAM, CREAM_DIM } from "@/components/mark";
  * variables, and the serif has to be fetched as a TTF.
  */
 export const runtime = "nodejs";
-export const alt = "IILM OS — Section E's semester, in one place";
+export const alt = "Semwise for IILM University — your semester, planned";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -51,7 +51,10 @@ export default async function OpenGraphImage() {
               <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx={2.5} fill={b.lit ? CREAM : CREAM_DIM} />
             ))}
           </svg>
-          <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.5 }}>IILM OS</div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.5 }}>Semwise</div>
+            <div style={{ fontSize: 22, opacity: 0.7 }}>for IILM University</div>
+          </div>
         </div>
 
         {/* the pitch */}

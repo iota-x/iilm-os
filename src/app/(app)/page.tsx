@@ -140,13 +140,6 @@ export default async function Dashboard() {
   const focusQueue = todayQueue.length ? todayQueue.length - 1 : 0;
   const firstRun = [
     {
-      key: "key",
-      label: "Add your Gemini key",
-      why: "Ask runs on your own free key — two minutes at aistudio.google.com.",
-      href: "/settings",
-      done: Boolean(profile?.gemini_key),
-    },
-    {
       key: "goal",
       label: "Set a goal",
       why: "Pick a subject and a date; each day's share lands here on Today.",

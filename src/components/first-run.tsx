@@ -44,7 +44,7 @@ export function FirstRun({ steps }: { steps: FirstRunStep[] }) {
       <div className="flex items-start justify-between gap-3 px-5 pt-4">
         <div>
           <p className="font-serif text-[length:var(--text-lead)] font-semibold">
-            Five things, then it runs itself
+            {["One", "Two", "Three", "Four", "Five", "Six"][steps.length - 1] ?? steps.length} things, then it runs itself
           </p>
           <p className="mt-0.5 text-[length:var(--text-small)] text-muted">
             {remaining === steps.length

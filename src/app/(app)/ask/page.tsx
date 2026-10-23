@@ -21,7 +21,7 @@ export default async function AskPage({ searchParams }: { searchParams: Promise<
       <div>
         <h1 className="text-[length:var(--text-page)]">Ask</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
-          Claude, with your syllabus loaded and permission to change your data.
+          An assistant with your syllabus loaded and permission to change your data.
         </p>
       </div>
 

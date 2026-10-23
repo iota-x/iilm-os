@@ -1,24 +1,30 @@
 import { Target } from "lucide-react";
-import { getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits } from "@/lib/queries";
+import { getExams, getGoalMinutes, getGoals, getSubjects, getTasks, getTopics, getUnits } from "@/lib/queries";
 import { NewGoal } from "@/components/goals/new-goal";
 import { GoalCard } from "@/components/goals/goal-card";
+import { PlanEndsems } from "@/components/goals/plan-endsems";
 import { Card, Empty } from "@/components/ui";
 import { istToday, MIDSEM_START, ENDSEM_START, nextPaper } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function GoalsPage() {
-  const [goals, subjects, units, topics, tasks, minutesByGoal] = await Promise.all([
+  const [goals, subjects, units, topics, tasks, minutesByGoal, exams] = await Promise.all([
     getGoals(),
     getSubjects(),
     getUnits(),
     getTopics(),
     getTasks({ from: "2000-01-01" }),
     getGoalMinutes(),
+    getExams(),
   ]);
   const today = istToday();
   const active = goals.filter((g) => g.status === "active");
   const past = goals.filter((g) => g.status !== "active");
+  // end-sem papers still ahead that no active goal covers yet
+  const unplanned = exams.filter(
+    (e) => e.kind === "ese" && e.exam_date && e.exam_date > today && e.subject_id && !active.some((g) => g.subject_id === e.subject_id),
+  ).length;
 
   return (
     <div className="mx-auto max-w-[820px] space-y-6">
@@ -31,12 +37,15 @@ export default async function GoalsPage() {
             that each end with a review — and it re-adjusts itself when a day slips.
           </p>
         </div>
-        <NewGoal
-          subjects={subjects}
-          units={units}
-          topics={topics}
-          defaultDeadline={(ENDSEM_START && nextPaper() === "endsem" ? new Date(ENDSEM_START.getTime() - 86_400_000) : MIDSEM_START).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" })}
-        />
+        <div className="flex flex-wrap gap-2">
+          {unplanned ? <PlanEndsems papers={unplanned} /> : null}
+          <NewGoal
+            subjects={subjects}
+            units={units}
+            topics={topics}
+            defaultDeadline={(ENDSEM_START && nextPaper() === "endsem" ? new Date(ENDSEM_START.getTime() - 86_400_000) : MIDSEM_START).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" })}
+          />
+        </div>
       </div>
 
       {active.length ? (

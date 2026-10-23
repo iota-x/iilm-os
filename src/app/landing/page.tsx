@@ -246,10 +246,10 @@ export default function LandingPage() {
               </p>
 
               <div className="mt-8 rounded-[var(--radius-card)] border border-line bg-surface p-4">
-                <p className="text-[length:var(--text-small)] font-medium">It runs on a key you bring</p>
+                <p className="text-[length:var(--text-small)] font-medium">It works the moment you sign in</p>
                 <p className="mt-1 text-[length:var(--text-micro)] leading-relaxed text-muted">
-                  Google gives everyone a free Gemini key. Yours is yours alone, stored only against
-                  your account.
+                  Everyone gets 20 questions a day on a shared key. For no limit, add the free Gemini
+                  key Google gives everyone. Yours is yours alone, stored only against your account.
                 </p>
                 <ol className="mt-3 space-y-1.5 text-[length:var(--text-small)] text-muted">
                   <li className="flex gap-2">

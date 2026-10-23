@@ -866,6 +866,43 @@ export async function createGoal(input: {
   return { id: data.id as string, ...plan };
 }
 
+/**
+ * One tap for a new account: a whole-subject goal for every end-sem paper
+ * still ahead, due the day before it. Subjects that already have an active
+ * goal are left alone.
+ */
+export async function planEndsems(dailyMinutes = 40): Promise<{ created: number }> {
+  const { db } = await uid();
+  const today = istToday();
+  const [{ data: exams }, { data: goals }, { data: subjects }] = await Promise.all([
+    db.from("exams").select("subject_id, exam_date").eq("kind", "ese").gt("exam_date", today),
+    db.from("goals").select("subject_id").eq("status", "active"),
+    db.from("subjects").select("id, short_name"),
+  ]);
+  const taken = new Set((goals ?? []).map((g) => g.subject_id));
+  let created = 0;
+  for (const e of exams ?? []) {
+    if (!e.subject_id || taken.has(e.subject_id)) continue;
+    const deadline = new Date(new Date(e.exam_date + "T00:00:00Z").getTime() - 86_400_000).toISOString().slice(0, 10);
+    if (deadline < today) continue;
+    const name = subjects?.find((s) => s.id === e.subject_id)?.short_name ?? "Subject";
+    const goal = await createGoal({
+      title: `${name} end-sem`,
+      subject_id: e.subject_id,
+      scope: "subject",
+      deadline,
+      daily_minutes: dailyMinutes,
+    });
+    // a heavy subject needs more than the default; give it what it needs so the whole syllabus fits
+    if (goal.neededPerDay > dailyMinutes) {
+      await replanGoal(goal.id, { daily_minutes: Math.ceil(goal.neededPerDay / 5) * 5 });
+    }
+    taken.add(e.subject_id);
+    created++;
+  }
+  return { created };
+}
+
 /** Rebuild the remaining days from what's still not done — optionally with a new budget, level or deadline. */
 export async function replanGoal(
   id: string,

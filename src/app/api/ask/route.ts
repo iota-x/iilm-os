@@ -4,6 +4,7 @@ import { z } from "zod";
 import { resolveModel } from "@/lib/ai-model";
 import { createClient } from "@/lib/supabase/server";
 import { decrypt } from "@/lib/secret";
+import { SHARED_ASK_DAILY, takeSharedAsk } from "@/lib/ask-quota";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -33,6 +34,14 @@ export async function POST(req: Request) {
     return Response.json(
       { error: "No AI key yet. Add your Gemini key in Settings — it takes two minutes and is free." },
       { status: 501 },
+    );
+  }
+  if (!resolved.own && (await takeSharedAsk(user.id)) < 0) {
+    return Response.json(
+      {
+        error: `That's today's ${SHARED_ASK_DAILY} free questions on the shared key. Add your own free Gemini key in Settings for no limit, or come back tomorrow.`,
+      },
+      { status: 429 },
     );
   }
 

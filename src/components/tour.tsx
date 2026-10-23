@@ -50,7 +50,7 @@ const STEPS = [
   {
     icon: Sparkles,
     title: "Ask knows your syllabus",
-    body: "It can read a board photo, write the note, add checkpoints to a topic, put questions in the bank, or just tell you what to study tonight. It runs on your own free Gemini key — two minutes in Settings.",
+    body: "It can read a board photo, write the note, add checkpoints to a topic, put questions in the bank, or just tell you what to study tonight. It works straight away, 20 questions a day; add your own free Gemini key in Settings for no limit.",
     href: "/ask",
     cta: "Ask",
   },

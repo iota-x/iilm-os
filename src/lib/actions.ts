@@ -1256,3 +1256,108 @@ export async function disconnectClassroom() {
   if (error) throw new Error(error.message);
   revalidatePath("/settings");
 }
+
+/* ─── deadlines caught from WhatsApp / the ERP ──────────────── */
+export interface CaughtSave {
+  title: string;
+  subject: string; // slug, or ""
+  due_date: string;
+  due_time: string;
+  kind: string;
+  quote: string;
+  /** put it on my Planner */
+  add: boolean;
+  /** post it to the class board for everyone */
+  share: boolean;
+  /** it's already on the board: link my to-do to that post */
+  board_id: string | null;
+}
+
+const DUPLICATE = "23505";
+
+/**
+ * Save what the student ticked from /api/catch. Their to-dos go on the
+ * Planner; anything shared becomes a notice with a due date on the class
+ * board, which classmates add to their own Planner with one tap.
+ *
+ * Errors come back as a value: production builds hide a thrown message
+ * from the browser, and "run migration 014" has to reach whoever sees it.
+ * A share that fails doesn't stop the student's own to-dos being saved.
+ */
+export async function saveCaught(items: CaughtSave[]): Promise<{ added: number; shared: number; error?: string }> {
+  const { db, userId } = await uid();
+  const { data: subjects } = await db.from("subjects").select("id, slug");
+  const idOf = new Map((subjects ?? []).map((s) => [s.slug as string, s.id as string]));
+  let added = 0;
+  let shared = 0;
+  let problem: string | undefined;
+  for (const it of items.slice(0, 30)) {
+    const title = it.title.trim().slice(0, 160);
+    if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(it.due_date)) continue;
+    const when = it.due_time ? ` by ${it.due_time}` : "";
+    let postId = it.board_id;
+    if (it.share && !postId && !problem) {
+      const { data, error } = await db
+        .from("posts")
+        .insert({
+          user_id: userId,
+          kind: "notice",
+          title,
+          body: [it.quote ? `> ${it.quote}` : "", `Due ${it.due_date}${when}.`].filter(Boolean).join("\n\n"),
+          subject_slug: it.subject || null,
+          due_date: it.due_date,
+        })
+        .select("id")
+        .single();
+      if (error) {
+        problem = /due_date/.test(error.message)
+          ? "Saved to your Planner, but the class board can't take due dates until migration 014 is run."
+          : `Couldn't post to the class board: ${error.message}`;
+      } else {
+        postId = data.id as string;
+        shared++;
+      }
+    }
+    if (it.add) {
+      const { error } = await db.from("tasks").insert({
+        user_id: userId,
+        title,
+        subject_id: idOf.get(it.subject) ?? null,
+        due_date: it.due_date,
+        kind: "admin",
+        detail: [it.quote, it.due_time ? `Due ${it.due_time}` : ""].filter(Boolean).join(" · ") || null,
+        source: "manual",
+        external_id: postId ? `post:${postId}` : null,
+        sort_order: 999,
+      });
+      if (!error) added++;
+      else if (error.code !== DUPLICATE) problem ??= `Couldn't save "${title}": ${error.message}`;
+    }
+  }
+  revalidatePath("/", "layout");
+  return { added, shared, error: problem };
+}
+
+/** A deadline someone posted on the class board, onto my Planner. */
+export async function addPostToPlanner(postId: string): Promise<{ error?: string }> {
+  const { db, userId } = await uid();
+  const { data: post } = await db.from("posts").select("id, title, subject_slug, due_date").eq("id", postId).maybeSingle();
+  if (!post?.due_date) return { error: "That post has no due date." };
+  const { data: subject } = post.subject_slug
+    ? await db.from("subjects").select("id").eq("slug", post.subject_slug).maybeSingle()
+    : { data: null };
+  const { error } = await db.from("tasks").insert({
+    user_id: userId,
+    title: post.title,
+    subject_id: subject?.id ?? null,
+    due_date: post.due_date,
+    kind: "admin",
+    detail: "From the class board",
+    source: "manual",
+    external_id: `post:${post.id}`,
+    sort_order: 999,
+  });
+  if (error && error.code !== DUPLICATE) return { error: error.message };
+  revalidatePath("/", "layout");
+  return {};
+}

@@ -17,7 +17,7 @@ async function me() {
 /* ─── teachers ──────────────────────────────────────────────── */
 
 /** One post, as many classes as the teacher picks. Returns how many it went to. */
-export async function teacherPost(input: { title: string; body?: string; kind: string; cohorts: string[] }) {
+export async function teacherPost(input: { title: string; body?: string; kind: string; cohorts: string[]; due_date?: string | null }) {
   const { db, teacher, admin } = await me();
   if (!teacher && !admin) throw new Error("Teacher access hasn't been approved yet.");
   if (!input.cohorts.length) throw new Error("Pick at least one class.");
@@ -26,6 +26,8 @@ export async function teacherPost(input: { title: string; body?: string; kind: s
     p_body: input.body ?? "",
     p_kind: input.kind,
     p_cohorts: input.cohorts,
+    // only sent when set, so posting still works before migration 014 adds it
+    ...(input.due_date ? { p_due: input.due_date } : {}),
   });
   if (error) throw new Error(error.message);
   revalidatePath("/teacher");

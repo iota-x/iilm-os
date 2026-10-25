@@ -26,7 +26,7 @@ export function ClassroomCard({
   status,
 }: {
   configured: boolean;
-  link: { google_email: string | null; last_synced_at: string | null; last_error: string | null } | null;
+  link: { google_email: string | null; last_synced_at: string | null; last_error: string | null; reconnect?: boolean } | null;
   status?: string;
 }) {
   const router = useRouter();
@@ -40,7 +40,8 @@ export function ClassroomCard({
       </h2>
       <p className="mt-1.5 max-w-prose text-[length:var(--text-small)] leading-relaxed text-muted">
         Every assignment with a due date, from every class you&rsquo;re in, lands on your Planner and Today — and ticks itself off
-        once you&rsquo;ve turned it in. Read-only: Semwise can&rsquo;t post, submit or see your grades.
+        once you&rsquo;ve turned it in. Dates in announcements become to-dos too, and posted PDFs and links are saved under the
+        subject. Read-only: Semwise can&rsquo;t post, submit or see your grades.
       </p>
       {configured && status && STATUS[status] ? (
         <p className="mt-2 rounded-lg bg-surface-2 px-3 py-2 text-[length:var(--text-micro)]">{STATUS[status]}</p>
@@ -54,6 +55,15 @@ export function ClassroomCard({
             Connected{link.google_email ? <> as <span className="font-medium">{link.google_email}</span></> : null}
             {link.last_synced_at ? <span className="text-subtle"> · synced {relativeDay(link.last_synced_at.slice(0, 10))}</span> : null}
           </p>
+          {link.reconnect ? (
+            <p className="rounded-lg bg-[var(--accent-soft)] px-3 py-2 text-[length:var(--text-micro)]">
+              Semwise can now read announcements and class materials too.{" "}
+              <a href="/api/classroom/connect" className="font-medium text-[var(--accent)] underline underline-offset-2">
+                Reconnect once
+              </a>{" "}
+              to allow it.
+            </p>
+          ) : null}
           {link.last_error ? (
             <p className="rounded-lg bg-[var(--bad-soft)] px-3 py-2 text-[length:var(--text-micro)] text-[var(--bad)]">Last sync failed: {link.last_error}</p>
           ) : null}
@@ -66,7 +76,11 @@ export function ClassroomCard({
                   const res = await fetch("/api/classroom/sync", { method: "POST" });
                   const d = await res.json().catch(() => ({}));
                   if (!res.ok) toast.error(d.error ?? "Sync failed");
-                  else toast.success(`${d.courses} classes checked — ${d.added} new, ${d.updated} updated`);
+                  else
+                    toast.success(
+                      `${d.courses} class${d.courses === 1 ? "" : "es"} checked — ${d.added} new, ${d.updated} updated` +
+                        (d.materials ? `, ${d.materials} material${d.materials === 1 ? "" : "s"} saved` : ""),
+                    );
                   router.refresh();
                 })
               }

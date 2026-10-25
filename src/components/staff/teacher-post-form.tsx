@@ -20,6 +20,7 @@ export function TeacherPostForm({ cohorts }: { cohorts: { id: string; label: str
   const [kind, setKind] = useState<string>("notice");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [due, setDue] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
   const [pending, start] = useTransition();
   const all = picked.length === cohorts.length;
@@ -32,10 +33,11 @@ export function TeacherPostForm({ cohorts }: { cohorts: { id: string; label: str
           e.preventDefault();
           start(async () => {
             try {
-              const n = await teacherPost({ title, body, kind, cohorts: picked });
+              const n = await teacherPost({ title, body, kind, cohorts: picked, due_date: kind === "notice" ? due || null : null });
               toast.success(`Posted to ${n} class${n === 1 ? "" : "es"}`);
               setTitle("");
               setBody("");
+              setDue("");
               router.refresh();
             } catch (err) {
               toast.error(err instanceof Error ? err.message : "Couldn't post");
@@ -67,6 +69,13 @@ export function TeacherPostForm({ cohorts }: { cohorts: { id: string; label: str
           rows={4}
           className={cn(inputCls, "h-auto resize-y py-2")}
         />
+        {kind === "notice" ? (
+          <label className="flex flex-wrap items-center gap-2 text-[length:var(--text-small)] text-muted">
+            Due date, if it&rsquo;s a deadline
+            <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className={cn(inputCls, "w-[160px]")} />
+            <span className="text-[length:var(--text-micro)] text-subtle">Students get a button to put it on their Planner.</span>
+          </label>
+        ) : null}
         <div>
           <div className="flex items-center justify-between">
             <p className="text-[length:var(--text-micro)] font-medium text-muted">Send to</p>

@@ -7,7 +7,7 @@ import { GeminiKeyForm } from "@/components/gemini-key-form";
 import { decrypt } from "@/lib/secret";
 import { Card, CardHead } from "@/components/ui";
 import { ClassroomCard } from "@/components/classroom-card";
-import { classroomConfigured } from "@/lib/classroom";
+import { classroomConfigured, needsReconnect } from "@/lib/classroom";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     getAttendance(),
     getSlots(),
     searchParams,
-    db.from("classroom_links").select("google_email, last_synced_at, last_error").maybeSingle(),
+    db.from("classroom_links").select("*").maybeSingle(), // * so a missing 014 column doesn't hide the link
   ]);
 
   if (!profile) return null;
@@ -67,7 +67,11 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} labGroups={tenant.cohort.labGroups} labLines={labLines} />
 
-      <ClassroomCard configured={classroomConfigured()} link={classroomLink ?? null} status={classroomStatus} />
+      <ClassroomCard
+        configured={classroomConfigured()}
+        link={classroomLink ? { ...classroomLink, reconnect: needsReconnect(classroomLink.granted_scopes) } : null}
+        status={classroomStatus}
+      />
 
       {profile.is_admin ? (
       <Card className="flex flex-wrap items-center justify-between gap-3 p-5">

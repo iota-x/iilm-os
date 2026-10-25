@@ -32,7 +32,8 @@ fetch(`${SITE}/api/search-pages?q=karnaugh`, { headers: { Authorization: `Bearer
 | `GET /api/search-pages?q=` | words inside the class notes → `{ hits: [{ label, snippet, href, subject }] }` |
 | `GET /api/events/:id/ics` | an event as a calendar file (or use expo-calendar with the row itself) |
 | `GET /api/classroom/connect?app=1&json=1` | `{ url }` — open it in a browser; Google sends the student back to `semwise://classroom?status=connected` |
-| `POST /api/classroom/sync` | pull Classroom coursework into to-dos now → `{ courses, added, updated }` |
+| `POST /api/classroom/sync` | pull Classroom coursework, announcement deadlines and materials now → `{ courses, added, updated, materials, reconnect }` |
+| `POST /api/catch` | read deadlines out of `{ text }` (a WhatsApp message or a whole exported chat) or `{ image: { data: base64, mediaType } }` (an ERP screenshot) → `{ items: [{ title, subject, due_date, due_time, kind, quote, in_planner, on_board }] }`. Saves nothing: insert the ones the student keeps into `tasks` (external_id `post:<id>` when linked to a board post) and, to share, into `posts` as a `notice` with `due_date`. The app's share extension can send WhatsApp text straight here. |
 
 `/api/search-index` and `/api/ask` still read the web session only.
 
@@ -61,8 +62,12 @@ supabase.from("paper_votes").insert({ paper_id, user_id });
 supabase.from("events").select("*, event_rsvps(count)").gte("starts_at", since).order("starts_at");
 supabase.from("event_rsvps").insert({ event_id, user_id });          // I'm going
 
+// deadlines on the board (migration 014): notices with a due_date
+supabase.from("posts").select("id, title, due_date, subject_slug").gte("due_date", today).order("due_date");
+supabase.from("tasks").insert({ user_id, title, due_date, kind: "admin", source: "manual", external_id: `post:${id}` }); // add to my Planner
+
 // teachers
-supabase.rpc("teacher_post", { p_title, p_body, p_kind, p_cohorts }); // → how many classes
+supabase.rpc("teacher_post", { p_title, p_body, p_kind, p_cohorts, p_due }); // → how many classes; p_due optional
 supabase.rpc("set_post_verified", { p_id, p_on });
 supabase.rpc("set_paper_verified", { p_id, p_on });
 ```

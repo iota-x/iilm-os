@@ -6,7 +6,7 @@ import { Helpful } from "@/components/class/helpful";
 import { NewSince } from "@/components/class/seen";
 import { Points, TeacherTag, Verified } from "@/components/class/badges";
 import { Badge, Card, Empty } from "@/components/ui";
-import { ACCENT_CLASS, cn, relativeDay } from "@/lib/utils";
+import { ACCENT_CLASS, cn, fmtDate, relativeDay } from "@/lib/utils";
 import type { PostKind } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
@@ -136,6 +136,7 @@ export default async function ClassPage({
                         </span>
                         <Badge tone={KIND_TONE[p.kind]}>{KIND_LABEL[p.kind]}</Badge>
                         {p.kind === "question" && p.answer_reply_id ? <Badge tone="good">answered</Badge> : null}
+                        {p.due_date ? <Badge tone="warn">due {fmtDate(p.due_date)}</Badge> : null}
                         <Verified by={p.verifier} />
                         {s ? <Badge tone="subject">{s.short_name}</Badge> : null}
                         <NewSince postId={p.id} replies={p.reply_count} />

@@ -319,6 +319,8 @@ export interface Post {
   anonymous?: boolean;
   verified_by?: string | null;
   verified_at?: string | null;
+  /** a deadline on the board (migration 014): classmates add it to their Planner */
+  due_date?: string | null;
   created_at: string;
   updated_at: string;
   /** joined from member_names; "Anonymous" when it is */

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, EyeOff } from "lucide-react";
-import { getClassPoints, getNoticeReach, getPost, getProfile, getSubjects } from "@/lib/queries";
+import { getClassPoints, getNoticeReach, getPost, getProfile, getSubjects, postOnPlanner } from "@/lib/queries";
 import { Markdown } from "@/components/markdown";
 import { Replies } from "@/components/class/replies";
 import { DeletePost } from "@/components/class/delete-post";
@@ -11,6 +11,7 @@ import { MarkSeen } from "@/components/class/seen";
 import { Points, TeacherTag, Verified } from "@/components/class/badges";
 import { VerifyPost } from "@/components/class/verify-post";
 import { NoticeReach } from "@/components/class/notice-reach";
+import { AddToPlanner } from "@/components/class/add-to-planner";
 import { boardImageUrl } from "@/lib/board-image";
 import { Badge, Card } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtDate } from "@/lib/utils";
@@ -27,7 +28,10 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const admin = Boolean(profile?.is_admin);
   const teacher = Boolean(profile?.is_faculty) || admin;
   const points = Object.fromEntries(allTime.map((p) => [p.user_id, p.points]));
-  const reach = post.kind === "notice" ? await getNoticeReach(post.id) : null;
+  const [reach, onPlanner] = await Promise.all([
+    post.kind === "notice" ? getNoticeReach(post.id) : null,
+    post.due_date ? postOnPlanner(post.id) : false,
+  ]);
 
   return (
     <div className={cn("mx-auto max-w-[760px] space-y-5", subject ? ACCENT_CLASS[subject.color] : "")}>
@@ -80,6 +84,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         {post.body ? (
           <div className="prose-note mt-4">
             <Markdown>{post.body}</Markdown>
+          </div>
+        ) : null}
+        {post.due_date ? (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] bg-surface-2 px-3.5 py-2.5">
+            <span className="text-[length:var(--text-small)]">
+              Due <span className="font-medium">{fmtDate(post.due_date)}</span>
+            </span>
+            <AddToPlanner id={post.id} added={onPlanner} />
           </div>
         ) : null}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">

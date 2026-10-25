@@ -4,6 +4,8 @@ import type { MetadataRoute } from "next";
  * Installable on a phone, and — the point — a share target on Android: from
  * the gallery, select the day's photos, Share → Semwise, and they land in
  * the inbox filed by the time they were taken. No transfer to a laptop.
+ * A WhatsApp message or exported chat shared the same way goes to the
+ * Planner, where its deadlines are read out.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -26,7 +28,7 @@ export default function manifest(): MetadataRoute.Manifest {
       params: {
         title: "title",
         text: "text",
-        files: [{ name: "files", accept: ["image/*", "application/pdf"] }],
+        files: [{ name: "files", accept: ["image/*", "application/pdf", "text/plain", ".txt"] }],
       },
     },
   } as MetadataRoute.Manifest;

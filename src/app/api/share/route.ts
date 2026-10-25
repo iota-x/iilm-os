@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { exifDate, filenameDate, matchSession } from "@/lib/capture";
@@ -12,6 +13,10 @@ const MAX_BYTES = 25 * 1024 * 1024;
  * multipart form; each is filed by its capture time against the timetable
  * exactly as the inbox upload does, then the browser is sent to /inbox.
  *
+ * Text with no photos — a WhatsApp message, or an exported group chat
+ * (.txt) — is a deadline to catch instead: it's parked in the student's own
+ * vault folder and the Planner's catch panel reads the dates out of it.
+ *
  * The installed app shares Chrome's cookies, so the normal session applies.
  */
 export async function POST(req: Request) {
@@ -24,8 +29,23 @@ export async function POST(req: Request) {
   }
 
   const form = await req.formData();
-  const files = form.getAll("files").filter((f): f is File => f instanceof File);
+  const all = form.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
+  const isText = (f: File) => f.type.startsWith("text/") || /\.txt$/i.test(f.name);
+  const files = all.filter((f) => !isText(f));
   const text = String(form.get("text") ?? form.get("title") ?? "").trim();
+
+  if (!files.length) {
+    const chats = await Promise.all(all.filter(isText).map((f) => f.text()));
+    const body = [text, ...chats].filter(Boolean).join("\n\n").slice(0, 2_000_000);
+    if (!body) return NextResponse.redirect(new URL("/planner?catch=new", req.url), 303);
+    const id = randomBytes(9).toString("hex");
+    const { error } = await db.storage
+      .from("vault")
+      .upload(`${user.id}/_catch/${id}.txt`, new TextEncoder().encode(body), { contentType: "text/plain", upsert: false });
+    const to = new URL("/planner", req.url);
+    to.searchParams.set("catch", error ? "new" : id);
+    return NextResponse.redirect(to, 303);
+  }
 
   const [{ data: profile }, { data: slots }] = await Promise.all([
     db.from("profiles").select("lab_group").eq("id", user.id).single(),

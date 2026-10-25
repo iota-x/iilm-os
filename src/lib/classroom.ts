@@ -1,11 +1,15 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { decrypt, encrypt } from "@/lib/secret";
+import { resolveModel } from "@/lib/ai-model";
+import { extractDeadlines } from "@/lib/deadlines";
 
 /**
  * Google Classroom → planner to-dos. Each student connects their own Google
  * account once (OAuth, read-only scopes); their coursework with a due date
  * becomes to-dos on the Planner and Today, ticked off when it's turned in.
+ * Announcements are read for deadlines too (many teachers announce rather
+ * than set coursework), and posted materials are saved as resources.
  *
  * Needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (a Google Cloud OAuth
  * client, type "Web application"). Without them the feature stays hidden.
@@ -15,7 +19,16 @@ export const SCOPES = [
   "email",
   "https://www.googleapis.com/auth/classroom.courses.readonly",
   "https://www.googleapis.com/auth/classroom.coursework.me.readonly",
+  "https://www.googleapis.com/auth/classroom.announcements.readonly",
+  "https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly",
 ];
+const ANNOUNCEMENTS = SCOPES[4];
+const MATERIALS = SCOPES[5];
+
+/** Connected before announcements and materials were read: one reconnect adds them. */
+export function needsReconnect(granted: string | null | undefined) {
+  return granted != null && !(granted.includes(ANNOUNCEMENTS) && granted.includes(MATERIALS));
+}
 
 export function classroomConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
@@ -73,7 +86,7 @@ async function token(params: Record<string, string>) {
       ...params,
     }),
   });
-  const data = (await res.json()) as { access_token?: string; refresh_token?: string; id_token?: string; error?: string; error_description?: string };
+  const data = (await res.json()) as { access_token?: string; refresh_token?: string; id_token?: string; scope?: string; error?: string; error_description?: string };
   if (!res.ok || !data.access_token) throw new Error(data.error_description ?? data.error ?? `Google said ${res.status}`);
   return data;
 }
@@ -102,6 +115,14 @@ type Course = { id: string; name: string; section?: string };
 type Due = { year: number; month: number; day: number };
 type Work = { id: string; title: string; alternateLink?: string; dueDate?: Due; dueTime?: { hours?: number; minutes?: number }; state?: string };
 type Submission = { courseWorkId: string; state?: string };
+type Announcement = { id: string; text?: string; state?: string; creationTime?: string; updateTime?: string };
+type Material = {
+  driveFile?: { driveFile?: { title?: string; alternateLink?: string } };
+  link?: { url?: string; title?: string };
+  youtubeVideo?: { title?: string; alternateLink?: string };
+  form?: { title?: string; formUrl?: string };
+};
+type MaterialPost = { id: string; title?: string; state?: string; materials?: Material[] };
 
 /** Classroom's due date is UTC; the planner works in India dates. */
 function istDue(d: Due, t?: { hours?: number; minutes?: number }) {
@@ -127,14 +148,18 @@ export async function syncClassroom(db: SupabaseClient, userId: string) {
   const { data: link } = await db.from("classroom_links").select("refresh_token").eq("user_id", userId).maybeSingle();
   if (!link) throw new Error("Classroom isn't connected.");
   try {
-    const { access_token } = await token({ refresh_token: decrypt(link.refresh_token)!, grant_type: "refresh_token" });
+    const { access_token, scope } = await token({ refresh_token: decrypt(link.refresh_token)!, grant_type: "refresh_token" });
+    const granted = scope ?? "";
+    // separate write: before migration 014 the column doesn't exist, and that mustn't fail the sync
+    await db.from("classroom_links").update({ granted_scopes: granted }).eq("user_id", userId);
     const { courses = [] } = await api<{ courses?: Course[] }>(access_token!, "courses", { studentId: "me", courseStates: "ACTIVE", pageSize: "50" });
 
-    const { data: subjects } = await db.from("subjects").select("id, name, short_name").eq("user_id", userId);
-    const subjectFor = (course: string) => {
+    const { data: subjects } = await db.from("subjects").select("id, slug, name, short_name, code, teacher").eq("user_id", userId);
+    const subjectRow = (course: string) => {
       const c = course.toLowerCase();
-      return (subjects ?? []).find((s) => c.includes(String(s.short_name).toLowerCase()) || c.includes(String(s.name).toLowerCase()))?.id ?? null;
+      return (subjects ?? []).find((s) => c.includes(String(s.short_name).toLowerCase()) || c.includes(String(s.name).toLowerCase())) ?? null;
     };
+    const subjectFor = (course: string) => subjectRow(course)?.id ?? null;
 
     const cutoff = new Date(Date.now() - 14 * 86_400_000).toISOString().slice(0, 10); // ignore long-past work
     const wanted: { external_id: string; title: string; detail: string; due_date: string; subject_id: string | null; done: boolean }[] = [];
@@ -183,11 +208,140 @@ export async function syncClassroom(db: SupabaseClient, userId: string) {
         updated++;
       }
     }
+
+    // extras: a failure here is logged, never allowed to undo the coursework sync above
+    const extra = async (what: string, run: () => Promise<number>) => {
+      try {
+        return await run();
+      } catch (e) {
+        console.error(`classroom: ${what} failed for ${userId}`, e);
+        return 0;
+      }
+    };
+    const materials = granted.includes(MATERIALS) ? await extra("materials", () => syncMaterials(db, userId, access_token!, courses, subjectFor)) : 0;
+    const fromAnnouncements = granted.includes(ANNOUNCEMENTS)
+      ? await extra("announcements", () => syncAnnouncements(db, userId, access_token!, courses, subjects ?? [], subjectRow))
+      : 0;
+
     await db.from("classroom_links").update({ last_synced_at: new Date().toISOString(), last_error: null }).eq("user_id", userId);
-    return { courses: courses.length, added, updated };
+    return { courses: courses.length, added: added + fromAnnouncements, updated, materials, reconnect: needsReconnect(granted) };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     await db.from("classroom_links").update({ last_error: msg.slice(0, 300) }).eq("user_id", userId);
     throw e;
   }
+}
+
+/** Posted materials (PDFs, links, videos) → resources under the class's subject. Matched on the URL. */
+async function syncMaterials(
+  db: SupabaseClient,
+  userId: string,
+  accessToken: string,
+  courses: Course[],
+  subjectFor: (course: string) => string | null,
+) {
+  const found: { title: string; url: string; kind: string; why: string; subject_id: string | null }[] = [];
+  for (const course of courses) {
+    const { courseWorkMaterial = [] } = await api<{ courseWorkMaterial?: MaterialPost[] }>(
+      accessToken,
+      `courses/${course.id}/courseWorkMaterials`,
+      { pageSize: "100" },
+    );
+    for (const post of courseWorkMaterial) {
+      if (post.state && post.state !== "PUBLISHED") continue;
+      for (const m of post.materials ?? []) {
+        const file = m.driveFile?.driveFile;
+        const item = file?.alternateLink
+          ? { title: file.title ?? "File", url: file.alternateLink, kind: /\.pdf$/i.test(file.title ?? "") ? "pdf" : "article" }
+          : m.youtubeVideo?.alternateLink
+            ? { title: m.youtubeVideo.title ?? "Video", url: m.youtubeVideo.alternateLink, kind: "video" }
+            : m.link?.url
+              ? { title: m.link.title ?? m.link.url, url: m.link.url, kind: "article" }
+              : m.form?.formUrl
+                ? { title: m.form.title ?? "Form", url: m.form.formUrl, kind: "tool" }
+                : null;
+        if (item) found.push({ ...item, title: item.title.slice(0, 200), why: `${course.name}${post.title ? ` — ${post.title}` : ""}`.slice(0, 300), subject_id: subjectFor(course.name) });
+      }
+    }
+  }
+  if (!found.length) return 0;
+  const { data: have } = await db.from("resources").select("url").eq("user_id", userId).in("url", found.map((f) => f.url));
+  const known = new Set((have ?? []).map((r) => r.url as string));
+  const fresh = found.filter((f, i) => !known.has(f.url) && found.findIndex((g) => g.url === f.url) === i);
+  if (!fresh.length) return 0;
+  const { error } = await db.from("resources").insert(
+    fresh.map((f) => ({ user_id: userId, ...f, source: "Google Classroom", rank: 9, is_curated: false })),
+  );
+  if (error) throw new Error(error.message);
+  return fresh.length;
+}
+
+/**
+ * Announcements from the last fortnight, read once each for deadlines
+ * ("quiz next Tuesday", "file due 4/11"). Needs migration 014's
+ * seen_announcements; before it, announcements are skipped rather than
+ * read again on every sync.
+ */
+async function syncAnnouncements(
+  db: SupabaseClient,
+  userId: string,
+  accessToken: string,
+  courses: Course[],
+  subjects: { id: string; slug: string; name: string; short_name: string | null; code: string | null; teacher: string | null }[],
+  subjectRow: (course: string) => { id: string; slug: string } | null,
+) {
+  const { data: link, error } = await db.from("classroom_links").select("seen_announcements").eq("user_id", userId).maybeSingle();
+  if (error || !link) return 0;
+  const seen = new Set((link.seen_announcements as string[] | null) ?? []);
+  const since = new Date(Date.now() - 14 * 86_400_000).toISOString();
+
+  const fresh: { id: string; course: Course; text: string; at: string }[] = [];
+  for (const course of courses) {
+    const { announcements = [] } = await api<{ announcements?: Announcement[] }>(accessToken, `courses/${course.id}/announcements`, {
+      pageSize: "30",
+      orderBy: "updateTime desc",
+    });
+    for (const a of announcements) {
+      const at = a.updateTime ?? a.creationTime ?? "";
+      if (a.state && a.state !== "PUBLISHED") continue;
+      if (!a.text?.trim() || at < since || seen.has(a.id)) continue;
+      fresh.push({ id: a.id, course, text: a.text.trim(), at });
+    }
+  }
+  if (!fresh.length) return 0;
+
+  const { data: prof } = await db.from("profiles").select("gemini_key").eq("id", userId).maybeSingle();
+  const resolved = resolveModel(decrypt(prof?.gemini_key ?? null));
+  if (!resolved) return 0; // no AI key on this server: leave them unseen for when there is one
+
+  const today = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10);
+  const text = fresh
+    .map((a) => {
+      const s = subjectRow(a.course.name);
+      return `Announcement in "${a.course.name}"${s ? ` (subject ${s.slug})` : ""}, posted ${a.at.slice(0, 10)}:\n${a.text}`;
+    })
+    .join("\n\n---\n\n");
+  const items = await extractDeadlines({ model: resolved.model, today, subjects, text, source: "Google Classroom announcements" });
+
+  const idOf = new Map(subjects.map((s) => [s.slug, s.id]));
+  let added = 0;
+  for (const it of items) {
+    const key = `classroom-ann:${it.due_date}:${it.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60)}`;
+    const { error: insErr } = await db.from("tasks").insert({
+      user_id: userId,
+      title: it.title,
+      detail: it.quote || null,
+      due_date: it.due_date,
+      subject_id: idOf.get(it.subject) ?? null,
+      kind: "admin",
+      source: "classroom",
+      external_id: key,
+      status: "todo",
+    });
+    if (!insErr) added++;
+    else if (insErr.code !== "23505") throw new Error(insErr.message);
+  }
+  const keep = [...fresh.map((a) => a.id), ...seen].slice(0, 300);
+  await db.from("classroom_links").update({ seen_announcements: keep }).eq("user_id", userId);
+  return added;
 }

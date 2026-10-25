@@ -2,6 +2,7 @@ import { midsemBadge } from "@/lib/utils";
 import { tenantOf, type Tenant } from "@/lib/universities";
 import { createClient } from "@/lib/supabase/server";
 import { istDay } from "@/lib/streak";
+import { sameDeadline } from "@/lib/deadlines";
 import type {
   AskThread,
   StudySession,
@@ -686,4 +687,49 @@ export async function getGoalMinutes(): Promise<Map<string, number>> {
   const m = new Map<string, number>();
   for (const r of data ?? []) m.set(r.goal_id as string, (m.get(r.goal_id as string) ?? 0) + (r.minutes ?? 0));
   return m;
+}
+
+/**
+ * Deadlines classmates posted on the board (notices with a due date) from
+ * today on, and whether each is already on my Planner. Empty before
+ * migration 014, when posts have no due date.
+ */
+export async function getBoardDeadlines(today: string): Promise<
+  { id: string; title: string; due_date: string; subject_slug: string | null; author: string; added: boolean }[]
+> {
+  const db = await createClient();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  if (!user) return [];
+  const { data: me } = await db.from("profiles").select("cohort_id").eq("id", user.id).maybeSingle();
+  if (!me?.cohort_id) return [];
+  const { data: rows, error } = await db
+    .from("posts")
+    .select("id, user_id, title, due_date, subject_slug, anonymous")
+    .eq("cohort_id", me.cohort_id)
+    .gte("due_date", today)
+    .order("due_date")
+    .limit(40);
+  if (error || !rows?.length) return [];
+  const [{ data: tasks }, names] = await Promise.all([
+    db.from("tasks").select("title, due_date, external_id").gte("due_date", today),
+    namesFor(db, rows.map((r) => r.user_id).filter(Boolean) as string[]),
+  ]);
+  const linked = new Set((tasks ?? []).map((t) => t.external_id).filter(Boolean));
+  return rows.map((r) => ({
+    id: r.id as string,
+    title: r.title as string,
+    due_date: r.due_date as string,
+    subject_slug: (r.subject_slug as string | null) ?? null,
+    author: r.user_id === user.id ? "You" : r.anonymous || !r.user_id ? "Anonymous" : (names.get(r.user_id as string) ?? "A classmate"),
+    added: linked.has(`post:${r.id}`) || (tasks ?? []).some((t) => sameDeadline(t, { title: r.title as string, due_date: r.due_date as string })),
+  }));
+}
+
+/** Has the viewer put this board deadline on their Planner? */
+export async function postOnPlanner(postId: string): Promise<boolean> {
+  const db = await createClient();
+  const { data } = await db.from("tasks").select("id").eq("external_id", `post:${postId}`).limit(1);
+  return Boolean(data?.length);
 }

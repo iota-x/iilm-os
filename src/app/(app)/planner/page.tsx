@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { getProfile, getSlots, getSubjects, getTasks, getTenant } from "@/lib/queries";
+import { getBoardDeadlines, getProfile, getSlots, getSubjects, getTasks, getTenant } from "@/lib/queries";
 import { TaskList } from "@/components/task-list";
 import { QuickAdd } from "@/components/quick-add";
+import { CatchDeadlines } from "@/components/catch-deadlines";
+import { AddToPlanner } from "@/components/class/add-to-planner";
 import { WeekGrid } from "@/components/planner/week-grid";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageSquareText } from "lucide-react";
 import { Badge, Card, CardHead } from "@/components/ui";
-import { istToday } from "@/lib/utils";
+import { fmtDate, istToday } from "@/lib/utils";
 import { holidayOn, holidayRange, upcomingHolidays } from "@/lib/holidays";
 
 export const dynamic = "force-dynamic";
 
 
-export default async function PlannerPage() {
+export default async function PlannerPage({ searchParams }: { searchParams: Promise<{ catch?: string }> }) {
+  const { catch: stash } = await searchParams;
   const tenant = await getTenant();
   const cal = tenant.calendar;
   const [profile, slots, subjects] = await Promise.all([getProfile(), getSlots(), getSubjects()]);
@@ -22,7 +25,8 @@ export default async function PlannerPage() {
 
   // College to-dos are the blocks you add yourself (assignments, submissions,
   // forms). The prep plan — end-sems, DSA, GSoC — lives on Sprint.
-  const [ahead, past] = await Promise.all([getTasks({ from: today }), getTasks({ to: today })]);
+  const [ahead, past, board] = await Promise.all([getTasks({ from: today }), getTasks({ to: today }), getBoardDeadlines(today)]);
+  const fromBoard = board.filter((b) => !b.added);
   const mine = (t: { source: string }) => t.source === "manual" || t.source === "classroom";
   const upcoming = ahead.filter((t) => mine(t) && t.status === "todo");
   const overdue = past.filter((t) => mine(t) && t.status === "todo" && t.due_date !== today);
@@ -40,8 +44,16 @@ export default async function PlannerPage() {
             .
           </p>
         </div>
-        <QuickAdd subjects={subjects} defaultDate={today} />
+        <div className="flex flex-wrap gap-2">
+          {stash ? null : (
+            <Link href="/planner?catch=new" scroll={false} className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-[length:var(--text-micro)] font-medium hover:bg-surface-2 focus-ring">
+              <MessageSquareText size={14} /> Catch from WhatsApp
+            </Link>
+          )}
+          <QuickAdd subjects={subjects} defaultDate={today} />
+        </div>
       </div>
+      {stash ? <CatchDeadlines subjects={subjects} stash={stash === "new" ? undefined : stash} /> : null}
 
       {/* ── the week, drawn to scale ───────────────────────── */}
       <Card className="overflow-hidden">
@@ -78,6 +90,33 @@ export default async function PlannerPage() {
         />
         <TaskList tasks={upcoming} subjects={subjects} showDate emptyText="Nothing added. Use Add for an assignment or a deadline." />
       </Card>
+
+      {/* ── deadlines classmates caught ────────────────────── */}
+      {fromBoard.length ? (
+        <Card>
+          <CardHead
+            title="From the class board"
+            sub="Deadlines classmates caught from WhatsApp and the ERP that aren't on your Planner yet"
+            right={<Badge tone="accent">{fromBoard.length}</Badge>}
+          />
+          <ul className="divide-y divide-[var(--border)]">
+            {fromBoard.map((b) => {
+              const s = subjects.find((x) => x.slug === b.subject_slug);
+              return (
+                <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                  <div className="min-w-0">
+                    <Link href={`/class/${b.id}`} className="font-medium hover:underline focus-ring rounded">{b.title}</Link>
+                    <p className="mt-0.5 text-[length:var(--text-micro)] text-subtle">
+                      Due {fmtDate(b.due_date)}{s ? ` · ${s.short_name}` : ""} · posted by {b.author}
+                    </p>
+                  </div>
+                  <AddToPlanner id={b.id} added={false} />
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
+      ) : null}
 
       {/* ── holidays ───────────────────────────────────────── */}
       <Card>

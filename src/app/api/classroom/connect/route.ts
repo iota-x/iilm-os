@@ -16,6 +16,6 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const url = new URL(req.url);
   const app = url.searchParams.get("app") === "1";
-  const google = authUrl(`${url.origin}/api/classroom/callback`, makeState(user.id, app));
+  const google = authUrl(`${url.origin}/api/classroom/callback`, makeState(user.id, app), user.email);
   return url.searchParams.get("json") === "1" ? NextResponse.json({ url: google }) : NextResponse.redirect(google);
 }

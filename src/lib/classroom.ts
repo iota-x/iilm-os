@@ -43,14 +43,20 @@ export function readState(state: string | null): { userId: string; app: boolean 
   return { userId: s.u, app: s.a === 1 };
 }
 
-export function authUrl(redirectUri: string, state: string) {
+/**
+ * `loginHint` is the Semwise account's email: Classroom lives on the college
+ * Google account, and without a hint Google silently picks whichever account
+ * the browser is signed into first (often a personal Gmail).
+ */
+export function authUrl(redirectUri: string, state: string, loginHint?: string | null) {
   const q = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
     redirect_uri: redirectUri,
     response_type: "code",
     scope: SCOPES.join(" "),
     access_type: "offline",
-    prompt: "consent", // or Google only sends a refresh token the first time
+    prompt: "select_account consent", // always ask which account; consent so Google sends a refresh token every time
+    ...(loginHint ? { login_hint: loginHint } : {}),
     include_granted_scopes: "true",
     state,
   });

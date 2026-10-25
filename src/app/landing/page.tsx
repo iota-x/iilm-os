@@ -57,9 +57,11 @@ export default function LandingPage() {
   const bySlug = new Map(seedSubjects.map((s) => [s.slug, s]));
 
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-  const soon = seedExams
-    .filter((e) => e.kind !== "mse" && e.kind !== "ese" && (e.date ? e.date >= today : Boolean(e.window)))
-    .slice(0, 3)
+  // class tests and vivas first; when none are left, the end-sem papers themselves
+  const minor = seedExams.filter((e) => e.kind !== "mse" && e.kind !== "ese" && (e.date ? e.date >= today : windowOpen(e.window, today)));
+  const papers = seedExams.filter((e) => e.kind === "ese" && e.subject && e.date && e.date >= today);
+  const soon = (minor.length ? minor : papers)
+    .slice(0, minor.length ? 3 : 4)
     .map((e) => ({
       when: e.date
         ? new Date(e.date + "T00:00:00+05:30").toLocaleDateString("en-GB", {
@@ -525,4 +527,20 @@ function Did({ icon: Icon, children }: { icon: typeof FolderCheck; children: Rea
       <Icon size={13} /> <span className="text-fg">{children}</span>
     </li>
   );
+}
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/**
+ * A dateless exam ("Week of 21 Sept 2026") is still coming up until its
+ * window has passed — a "week of" window lasts seven days. A window with no
+ * date we can read ("TBA") stays listed.
+ */
+function windowOpen(window: string | null, today: string): boolean {
+  if (!window) return false;
+  const m = window.match(/(\d{1,2})\s+([A-Za-z]{3,})\.?\s+(\d{4})/);
+  const month = m ? MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()) : -1;
+  if (!m || month < 0) return true;
+  const last = new Date(Date.UTC(Number(m[3]), month, Number(m[1]) + (/week of/i.test(window) ? 6 : 0)));
+  return last.toISOString().slice(0, 10) >= today;
 }

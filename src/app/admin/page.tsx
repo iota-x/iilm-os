@@ -165,6 +165,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
         <Card>
           <CardHead title="Latest on every board" sub="Anonymous posts show as anonymous here too; who wrote one is in post_owners if it ever needs acting on." />
+          {!(posts ?? []).length ? (
+            <p className="px-5 py-4 text-[length:var(--text-small)] text-muted">No posts on any board yet.</p>
+          ) : null}
           <ul className="divide-y divide-[var(--border)]">
             {(posts ?? []).map((p) => (
               <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-2.5">

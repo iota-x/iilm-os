@@ -122,7 +122,7 @@ export default async function TeacherPage() {
   return (
     <Shell links={links}>
       <div>
-        <h1 className="text-[length:var(--text-page)]">Good to see you, {profile.display_name?.split(" ").slice(-1)[0] ?? "teacher"}</h1>
+        <h1 className="text-[length:var(--text-page)]">Good to see you{profile.display_name ? `, ${profile.display_name}` : ""}</h1>
         <p className="mt-1 text-[length:var(--text-small)] text-muted">
           Post once and every class you pick sees it on their board. Students see a Teacher tag next to your name.
         </p>

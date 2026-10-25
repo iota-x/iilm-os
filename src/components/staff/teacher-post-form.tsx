@@ -101,7 +101,7 @@ export function TeacherPostForm({ cohorts }: { cohorts: { id: string; label: str
         <div className="flex justify-end">
           <Button type="submit" variant="primary" size="sm" disabled={pending || !title.trim() || !picked.length}>
             {pending ? <Loader2 size={14} className="animate-spin" /> : <Send size={13} />}
-            Post to {picked.length || "…"} class{picked.length === 1 ? "" : "es"}
+            {picked.length ? `Post to ${picked.length} class${picked.length === 1 ? "" : "es"}` : "Pick the classes"}
           </Button>
         </div>
       </form>

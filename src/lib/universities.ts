@@ -160,6 +160,30 @@ export function universityForEmail(email: string): University | null {
   return UNIVERSITIES.find((u) => u.domains.includes(domain)) ?? null;
 }
 
+// suffixes too broad to treat as one college's domain
+const SHARED_SUFFIXES = new Set(["ac.in", "edu.in", "co.in", "org.in", "res.in", "ac.uk", "edu.au", "edu"]);
+
+/**
+ * The university a teacher's address belongs to. Staff often sit on the
+ * parent of the students' domain (gg.iilm.edu → iilm.edu), so the parent
+ * and its other subdomains count too — the admin approves every teacher
+ * anyway; this only stops obvious strangers.
+ */
+export function universityForStaffEmail(email: string): University | null {
+  const domain = emailDomain(email);
+  if (!domain) return null;
+  return (
+    UNIVERSITIES.find((u) =>
+      u.domains.some((d) => {
+        if (d === domain) return true;
+        const parent = d.split(".").slice(1).join(".");
+        if (!parent.includes(".") || SHARED_SUFFIXES.has(parent)) return false;
+        return domain === parent || domain.endsWith(`.${parent}`);
+      }),
+    ) ?? null
+  );
+}
+
 /** Why this address can't sign up at its university, or null when it can. */
 export function emailProblem(email: string, u: University): string | null {
   const local = email.trim().toLowerCase().split("@")[0] ?? "";

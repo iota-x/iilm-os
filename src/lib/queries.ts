@@ -8,6 +8,8 @@ import type {
   Goal,
   Post,
   Reply,
+  Paper,
+  CampusEvent,
   Attachment,
   Attendance,
   Attempt,
@@ -101,10 +103,34 @@ export async function getCheckpoints(topicIds?: string[]): Promise<Checkpoint[]>
 
 /* ─── class board ───────────────────────────────────────────── */
 
-async function namesFor(db: Awaited<ReturnType<typeof createClient>>, ids: string[]) {
-  if (!ids.length) return new Map<string, string>();
-  const { data } = await db.from("member_names").select("id, display_name").in("id", ids);
-  return new Map((data ?? []).map((m) => [m.id as string, (m.display_name as string) || "Someone"]));
+/** Names by id, plus which of them are teachers (`.teachers`). */
+async function namesFor(db: Awaited<ReturnType<typeof createClient>>, ids: (string | null | undefined)[]) {
+  const wanted = [...new Set(ids.filter((x): x is string => Boolean(x)))];
+  const names = new Map<string, string>() as Map<string, string> & { teachers: Set<string> };
+  names.teachers = new Set();
+  if (!wanted.length) return names;
+  type Row = { id: string; display_name: string | null; is_faculty?: boolean };
+  const first = await db.from("member_names").select("id, display_name, is_faculty").in("id", wanted);
+  let data = first.data as Row[] | null;
+  if (first.error) data = (await db.from("member_names").select("id, display_name").in("id", wanted)).data as Row[] | null; // before 013
+  for (const m of data ?? []) {
+    names.set(m.id, m.display_name || "Someone");
+    if (m.is_faculty) names.teachers.add(m.id);
+  }
+  return names;
+}
+
+function authorOf(names: Map<string, string>, p: { user_id: string | null; anonymous?: boolean }) {
+  if (p.anonymous || !p.user_id) return "Anonymous";
+  return names.get(p.user_id) ?? "Someone";
+}
+
+/** The anonymous posts the viewer wrote — only they can read post_owners. */
+async function ownedAnonymous(db: Awaited<ReturnType<typeof createClient>>, userId: string | undefined) {
+  if (!userId) return new Set<string>();
+  const { data, error } = await db.from("post_owners").select("post_id").eq("user_id", userId);
+  if (error) return new Set<string>(); // before migration 013
+  return new Set((data ?? []).map((r) => r.post_id as string));
 }
 
 export async function getPosts(subjectSlug?: string, sort: "new" | "helpful" = "new"): Promise<Post[]> {
@@ -119,27 +145,34 @@ export async function getPosts(subjectSlug?: string, sort: "new" | "helpful" = "
     .order("created_at", { ascending: false })
     .limit(200);
   if (subjectSlug) q = q.eq("subject_slug", subjectSlug);
-  const [{ data, error }, { data: mine }] = await Promise.all([
+  const [{ data, error }, { data: mine }, owned] = await Promise.all([
     q,
     user ? db.from("post_votes").select("post_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+    ownedAnonymous(db, user?.id),
   ]);
   if (error) console.error("getPosts", error.message);
   if (error || !data) return [];
   const voted = new Set((mine ?? []).map((v) => v.post_id as string));
-  const names = await namesFor(db, [...new Set(data.map((p) => p.user_id as string))]);
   type Row = Omit<Post, "author" | "reply_count" | "helpful" | "mine"> & {
     replies?: { count: number }[];
     post_votes?: { count: number }[];
   };
-  const posts = (data as Row[]).map((p) => ({
+  const rows = data as Row[];
+  const names = await namesFor(db, rows.flatMap((p) => [p.anonymous ? null : p.user_id, p.verified_by]));
+  const posts = rows.map((p) => ({
     ...p,
-    author: names.get(p.user_id) ?? "Someone",
+    author: authorOf(names, p),
+    verifier: p.verified_by ? (names.get(p.verified_by) ?? "a teacher") : null,
+    by_teacher: !p.anonymous && !!p.user_id && names.teachers.has(p.user_id),
     reply_count: p.replies?.[0]?.count ?? 0,
     helpful: p.post_votes?.[0]?.count ?? 0,
     mine: voted.has(p.id),
+    owned: (!!user && p.user_id === user.id) || owned.has(p.id),
   }));
   if (sort === "helpful") {
-    posts.sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.helpful - a.helpful || b.created_at.localeCompare(a.created_at));
+    // a teacher's tick counts for a lot: verified posts sit above unverified ones with the same votes
+    const score = (x: Post) => x.helpful + (x.verified_by ? 5 : 0);
+    posts.sort((a, b) => Number(b.pinned) - Number(a.pinned) || score(b) - score(a) || b.created_at.localeCompare(a.created_at));
   }
   return posts;
 }
@@ -149,35 +182,110 @@ export async function getPost(id: string): Promise<{ post: Post; replies: Reply[
   const {
     data: { user },
   } = await db.auth.getUser();
-  const [{ data: p }, { data: rs }, { data: pv }, { data: rv }] = await Promise.all([
+  const [{ data: p }, { data: rs }, { data: pv }, { data: rv }, owned] = await Promise.all([
     db.from("posts").select("*, post_votes(count)").eq("id", id).maybeSingle(),
     db.from("replies").select("*, reply_votes(count)").eq("post_id", id).order("created_at"),
     user ? db.from("post_votes").select("post_id").eq("user_id", user.id).eq("post_id", id) : Promise.resolve({ data: [] }),
     user ? db.from("reply_votes").select("reply_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+    ownedAnonymous(db, user?.id),
   ]);
   if (!p) return null;
   const myReplyVotes = new Set((rv ?? []).map((v) => v.reply_id as string));
-  const names = await namesFor(db, [
-    ...new Set([p.user_id as string, ...(rs ?? []).map((r) => r.user_id as string)]),
-  ]);
   type PRow = Omit<Post, "author" | "reply_count" | "helpful" | "mine"> & { post_votes?: { count: number }[] };
   type RRow = Omit<Reply, "author" | "helpful" | "mine"> & { reply_votes?: { count: number }[] };
   const post = p as PRow;
+  const names = await namesFor(db, [
+    post.anonymous ? null : post.user_id,
+    post.verified_by,
+    ...(rs ?? []).map((r) => r.user_id as string),
+  ]);
   return {
     post: {
       ...post,
-      author: names.get(post.user_id) ?? "Someone",
+      author: authorOf(names, post),
+      verifier: post.verified_by ? (names.get(post.verified_by) ?? "a teacher") : null,
+      by_teacher: !post.anonymous && !!post.user_id && names.teachers.has(post.user_id),
       reply_count: rs?.length ?? 0,
       helpful: post.post_votes?.[0]?.count ?? 0,
       mine: (pv ?? []).length > 0,
+      owned: (!!user && post.user_id === user.id) || owned.has(post.id),
     },
     replies: ((rs ?? []) as RRow[]).map((r) => ({
       ...r,
       author: names.get(r.user_id) ?? "Someone",
+      by_teacher: names.teachers.has(r.user_id),
       helpful: r.reply_votes?.[0]?.count ?? 0,
       mine: myReplyVotes.has(r.id),
     })),
   };
+}
+
+/**
+ * Brownie points for the viewer's class: a point for every Helpful someone
+ * else gave your post, reply or past paper, three for an accepted answer.
+ * `since` null = all time. Empty before migration 013.
+ */
+export async function getClassPoints(since: string | null = null): Promise<{ user_id: string; display_name: string; points: number }[]> {
+  const db = await createClient();
+  const { data, error } = await db.rpc("class_points", { since });
+  if (error) return [];
+  return (data ?? []) as { user_id: string; display_name: string; points: number }[];
+}
+
+/** "Seen by 48 of 60" on a notice, and who hasn't when the viewer may know. */
+export async function getNoticeReach(postId: string): Promise<{ seen: number; total: number; unseen: string[] | null } | null> {
+  const db = await createClient();
+  const { data, error } = await db.rpc("notice_reach", { p_id: postId });
+  const row = !error && Array.isArray(data) ? data[0] : null;
+  if (!row) return null;
+  return { seen: row.seen, total: row.total, unseen: row.can_see_names ? (row.unseen ?? []) : null };
+}
+
+export async function getPapers(): Promise<Paper[]> {
+  const db = await createClient();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  const [{ data, error }, { data: mine }] = await Promise.all([
+    db.from("papers").select("*, paper_votes(count)").order("year", { ascending: false }).limit(500),
+    user ? db.from("paper_votes").select("paper_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+  ]);
+  if (error || !data) return [];
+  const voted = new Set((mine ?? []).map((v) => v.paper_id as string));
+  type Row = Omit<Paper, "author" | "verifier" | "helpful" | "mine"> & { paper_votes?: { count: number }[] };
+  const rows = data as Row[];
+  const names = await namesFor(db, rows.flatMap((r) => [r.user_id, r.verified_by]));
+  return rows.map((r) => ({
+    ...r,
+    author: names.get(r.user_id) ?? "Someone",
+    verifier: r.verified_by ? (names.get(r.verified_by) ?? "a teacher") : null,
+    helpful: r.paper_votes?.[0]?.count ?? 0,
+    mine: voted.has(r.id),
+  }));
+}
+
+/** Events from `from` on (default: the start of today), soonest first. */
+export async function getEvents(from?: string): Promise<CampusEvent[]> {
+  const db = await createClient();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  const since = from ?? new Date(Date.now() - 12 * 3600_000).toISOString();
+  const [{ data, error }, { data: mine }] = await Promise.all([
+    db.from("events").select("*, event_rsvps(count)").gte("starts_at", since).order("starts_at").limit(200),
+    user ? db.from("event_rsvps").select("event_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+  ]);
+  if (error || !data) return [];
+  const going = new Set((mine ?? []).map((v) => v.event_id as string));
+  type Row = Omit<CampusEvent, "author" | "going" | "mine"> & { event_rsvps?: { count: number }[] };
+  const rows = data as Row[];
+  const names = await namesFor(db, rows.map((r) => r.user_id));
+  return rows.map((r) => ({
+    ...r,
+    author: names.get(r.user_id) ?? "Someone",
+    going: r.event_rsvps?.[0]?.count ?? 0,
+    mine: going.has(r.id),
+  }));
 }
 
 /**
@@ -437,7 +545,8 @@ export async function getNavTree(): Promise<NavSubject[]> {
 }
 
 export interface SearchDoc {
-  kind: "subject" | "unit" | "topic" | "note" | "resource" | "page";
+  /** "inside" = a page of the class notes whose words matched (/api/search-pages) */
+  kind: "subject" | "unit" | "topic" | "note" | "resource" | "page" | "inside";
   title: string;
   subtitle?: string;
   href: string;

@@ -63,7 +63,7 @@ const STEPS = [
   },
   {
     icon: Search,
-    title: "Lost? Press ⌘K",
+    title: "Lost? Press Ctrl K (⌘K on a Mac)",
     body: "Search finds pages, topics, notes, resources and actions like “set a goal”. The Guide page (bottom of the sidebar) lists every screen with what it's for and when to use it.",
     href: "/guide",
     cta: "Guide",

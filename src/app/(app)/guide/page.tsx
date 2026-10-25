@@ -131,7 +131,7 @@ const WEEK = [
 ];
 
 const TIPS = [
-  "⌘K / Ctrl K opens search from anywhere — pages, topics, notes, resources, and actions.",
+  "⌘K / Ctrl K opens search from anywhere — pages, topics, notes, resources, the words inside your class notes, and actions.",
   "Enter sends in Ask; Shift+Enter makes a new line.",
   "The focus timer keeps running if you leave the page; the clock shows in the tab title.",
   "On a phone, Add to Home Screen — then “Share” from your camera roll sends photos straight in.",

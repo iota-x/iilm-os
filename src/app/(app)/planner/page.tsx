@@ -23,7 +23,7 @@ export default async function PlannerPage() {
   // College to-dos are the blocks you add yourself (assignments, submissions,
   // forms). The prep plan — end-sems, DSA, GSoC — lives on Sprint.
   const [ahead, past] = await Promise.all([getTasks({ from: today }), getTasks({ to: today })]);
-  const mine = (t: { source: string }) => t.source === "manual";
+  const mine = (t: { source: string }) => t.source === "manual" || t.source === "classroom";
   const upcoming = ahead.filter((t) => mine(t) && t.status === "todo");
   const overdue = past.filter((t) => mine(t) && t.status === "todo" && t.due_date !== today);
 

@@ -282,6 +282,9 @@ function LoginForm() {
             {mode === "in" ? "New here? Create your account" : "Already have an account? Sign in"}
           </button>
         </Card>
+        <p className="mt-4 text-center text-[length:var(--text-micro)] text-subtle">
+          A teacher? <Link href="/teacher/signin" className="text-[var(--accent)] hover:underline">Sign in here</Link>.
+        </p>
       </div>
     </div>
   );

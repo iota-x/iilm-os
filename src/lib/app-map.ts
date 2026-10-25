@@ -129,6 +129,20 @@ export const APP_MAP: AppGroup[] = [
         keywords: ["forum", "board", "discussion", "section", "posts", "questions", "community"],
       },
       {
+        href: "/papers",
+        label: "Past papers",
+        blurb: "Previous years' question papers per subject, shared by every section on your syllabus and ranked by Helpful votes; teacher-verified ones first.",
+        when: "From the first week — and every night before an exam.",
+        keywords: ["pyq", "previous year", "question paper", "end-sem paper", "mid-sem paper", "exam paper"],
+      },
+      {
+        href: "/events",
+        label: "Events",
+        blurb: "Workshops, fests, talks and club meets across the university. Say you're going and it's on Today the evening before; add it to your phone's calendar.",
+        when: "When you want to know what's on — or you're running something.",
+        keywords: ["workshop", "fest", "club", "hackathon", "seminar", "talk", "rsvp", "calendar"],
+      },
+      {
         href: "/attendance",
         label: "Attendance",
         blurb: "Per-subject attendance against the 75% bar, with how many you can still miss or need to attend in a row.",
@@ -175,6 +189,9 @@ export const APP_ACTIONS: { label: string; href: string; keywords: string[] }[] 
   { label: "Set a goal", href: "/goals?new=1", keywords: ["goal", "deadline", "plan"] },
   { label: "Write a note", href: "/notes", keywords: ["note", "write", "new"] },
   { label: "New post on the board", href: "/class?new=1", keywords: ["post", "ask the class", "share", "forum"] },
+  { label: "Ask the class anonymously", href: "/class?new=1", keywords: ["anonymous", "secret", "question", "doubt"] },
+  { label: "Add a past paper", href: "/papers", keywords: ["pyq", "upload paper", "question paper"] },
+  { label: "Post an event", href: "/events", keywords: ["event", "workshop", "club", "fest"] },
   { label: "Upload photos", href: "/inbox", keywords: ["photo", "upload", "board", "share"] },
   { label: "Take the tour", href: "/?tour=1", keywords: ["tour", "help", "walkthrough", "intro"] },
 ];

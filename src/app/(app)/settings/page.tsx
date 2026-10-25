@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAttendance, getProfile, getSlots, getSubjects } from "@/lib/queries";
 import { tenantOf } from "@/lib/universities";
 import { SettingsForm } from "@/components/settings-form";
@@ -5,15 +6,21 @@ import { ThemeToggle } from "@/components/theme";
 import { GeminiKeyForm } from "@/components/gemini-key-form";
 import { decrypt } from "@/lib/secret";
 import { Card, CardHead } from "@/components/ui";
+import { ClassroomCard } from "@/components/classroom-card";
+import { classroomConfigured } from "@/lib/classroom";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage() {
-  const [profile, subjects, attendance, slots] = await Promise.all([
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ classroom?: string }> }) {
+  const db = await createClient();
+  const [profile, subjects, attendance, slots, { classroom: classroomStatus }, { data: classroomLink }] = await Promise.all([
     getProfile(),
     getSubjects(),
     getAttendance(),
     getSlots(),
+    searchParams,
+    db.from("classroom_links").select("google_email, last_synced_at, last_error").maybeSingle(),
   ]);
 
   if (!profile) return null;
@@ -59,6 +66,20 @@ export default async function SettingsPage() {
       <GeminiKeyForm current={decrypt(profile.gemini_key)} />
 
       <SettingsForm profile={profile} subjects={subjects} attendance={attendance} labGroups={tenant.cohort.labGroups} labLines={labLines} />
+
+      <ClassroomCard configured={classroomConfigured()} link={classroomLink ?? null} status={classroomStatus} />
+
+      {profile.is_admin ? (
+      <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
+        <div>
+          <h2 className="text-[length:var(--text-small)] font-semibold">Admin</h2>
+          <p className="mt-1 text-[length:var(--text-small)] text-muted">Teacher requests, roles, every board and the waitlist.</p>
+        </div>
+        <Link href="/admin" className="rounded-[var(--radius-control)] border border-line px-3 py-1.5 text-[length:var(--text-small)] font-medium hover:bg-surface-2 focus-ring">
+          Open admin
+        </Link>
+      </Card>
+      ) : null}
 
       {profile.is_admin ? (
       <Card className="p-5">

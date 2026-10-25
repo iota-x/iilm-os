@@ -8,6 +8,7 @@ import {
   BookOpen,
   CornerDownLeft,
   ExternalLink,
+  FileSearch,
   Layers,
   LayoutDashboard,
   Link2,
@@ -43,6 +44,7 @@ const ICON = {
   topic: Target,
   note: StickyNote,
   resource: Link2,
+  inside: FileSearch,
 } as const;
 
 const GROUP_LABEL: Record<SearchDoc["kind"], string> = {
@@ -52,9 +54,10 @@ const GROUP_LABEL: Record<SearchDoc["kind"], string> = {
   topic: "Topics",
   note: "Notes",
   resource: "Resources",
+  inside: "Inside your class notes",
 };
 
-const GROUP_ORDER: SearchDoc["kind"][] = ["page", "subject", "unit", "topic", "note", "resource"];
+const GROUP_ORDER: SearchDoc["kind"][] = ["page", "subject", "unit", "topic", "inside", "note", "resource"];
 
 export function CommandPalette() {
   const router = useRouter();
@@ -63,6 +66,13 @@ export function CommandPalette() {
   const [loading, setLoading] = useState(false);
   const loadedRef = useRef(false);
   const [query, setQuery] = useState("");
+  // hits from inside the notes, tagged with the query they answer so a stale
+  // answer never shows under a newer query
+  const [insideRes, setInsideRes] = useState<{ q: string; docs: SearchDoc[] }>({ q: "", docs: [] });
+  const inside = useMemo(
+    () => (query.trim().length >= 3 && insideRes.q === query.trim() ? insideRes.docs : []),
+    [query, insideRes],
+  );
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,8 +95,28 @@ export function CommandPalette() {
       .filter((r) => r.s > 0)
       .sort((a, b) => b.s - a.s)
       .slice(0, 40)
-      .map((r) => r.doc);
-  }, [query, all, docs]);
+      .map((r) => r.doc)
+      .concat(inside); // already ranked by the server
+  }, [query, all, docs, inside]);
+
+  // the words on the pages themselves: asked of the server, a beat after typing stops
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 3) return;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      fetch(`/api/search-pages?q=${encodeURIComponent(q)}`, { signal: ctrl.signal })
+        .then((r) => (r.ok ? r.json() : { hits: [] }))
+        .then((d: { hits: { key: string; label: string; snippet: string; href: string }[] }) =>
+          setInsideRes({ q, docs: d.hits.map((h) => ({ kind: "inside" as const, title: h.label, subtitle: h.snippet, href: h.href })) }),
+        )
+        .catch(() => {});
+    }, 250);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [query]);
 
   // Results are ranked by score but rendered in group order, so the index the
   // arrow keys walk has to be assigned in the order things actually appear —
@@ -198,7 +228,7 @@ export function CommandPalette() {
                 if (doc) run(doc);
               }
             }}
-            placeholder="Search topics, notes, resources…"
+            placeholder="Search topics, notes, resources — or words inside your class notes…"
             className="h-12 flex-1 bg-transparent text-[length:var(--text-body)] outline-none placeholder:text-subtle"
           />
           <kbd className="hidden sm:block rounded border border-line bg-surface-2 px-1.5 py-0.5 text-[length:var(--text-micro)] text-subtle">
@@ -289,7 +319,7 @@ export function SearchTrigger({ className }: { className?: string }) {
         className,
       )}
       aria-label="Search"
-      title="Search (⌘K)"
+      title={mac ? "Search (⌘K)" : "Search (Ctrl K)"}
     >
       <Search size={14} />
       <span className="hidden lg:inline">Search…</span>

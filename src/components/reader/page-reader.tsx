@@ -286,6 +286,12 @@ export function PageReader({
         else undo();
         return;
       }
+      // Windows' redo
+      if (e.ctrlKey && !e.metaKey && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
+        return;
+      }
       if (mod) return;
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowRight" || e.key === "PageDown") go(1);
@@ -574,10 +580,10 @@ export function PageReader({
         ) : null}
 
         <div className="flex items-center gap-0.5">
-          <IconBtn label="Undo (⌘Z)" onClick={undo} disabled={!stackSizes.undo}>
+          <IconBtn label="Undo (Ctrl/⌘ Z)" onClick={undo} disabled={!stackSizes.undo}>
             <Undo2 size={16} />
           </IconBtn>
-          <IconBtn label="Redo (⇧⌘Z)" onClick={redo} disabled={!stackSizes.redo}>
+          <IconBtn label="Redo (Ctrl Y, or ⇧⌘Z on a Mac)" onClick={redo} disabled={!stackSizes.redo}>
             <Redo2 size={16} />
           </IconBtn>
           <IconBtn label={confirmClear ? "Tap again to clear this page" : "Clear this page"} onClick={clearPage} disabled={!inkCount}>

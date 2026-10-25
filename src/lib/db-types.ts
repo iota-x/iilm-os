@@ -21,6 +21,11 @@ export interface Profile {
   cohort_id?: string | null;
   must_change_password: boolean;
   is_admin: boolean;
+  /** a teacher: reads every class's board at the university, verifies posts and papers */
+  is_faculty?: boolean;
+  /** teacher access: asked for at /teacher/signin, decided at /admin */
+  faculty_status?: "pending" | "approved" | "rejected" | null;
+  department?: string | null;
   /** the student's own Gemini key for /ask; null means the shared one */
   gemini_key: string | null;
 }
@@ -229,7 +234,9 @@ export interface Task {
   minutes: number | null;
   kind: TaskKind;
   status: TaskStatus;
-  source: "plan" | "manual" | "goal";
+  source: "plan" | "manual" | "goal" | "classroom";
+  /** "classroom:<courseWork id>" on tasks pulled in from Google Classroom */
+  external_id?: string | null;
   /** week of its goal, 1-based */
   sprint: number | null;
   goal_id: string | null;
@@ -299,7 +306,8 @@ export interface StudySession {
 export type PostKind = "discussion" | "question" | "resource" | "notice";
 export interface Post {
   id: string;
-  user_id: string;
+  /** null on an anonymous post — the author is in post_owners, readable only by them */
+  user_id: string | null;
   subject_slug: string | null;
   kind: PostKind;
   title: string;
@@ -308,14 +316,23 @@ export interface Post {
   pinned: boolean;
   answer_reply_id: string | null;
   image_path: string | null;
+  anonymous?: boolean;
+  verified_by?: string | null;
+  verified_at?: string | null;
   created_at: string;
   updated_at: string;
-  /** joined from member_names */
+  /** joined from member_names; "Anonymous" when it is */
   author: string;
+  /** the teacher who verified it, by name */
+  verifier?: string | null;
+  /** posted by a teacher */
+  by_teacher?: boolean;
   reply_count: number;
   helpful: number;
   /** the current viewer marked it helpful */
   mine: boolean;
+  /** the current viewer wrote it (anonymous included) */
+  owned?: boolean;
 }
 export interface Reply {
   id: string;
@@ -324,7 +341,46 @@ export interface Reply {
   body: string;
   created_at: string;
   author: string;
+  by_teacher?: boolean;
   helpful: number;
+  mine: boolean;
+}
+
+/* ─── past papers (shared by every class on the same syllabus) ─ */
+export type PaperExam = "mid-sem" | "end-sem" | "quiz" | "other";
+export interface Paper {
+  id: string;
+  user_id: string;
+  subject_slug: string;
+  year: number;
+  exam: PaperExam;
+  title: string | null;
+  file_path: string | null;
+  url: string | null;
+  verified_by: string | null;
+  verified_at: string | null;
+  created_at: string;
+  author: string;
+  verifier: string | null;
+  helpful: number;
+  mine: boolean;
+}
+
+/* ─── events and workshops (the whole university) ───────────── */
+export interface CampusEvent {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  organiser: string | null;
+  venue: string | null;
+  url: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  created_at: string;
+  author: string;
+  going: number;
+  /** the current viewer is going */
   mine: boolean;
 }
 

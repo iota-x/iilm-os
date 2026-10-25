@@ -17,7 +17,8 @@ import { studyStreak } from "@/lib/streak";
 import { holidayOn } from "@/lib/holidays";
 import { fmtDuration, inScope, nextPaper, paperLabel } from "@/lib/utils";
 import { FirstRun } from "@/components/first-run";
-import { getGoals, getInboxFiles } from "@/lib/queries";
+import { getEvents, getGoals, getInboxFiles } from "@/lib/queries";
+import { eventWhen, istDate } from "@/lib/event-time";
 import {
   ACCENT_CLASS,
   cn,
@@ -116,12 +117,22 @@ export default async function Dashboard() {
   // The first-run checklist: what this account has and hasn't done yet.
   // the last seven IST days, as a timestamp the sessions query can compare
   const weekStart = new Date(new Date(today + "T00:00:00+05:30").getTime() - 6 * 86_400_000).toISOString();
-  const [goals, inbox, activity, sessions] = await Promise.all([
+  const [goals, inbox, activity, sessions, events] = await Promise.all([
     getGoals(),
     getInboxFiles(),
     getActivityDays(),
     getStudySessions(weekStart),
+    getEvents(),
   ]);
+  // events you said you're going to: today's, and from 6 pm tomorrow's too —
+  // that's the evening-before reminder
+  const tomorrow = istDate(new Date(new Date(today + "T12:00:00+05:30").getTime() + 86_400_000));
+  const eveningNow = Number(new Date().toLocaleString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", hour12: false })) >= 18;
+  const goingSoon = events.filter((e) => {
+    if (!e.mine) return false;
+    const d = istDate(e.starts_at);
+    return (d === today && new Date(e.ends_at ?? e.starts_at) > new Date()) || (d === tomorrow && eveningNow);
+  });
   const streak = studyStreak(activity, today);
   const weekMinutes = sessions.reduce((n, s) => n + (s.minutes ?? 0), 0);
 
@@ -383,6 +394,34 @@ export default async function Dashboard() {
 
         {/* ── right column ─────────────────────────────────── */}
         <div className="space-y-5" id="classes">
+          {goingSoon.length ? (
+            <Card>
+              <CardHead
+                title="You're going"
+                right={
+                  <Link href="/events" className="text-[length:var(--text-micro)] text-muted hover:text-fg focus-ring rounded">
+                    All events
+                  </Link>
+                }
+              />
+              <ul className="divide-y divide-[var(--border)]">
+                {goingSoon.map((e) => (
+                  <li key={e.id} className="px-5 py-3">
+                    <p className="flex items-center gap-2 font-medium">
+                      {e.title}
+                      <Badge tone={istDate(e.starts_at) === today ? "accent" : "neutral"}>
+                        {istDate(e.starts_at) === today ? "today" : "tomorrow"}
+                      </Badge>
+                    </p>
+                    <p className="mt-0.5 flex items-center gap-1 text-[length:var(--text-micro)] text-subtle">
+                      <Clock size={11} /> {eventWhen(e.starts_at, e.ends_at)}
+                      {e.venue ? <><MapPin size={11} className="ml-1.5" /> {e.venue}</> : null}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
           <Card>
             <CardHead
               title={`${fullDay(weekday)}'s classes`}

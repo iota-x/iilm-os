@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ImageIcon, MessageSquare, Pin } from "lucide-react";
-import { getPosts, getSubjects, getTenant } from "@/lib/queries";
+import { Cookie, EyeOff, ImageIcon, MessageSquare, Pin } from "lucide-react";
+import { getClassPoints, getPosts, getSubjects, getTenant } from "@/lib/queries";
 import { NewPost } from "@/components/class/new-post";
 import { Helpful } from "@/components/class/helpful";
 import { NewSince } from "@/components/class/seen";
+import { Points, TeacherTag, Verified } from "@/components/class/badges";
 import { Badge, Card, Empty } from "@/components/ui";
 import { ACCENT_CLASS, cn, relativeDay } from "@/lib/utils";
 import type { PostKind } from "@/lib/db-types";
@@ -31,7 +32,14 @@ export default async function ClassPage({
   const tenant = await getTenant();
   const { subject, sort: rawSort } = await searchParams;
   const sort = rawSort === "helpful" ? "helpful" : "new";
-  const [posts, subjects] = await Promise.all([getPosts(subject, sort), getSubjects()]);
+  const [posts, subjects, allTime, thisMonth] = await Promise.all([
+    getPosts(subject, sort),
+    getSubjects(),
+    getClassPoints(null),
+    getClassPoints(monthStartIST()),
+  ]);
+  const points = new Map(allTime.map((p) => [p.user_id, p.points]));
+  const top = thisMonth.slice(0, 5);
   const link = (o: { subject?: string; sort?: string }) => {
     const q = new URLSearchParams();
     const sub = o.subject ?? subject;
@@ -55,6 +63,26 @@ export default async function ClassPage({
         </div>
         <NewPost subjects={subjects} defaultSubject={subject ?? ""} />
       </div>
+
+      {top.length ? (
+        <Card className="px-4 py-3">
+          <p className="flex items-center gap-1.5 text-[length:var(--text-micro)] font-medium text-subtle">
+            <Cookie size={13} className="text-[var(--warn)]" /> Top helpers this month
+          </p>
+          <ol className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
+            {top.map((t, i) => (
+              <li key={t.user_id} className="flex items-center gap-1.5 text-[length:var(--text-small)]">
+                <span className="tabular-nums text-subtle">{i + 1}</span>
+                <span className="font-medium">{t.display_name}</span>
+                <Points n={t.points} />
+              </li>
+            ))}
+          </ol>
+          <p className="mt-2 text-[length:var(--text-micro)] text-subtle">
+            Brownie points: one for every Helpful a classmate gives your post, reply or past paper, three when your reply is the accepted answer.
+          </p>
+        </Card>
+      ) : null}
 
       {/* subject filter + sort */}
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -108,6 +136,7 @@ export default async function ClassPage({
                         </span>
                         <Badge tone={KIND_TONE[p.kind]}>{KIND_LABEL[p.kind]}</Badge>
                         {p.kind === "question" && p.answer_reply_id ? <Badge tone="good">answered</Badge> : null}
+                        <Verified by={p.verifier} />
                         {s ? <Badge tone="subject">{s.short_name}</Badge> : null}
                         <NewSince postId={p.id} replies={p.reply_count} />
                         {p.image_path ? <ImageIcon size={12} className="text-subtle" aria-label="has an image" /> : null}
@@ -117,8 +146,11 @@ export default async function ClassPage({
                           {p.body}
                         </p>
                       ) : null}
-                      <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[length:var(--text-micro)] text-subtle">
+                        {p.anonymous ? <EyeOff size={11} aria-hidden /> : null}
                         {p.author}
+                        <TeacherTag show={p.by_teacher} />
+                        {p.user_id && !p.anonymous ? <Points n={points.get(p.user_id)} /> : null}
                         {"  "}
                         {relativeDay(p.created_at.slice(0, 10))}
                       </p>
@@ -146,6 +178,12 @@ export default async function ClassPage({
       )}
     </div>
   );
+}
+
+/** The first of this month in India, as an ISO timestamp — the leaderboard resets then. */
+function monthStartIST() {
+  const ist = new Date(Date.now() + 5.5 * 3600_000);
+  return new Date(Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), 1) - 5.5 * 3600_000).toISOString();
 }
 
 function FilterChip({

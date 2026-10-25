@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useUrlFlag } from "@/lib/client-hooks";
-import { ImagePlus, Loader2, Plus, X } from "lucide-react";
+import { EyeOff, ImagePlus, Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { createPost } from "@/lib/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -29,6 +29,7 @@ export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; def
   const [url, setUrl] = useState("");
   const [kind, setKind] = useState<string>("discussion");
   const [subject, setSubject] = useState(defaultSubject);
+  const [anonymous, setAnonymous] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -54,6 +55,10 @@ export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; def
     return key;
   }
 
+  // only questions can be anonymous, and an anonymous post can't carry an image
+  // (board image paths start with the poster's id)
+  const anon = kind === "question" && anonymous;
+
   if (!open) {
     return (
       <Button variant="primary" onClick={() => setOpen(true)}>
@@ -70,12 +75,13 @@ export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; def
           e.preventDefault();
           start(async () => {
             try {
-              const image_path = await uploadImage();
-              const id = await createPost({ title, body, url, kind, subject_slug: subject || null, image_path });
+              const image_path = anon ? null : await uploadImage();
+              const id = await createPost({ title, body, url, kind, subject_slug: subject || null, image_path, anonymous: anon });
               setOpen(false);
               setTitle("");
               setBody("");
               setUrl("");
+              setAnonymous(false);
               pick(null);
               router.push(`/class/${id}`);
             } catch (err) {
@@ -121,7 +127,25 @@ export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; def
           rows={4}
           className={cn(inputCls, "h-auto resize-y py-2")}
         />
-        {preview ? (
+        {kind === "question" ? (
+          <label className="flex items-start gap-2 text-[length:var(--text-small)] text-muted">
+            <input
+              type="checkbox"
+              checked={anonymous}
+              onChange={(e) => setAnonymous(e.target.checked)}
+              className="mt-1 accent-[var(--accent)]"
+            />
+            <span>
+              <span className="inline-flex items-center gap-1 font-medium text-fg">
+                <EyeOff size={13} /> Ask anonymously
+              </span>
+              <span className="block text-[length:var(--text-micro)] text-subtle">
+                Your class sees &ldquo;Anonymous&rdquo;. Only the board admin can see who asked. Your replies still show your name.
+              </span>
+            </span>
+          </label>
+        ) : null}
+        {preview && !anon ? (
           <div className="relative inline-block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={preview} alt="" className="max-h-48 rounded-[var(--radius-control)] border border-line" />
@@ -152,9 +176,11 @@ export function NewPost({ subjects, defaultSubject }: { subjects: Subject[]; def
               </option>
             ))}
           </select>
-          <Button type="button" variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
-            <ImagePlus size={14} /> {image ? "Change image" : "Add image"}
-          </Button>
+          {anon ? null : (
+            <Button type="button" variant="ghost" size="sm" onClick={() => fileRef.current?.click()}>
+              <ImagePlus size={14} /> {image ? "Change image" : "Add image"}
+            </Button>
+          )}
           </div>
           <Button type="submit" variant="primary" size="sm" disabled={pending || !title.trim()}>
             {pending ? <Loader2 size={14} className="animate-spin" /> : null}

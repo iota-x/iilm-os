@@ -9,6 +9,7 @@ import type { Reply } from "@/lib/db-types";
 import { Markdown } from "@/components/markdown";
 import { Badge, Button, Card, CardHead, inputCls } from "@/components/ui";
 import { Helpful } from "@/components/class/helpful";
+import { Points, TeacherTag } from "@/components/class/badges";
 import { cn, fmtDate } from "@/lib/utils";
 
 export function Replies({
@@ -18,6 +19,7 @@ export function Replies({
   canModerate = false,
   canAccept = false,
   answerId = null,
+  points = {},
 }: {
   postId: string;
   replies: Reply[];
@@ -25,6 +27,8 @@ export function Replies({
   canModerate?: boolean;
   canAccept?: boolean;
   answerId?: string | null;
+  /** brownie points by user id, all time */
+  points?: Record<string, number>;
 }) {
   const router = useRouter();
   const [text, setText] = useState("");
@@ -59,6 +63,8 @@ export function Replies({
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <p className="flex items-center gap-2 text-[length:var(--text-micro)] text-subtle">
                   <span className="font-medium text-fg">{r.author}</span>
+                  <TeacherTag show={r.by_teacher} />
+                  <Points n={points[r.user_id]} />
                   {fmtDate(r.created_at)}
                   {r.id === answerId ? (
                     <Badge tone="good"><CheckCircle2 size={10} /> answer</Badge>

@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
-import { getPost, getProfile, getSubjects } from "@/lib/queries";
+import { ExternalLink, EyeOff } from "lucide-react";
+import { getClassPoints, getNoticeReach, getPost, getProfile, getSubjects } from "@/lib/queries";
 import { Markdown } from "@/components/markdown";
 import { Replies } from "@/components/class/replies";
 import { DeletePost } from "@/components/class/delete-post";
 import { Helpful } from "@/components/class/helpful";
 import { PinPost } from "@/components/class/pin-post";
 import { MarkSeen } from "@/components/class/seen";
+import { Points, TeacherTag, Verified } from "@/components/class/badges";
+import { VerifyPost } from "@/components/class/verify-post";
+import { NoticeReach } from "@/components/class/notice-reach";
 import { boardImageUrl } from "@/lib/board-image";
 import { Badge, Card } from "@/components/ui";
 import { ACCENT_CLASS, cn, fmtDate } from "@/lib/utils";
@@ -16,12 +19,15 @@ export const dynamic = "force-dynamic";
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [data, profile, subjects] = await Promise.all([getPost(id), getProfile(), getSubjects()]);
+  const [data, profile, subjects, allTime] = await Promise.all([getPost(id), getProfile(), getSubjects(), getClassPoints(null)]);
   if (!data) notFound();
   const { post, replies } = data;
   const subject = post.subject_slug ? subjects.find((s) => s.slug === post.subject_slug) : null;
-  const mine = profile?.id === post.user_id;
+  const mine = Boolean(post.owned);
   const admin = Boolean(profile?.is_admin);
+  const teacher = Boolean(profile?.is_faculty) || admin;
+  const points = Object.fromEntries(allTime.map((p) => [p.user_id, p.points]));
+  const reach = post.kind === "notice" ? await getNoticeReach(post.id) : null;
 
   return (
     <div className={cn("mx-auto max-w-[760px] space-y-5", subject ? ACCENT_CLASS[subject.color] : "")}>
@@ -33,6 +39,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         <div className="flex flex-wrap items-center gap-2">
           {post.pinned ? <Badge tone="accent">pinned</Badge> : null}
           <Badge tone="neutral">{post.kind}</Badge>
+          <Verified by={post.verifier} />
           {subject ? (
             <Link href={`/subjects/${subject.slug}`}>
               <Badge tone="subject">{subject.short_name}</Badge>
@@ -40,8 +47,12 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           ) : null}
         </div>
         <h1 className="mt-2 text-[length:var(--text-title)]">{post.title}</h1>
-        <p className="mt-1 text-[length:var(--text-micro)] text-subtle">
+        <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[length:var(--text-micro)] text-subtle">
+          {post.anonymous ? <EyeOff size={11} aria-hidden /> : null}
           {post.author}
+          <TeacherTag show={post.by_teacher} />
+          {post.user_id && !post.anonymous ? <Points n={points[post.user_id]} /> : null}
+          {post.anonymous && mine ? <span>(you — only you and the board admin know)</span> : null}
           {"  "}
           {fmtDate(post.created_at)}
         </p>
@@ -74,12 +85,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
           <Helpful target="post" id={post.id} count={post.helpful} mine={post.mine} size="md" />
           <div className="flex items-center gap-1.5">
+            {teacher ? <VerifyPost id={post.id} verified={Boolean(post.verified_by)} /> : null}
             {admin ? <PinPost id={post.id} pinned={post.pinned} /> : null}
             {mine || admin ? <DeletePost id={post.id} /> : null}
           </div>
         </div>
       </Card>
 
+      {post.kind === "notice" ? <NoticeReach postId={post.id} reach={reach} /> : null}
       <MarkSeen postId={post.id} replies={replies.length} />
       <Replies
         postId={post.id}
@@ -88,6 +101,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         canModerate={admin}
         canAccept={mine && post.kind === "question"}
         answerId={post.answer_reply_id}
+        points={points}
       />
     </div>
   );

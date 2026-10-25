@@ -6,6 +6,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Users,
+  FileText,
+  CalendarDays,
   Target,
   BookOpen,
   CalendarCheck,
@@ -62,6 +64,8 @@ const GROUPS: { label: string | null; links: { href: string; label: string; icon
     label: "College",
     links: [
       { href: "/class", label: "Class", icon: Users },
+      { href: "/papers", label: "Past papers", icon: FileText },
+      { href: "/events", label: "Events", icon: CalendarDays },
       { href: "/attendance", label: "Attendance", icon: CalendarCheck },
       { href: "/exams", label: "Exams", icon: GraduationCap },
     ],

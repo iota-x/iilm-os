@@ -714,4 +714,4 @@ $$
 $$
 
 Paste a screenshot straight into this box and it uploads.
-⌘S saves. Autosave runs anyway.`;
+Ctrl/⌘ S saves. Autosave runs anyway.`;

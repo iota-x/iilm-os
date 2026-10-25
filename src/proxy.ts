@@ -12,6 +12,9 @@ const PUBLIC = [
   "/offline",
   "/api/pwa-icon",
   "/api/signup",
+  "/teacher/signin",
+  "/api/teacher-signup",
+  "/api/classroom/callback",
   "/opengraph-image",
   "/twitter-image",
   "/apple-icon",
@@ -45,6 +48,11 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+  // The mobile app calls /api/* with a bearer token instead of cookies; the
+  // route checks it (requestAuth), so don't bounce it to the login page.
+  if (pathname.startsWith("/api/") && /^Bearer\s/i.test(request.headers.get("authorization") ?? "")) {
+    return response;
+  }
   const isPublic = PUBLIC.some((p) => pathname.startsWith(p));
 
   // Signed out at the root: show the front door without changing the URL.
@@ -65,14 +73,21 @@ export async function proxy(request: NextRequest) {
   // small query per request; profiles is own-row-only under RLS so this
   // is the user's own flag.
   if (user && !pathname.startsWith("/welcome") && !pathname.startsWith("/api/")) {
-    const { data: p } = await supabase
-      .from("profiles")
-      .select("must_change_password")
-      .eq("id", user.id)
-      .maybeSingle();
+    // "*" rather than named columns so a column that isn't there yet
+    // (a migration not run) can't make this read fail and skip the gate
+    const { data: p } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
     if (p?.must_change_password) {
       const url = request.nextUrl.clone();
       url.pathname = "/welcome";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    // Teachers have no class or curriculum of their own: /teacher is home,
+    // and until the admin approves them it's the only page.
+    const waiting = p?.faculty_status && !p.is_faculty;
+    if ((p?.is_faculty && pathname === "/") || (waiting && !pathname.startsWith("/teacher"))) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/teacher";
       url.search = "";
       return NextResponse.redirect(url);
     }

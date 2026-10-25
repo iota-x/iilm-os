@@ -606,10 +606,23 @@ export async function createPost(input: {
   kind?: string;
   subject_slug?: string | null;
   image_path?: string | null;
+  /** questions only; the post is stored with no author the class can see */
+  anonymous?: boolean;
 }) {
   const { db, userId } = await uid();
   const title = input.title.trim();
   if (!title) throw new Error("Give it a title.");
+  if (input.anonymous) {
+    // no image: board image paths start with the uploader's id, which would give them away
+    const { data, error } = await db.rpc("create_anonymous_post", {
+      p_title: title,
+      p_body: (input.body ?? "").trim(),
+      p_subject: input.subject_slug || "",
+    });
+    if (error) throw new Error(error.message);
+    revalidatePath("/class");
+    return data as string;
+  }
   // the image was uploaded to the board bucket under the caller's own folder;
   // don't let a path point anywhere else
   const image = input.image_path && input.image_path.startsWith(`${userId}/`) ? input.image_path : null;
@@ -671,6 +684,141 @@ export async function toggleHelpful(target: "post" | "reply", id: string): Promi
   const { error } = await db.from(table).insert({ [col]: id, user_id: userId });
   if (error) throw new Error(error.message);
   return true;
+}
+
+/** A teacher (or the admin) puts their tick on a post, or takes it off. */
+export async function setPostVerified(id: string, on: boolean) {
+  const { db } = await uid();
+  const { error } = await db.rpc("set_post_verified", { p_id: id, p_on: on });
+  if (error) throw new Error(error.message);
+  revalidatePath("/class");
+  revalidatePath(`/class/${id}`);
+}
+
+/** Opening a notice records that you've read it — that's what "Seen by" counts. */
+export async function markNoticeRead(postId: string) {
+  const { db, userId } = await uid();
+  // already read is fine; a missing table (before migration 013) is too
+  await db.from("post_reads").upsert({ post_id: postId, user_id: userId }, { onConflict: "post_id,user_id", ignoreDuplicates: true });
+}
+
+/* ─── past papers ───────────────────────────────────────────── */
+export async function createPaper(input: {
+  subject_slug: string;
+  year: number;
+  exam: string;
+  title?: string;
+  file_path?: string | null;
+  url?: string | null;
+}) {
+  const { db, userId } = await uid();
+  if (!input.subject_slug) throw new Error("Pick the subject.");
+  const year = Math.round(Number(input.year));
+  if (!(year >= 2000 && year <= 2100)) throw new Error("Which year was the paper?");
+  const file = input.file_path && input.file_path.startsWith(`${userId}/`) ? input.file_path : null;
+  const url = input.url?.trim() || null;
+  if (!file && !url) throw new Error("Add the file or a link to it.");
+  const { error } = await db.from("papers").insert({
+    user_id: userId,
+    subject_slug: input.subject_slug,
+    year,
+    exam: input.exam,
+    title: input.title?.trim() || null,
+    file_path: file,
+    url,
+  });
+  if (error) throw new Error(error.message);
+  revalidatePath("/papers");
+}
+
+export async function deletePaper(id: string) {
+  const { db } = await uid();
+  const { data: row } = await db.from("papers").select("file_path").eq("id", id).maybeSingle();
+  const { error } = await db.from("papers").delete().eq("id", id); // RLS: own rows or admin
+  if (error) throw new Error(error.message);
+  if (row?.file_path) await db.storage.from("board").remove([row.file_path]);
+  revalidatePath("/papers");
+}
+
+export async function togglePaperVote(id: string): Promise<boolean> {
+  const { db, userId } = await uid();
+  const { data: existing } = await db.from("paper_votes").select("paper_id").eq("paper_id", id).eq("user_id", userId).maybeSingle();
+  if (existing) {
+    const { error } = await db.from("paper_votes").delete().eq("paper_id", id).eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return false;
+  }
+  const { error } = await db.from("paper_votes").insert({ paper_id: id, user_id: userId });
+  if (error) throw new Error(error.message);
+  return true;
+}
+
+export async function setPaperVerified(id: string, on: boolean) {
+  const { db } = await uid();
+  const { error } = await db.rpc("set_paper_verified", { p_id: id, p_on: on });
+  if (error) throw new Error(error.message);
+  revalidatePath("/papers");
+}
+
+/* ─── events and workshops ──────────────────────────────────── */
+export async function createEvent(input: {
+  title: string;
+  body?: string;
+  organiser?: string;
+  venue?: string;
+  url?: string;
+  starts_at: string;
+  ends_at?: string | null;
+}) {
+  const { db, userId } = await uid();
+  const title = input.title.trim();
+  if (!title) throw new Error("Give it a name.");
+  const starts = new Date(input.starts_at);
+  if (Number.isNaN(starts.getTime())) throw new Error("When does it start?");
+  const ends = input.ends_at ? new Date(input.ends_at) : null;
+  if (ends && ends <= starts) throw new Error("It has to end after it starts.");
+  const { data, error } = await db
+    .from("events")
+    .insert({
+      user_id: userId,
+      title,
+      body: (input.body ?? "").trim(),
+      organiser: input.organiser?.trim() || null,
+      venue: input.venue?.trim() || null,
+      url: input.url?.trim() || null,
+      starts_at: starts.toISOString(),
+      ends_at: ends ? ends.toISOString() : null,
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  // whoever posts it is going
+  await db.from("event_rsvps").insert({ event_id: data.id, user_id: userId });
+  revalidatePath("/events");
+  revalidatePath("/");
+}
+
+export async function deleteEvent(id: string) {
+  const { db } = await uid();
+  const { error } = await db.from("events").delete().eq("id", id); // RLS: own rows or admin
+  if (error) throw new Error(error.message);
+  revalidatePath("/events");
+  revalidatePath("/");
+}
+
+export async function toggleGoing(id: string): Promise<boolean> {
+  const { db, userId } = await uid();
+  const { data: existing } = await db.from("event_rsvps").select("event_id").eq("event_id", id).eq("user_id", userId).maybeSingle();
+  if (existing) {
+    const { error } = await db.from("event_rsvps").delete().eq("event_id", id).eq("user_id", userId);
+    if (error) throw new Error(error.message);
+  } else {
+    const { error } = await db.from("event_rsvps").insert({ event_id: id, user_id: userId });
+    if (error) throw new Error(error.message);
+  }
+  revalidatePath("/events");
+  revalidatePath("/");
+  return !existing;
 }
 
 /* ─── goals ─────────────────────────────────────────────────── */
@@ -1098,4 +1246,13 @@ export async function logStudy(input: {
   });
   // before migration 011 there is no table; the tick itself still counts
   if (error && !/study_sessions/.test(error.message)) throw new Error(error.message);
+}
+
+/* ─── Google Classroom ──────────────────────────────────────── */
+/** Forget the Google account. The to-dos it brought in stay — they're yours now. */
+export async function disconnectClassroom() {
+  const { db, userId } = await uid();
+  const { error } = await db.from("classroom_links").delete().eq("user_id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/settings");
 }

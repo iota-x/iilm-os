@@ -42,7 +42,7 @@ export function ClassroomCard({
         Every assignment with a due date, from every class you&rsquo;re in, lands on your Planner and Today — and ticks itself off
         once you&rsquo;ve turned it in. Read-only: Semwise can&rsquo;t post, submit or see your grades.
       </p>
-      {status && STATUS[status] ? (
+      {configured && status && STATUS[status] ? (
         <p className="mt-2 rounded-lg bg-surface-2 px-3 py-2 text-[length:var(--text-micro)]">{STATUS[status]}</p>
       ) : null}
 

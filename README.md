@@ -1,42 +1,62 @@
 # Semwise
 
-Your semester, planned. A study platform built around each class's actual course
-plans, timetable and exam dates — not a generic todo app with subjects bolted on.
-Live at IILM University, Gurugram (B.Tech CSE Semester I), built to take more
-universities.
+Your semester, planned. A study platform built around each class's actual syllabus,
+timetable and exam dates — open it and it tells you what to study today. Not a generic
+todo app with subjects bolted on.
+
+Live at **[semwise-app.vercel.app](https://semwise-app.vercel.app)** for IILM University,
+Gurugram (B.Tech CSE Semester I), and built to take more universities.
 
 ---
 
 ## What's in it
 
-**Syllabus, loaded from the real documents.** 90 topics across 6 subjects, session by session,
-exactly as the course plans define them. Applied Calculus (5 units) and Programming in C
-(8 units) are complete, with course outcomes, assessment schedules and marking schemes
-transcribed verbatim. Each topic carries an exam weight (1–5) and a one-line "what you
-actually need to be able to do".
+**The real syllabus, already loaded.** 7 subjects, 32 units, 202 topics, transcribed from
+the course plans — with course outcomes, marking schemes, and an exam weight and a
+one-line "what you need to be able to do" on each topic.
 
-**Mid-sem scope is explicit.** Calculus = Units I–III. C = Units 1–4. Straight from the course
-plans. Every progress bar in the app measures against that scope, not the whole course.
+**One tap plans every paper.** Goals split the whole syllabus into daily study blocks,
+each paper finished the day before it's written, sized to the time you have. Miss a day
+and the remaining days re-adjust. Spaced review brings shaky topics back.
 
-**Marking scheme, spelled out.** CLA 30 + Mid-Sem 20 + End-Sem 100→50. The two 40% hurdles
-you have to clear *separately*, and the 75% attendance rule that bars you from the end-sem
-entirely. Per-component mark entry so you can see where you stand.
+**Today.** Days to the next paper, the one block to do now (with a timer), today's plan
+and today's classes. College holidays are loaded, so no-class days show up on their own.
 
-**Timetable.** Both lab groups, all 19 slots, with your free study window each day computed
-from when your last class ends.
+**Your class notes, on the right topic.** 686 pages of class notes and slide decks are
+linked to the topics they cover, plus 161 study notes and one-page revision sheets. The
+reader opens full-screen with a whiteboard layer — your ink is saved per page. Search
+(Ctrl/⌘ K) finds words *inside* the notes and lands on the exact page.
 
-**An 18-day plan to mid-sems.** 59 blocks, 64 study hours, phased: triage → first pass →
-drill → mock. Budgeted against your actual free time after classes.
+**Ask — an AI tutor that knows the syllabus.** Answers name the real topic codes and the
+paper date, and it reads photos of the board. 20 free questions a day on the shared key;
+a student's own free Gemini key (stored encrypted) removes the cap.
 
-**Notes.** Markdown with LaTeX (KaTeX). Paste a screenshot straight into the editor and it
-uploads to private storage. Autosaves. Link a note to a subject and topic.
+**Catch deadlines from WhatsApp and the ERP.** Paste a message, share it from the phone,
+drop a screenshot or a whole exported group chat: the dates come out as a checklist, you
+confirm each line, and they land on the Planner. "Postponed to 29/10" keeps only the new
+date; "holiday on Monday" is skipped. Post it to the class board and classmates add it to
+their Planner in one tap.
 
-**Resources.** 46 curated links, ranked, each with a line on why it's worth your time —
-every URL was opened and checked. Plus a "Find more" button and your own saved links.
+**Google Classroom sync.** Coursework, due dates, announcements and materials come in on
+their own once a student connects their account (nightly cron).
 
-**Lab tracking.** 24 experiments across Applied Calculus Lab and Linux Administration Lab,
-with separate checkboxes for "done" and "written up in the lab file" — because those are
-different problems.
+**Class board, per section.** Notices, resources and questions, ranked by Helpful votes
+(sort by Most helpful). Accepted answers, anonymous questions, teacher-verified ticks,
+"Seen by 48 of 60" on notices, and brownie points with a monthly top-helpers strip.
+Past-paper bank per subject. Events with "I'm going", a calendar file and a card on Today
+the evening before.
+
+**Attendance and exams.** Attendance per subject against the 75% bar, with exactly how
+many more classes you can miss. How the marks split, the two separate 40% hurdles, an
+SGPA calculator and the end-sem marks you need from your internals.
+
+**Teachers and admin.** Teachers request access at `/teacher/signin`, an admin approves
+them at `/admin`, and `/teacher` posts one notice or deadline to many sections and shows
+which topics a class is stuck on.
+
+**Works on a phone.** Installs as an app from the browser (PWA) and takes shares from the
+Android share sheet. Pages are always live (never cached, so one person's data can't show
+to the next); without a connection it shows an offline page that reloads by itself.
 
 ---
 
@@ -44,32 +64,37 @@ different problems.
 
 ### 1. Database
 
-Open the Supabase SQL editor for your project and run `supabase/schema.sql`. It creates
-19 tables, row-level security on all of them, a private `vault` storage bucket for
-screenshots, and a trigger that creates your profile row on signup. It's safe to re-run.
+In the Supabase SQL editor, run `supabase/schema.sql`, then every file in
+`supabase/migrations/` in number order (`001` → `014`). Together they create the tables,
+row-level security on all of them, the private `vault` and `board` storage buckets, and
+the trigger that creates a profile row on sign-up.
 
 ### 2. Environment
 
-`.env.local` should already have your Supabase URL and keys. Add a password:
+`.env.local`:
 
-```
-SEED_PASSWORD=whatever-you-want
-```
-
-That's what you'll log in with. `SEED_EMAIL` is the account it creates.
+| Variable | What it's for |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | the Supabase project |
+| `SUPABASE_SERVICE_ROLE_KEY` | seed scripts, sign-up, admin actions, the shared-key quota |
+| `KEY_ENCRYPTION_SECRET` | encrypts students' own Gemini keys. **Never rotate it casually** — stored keys become unreadable |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | the shared AI key (Gemini). `GROQ_API_KEY` or `ANTHROPIC_API_KEY` work instead; `*_MODEL` overrides the model |
+| `SHARED_ASK_DAILY` | free AI uses per student per day on the shared key (default 20) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google Classroom sync (OAuth) |
+| `CRON_SECRET` | protects the nightly Classroom cron |
+| `SEED_EMAIL`, `SEED_PASSWORD`, `SEED_DISPLAY_NAME` | the owner account `npm run seed` creates |
+| `CLASS_DEFAULT_PASSWORD` | starting password for accounts made by `npm run onboard` |
 
 ### 3. Seed
 
 ```bash
 npm install
-npm run seed
+npm run tenants   # universities and classes into the database
+npm run seed      # the owner's account and its class's syllabus, timetable and plan
 ```
 
-This creates your auth user and pushes every subject, unit, topic, experiment, marking
-component, strategy, curated resource, timetable slot and plan day into the database.
-
-It's **idempotent** — re-run it any time you edit the files in `src/data/`. It upserts by
-natural key and never touches your notes, tasks, marks or screenshots.
+The seed is **idempotent** — re-run it any time you edit `src/data/`. It upserts by
+natural key and never touches notes, tasks, marks, attendance, photos or the board.
 
 ### 4. Run
 
@@ -81,32 +106,10 @@ npm run dev
 
 ## Deploy
 
-```bash
-gh repo create iilm-os --private --source=. --push
-vercel --prod
-```
-
-Then add the three environment variables in the Vercel dashboard
-(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
-
----
-
-## Filling the gaps
-
-Three subjects are incomplete because the source material wasn't available:
-
-| Subject | Missing |
-|---|---|
-| Digital Electronics & Computer Organization | Everything — course plan, units, lab experiments |
-| Computational Design Thinking | Course plan; Units 2+ |
-| Foundation of AI and Automation | Course plan; Units 2+ |
-
-When you get a course plan, open the matching file in `src/data/subjects/`, add the units
-and topics in the same shape as `calculus.ts`, set `status: "complete"` and
-`midsemConfirmed: true`, then run `npm run seed` again. The app will pick it all up.
-
-You can also add units and topics from inside the app, but the data files are the source of
-truth — anything you add in the app gets kept, but won't survive a schema rebuild.
+The repo is connected to Vercel, so pushing `main` deploys. Add the environment
+variables above in the Vercel dashboard. The Classroom cron is declared in
+`vercel.json`. In Supabase Auth, set the Site URL to the live domain and allow
+`https://<domain>/**` as a redirect, or password-reset emails won't work.
 
 ---
 
@@ -139,6 +142,13 @@ The schema is built around semesters, not this one semester. Add a new syllabus
 pack, point the cohorts at it in `src/lib/universities.ts`, and `npm run reseed`.
 Semester I's notes, marks and screenshots stay exactly where they are.
 
+## Filling the gaps
+
+Six of the seven Semester I subjects are complete. Entrepreneur Mindset is partial:
+Units 1, 2, 4 and 5 are in, Unit 3 has no deck yet. When it arrives, add it to
+`src/data/subjects/entrepreneur-mindset.ts` in the same shape as the other units and
+`npm run reseed`.
+
 ---
 
 ## Scripts
@@ -149,7 +159,11 @@ npm run build       # production build
 npm run seed        # push the owner's class's packs into Supabase (idempotent)
 npm run reseed      # the same for every account, each from its own class
 npm run tenants     # mirror src/lib/universities.ts into the universities/cohorts tables
+npm run onboard     # create accounts for everyone in scripts/roster.csv (--dry first)
 npm run stats       # section-wide counts for a pitch (numbers only)
+npm run pull        # your recent notes onto disk as markdown (read-only)
+npm run intake      # unfiled photos and PDFs onto disk under inbox/ (read-only)
+npm test            # vitest
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint
 npx tsx scripts/verify.ts   # dry-run check of the seed data, no network needed
@@ -161,24 +175,30 @@ npx tsx scripts/verify.ts   # dry-run check of the seed data, no network needed
 
 ```
 src/
-  data/           source of truth — the syllabus, timetable, plan and curated resources
-    subjects/     one file per subject
-    timetable.ts  both lab groups
-    plan.ts       the 18-day run-up
-    resources.ts  46 curated links
+  data/             source of truth — syllabus, timetable, plan, coverage, resources
+    subjects/       one file per subject
+    catalogs.ts     syllabus / timetable / grading packs per class
+    coverage.ts     topic → pages of the class notes
   app/
-    (app)/        the signed-in app
-    login/        auth
-    api/vault/    streams screenshots out of private storage
+    (app)/          the signed-in app: today, goals, planner, notes, ask, class,
+                    papers, events, attendance, exams, …
+    teacher/ admin/ teacher posting and approvals
+    api/            ask, catch, classroom, search, share, signup, vault, events
   components/
   lib/
-    queries.ts    server-side reads
-    actions.ts    server actions for every mutation
+    universities.ts universities and their classes
+    queries.ts      server-side reads
+    actions.ts      server actions for every mutation
+    classroom.ts    Google Classroom sync
+    ai-model.ts     which AI model runs, from whichever key is present
 supabase/
-  schema.sql      run this once
-scripts/
-  seed.ts         data files → database
-  verify.ts       sanity-check the data files
+  schema.sql        base schema
+  migrations/       001–014, run in order after the schema
+content/
+  study-notes/      generated study notes and revision sheets
+  page-index/       text of every notes page, for search inside the notes
+scripts/            seed, reseed, tenants, onboard, stats, verify, …
+docs/mobile-api.md  API for the planned mobile app (Bearer auth)
 ```
 
-Next.js 16 · React 19 · Tailwind v4 · Supabase · TypeScript.
+Next.js 16 · React 19 · Tailwind v4 · Supabase · Vercel AI SDK (Gemini) · TypeScript.

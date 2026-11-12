@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { RotateCcw, Undo2, X } from "lucide-react";
@@ -70,6 +71,19 @@ export function ReplanButton({ lastAt }: { lastAt: string | null }) {
       router.refresh();
     });
 
+  // lock page scroll + Esc to close while the preview is open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !pending && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, pending]);
+
   const p = preview;
   const res = p?.result;
   const busy = p ? p.days.filter((d) => d.minutes > 0 || d.isHoliday || d.isExam) : [];
@@ -89,7 +103,9 @@ export function ReplanButton({ lastAt }: { lastAt: string | null }) {
         </Button>
       </div>
 
-      {open ? (
+      {/* portal: the Sprint page sits inside a transformed (animated) wrapper, which turns
+          position:fixed into "fixed to that wrapper", so the dialog landed mid-page, off-screen */}
+      {open && typeof document !== "undefined" ? createPortal(
         <div className="fixed inset-0 z-[60] grid place-items-center bg-black/40 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Replan preview">
           <div className="flex max-h-[88vh] w-full max-w-2xl flex-col rounded-[var(--radius-card)] bg-surface shadow-card dark:border dark:border-line">
             <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
@@ -187,7 +203,8 @@ export function ReplanButton({ lastAt }: { lastAt: string | null }) {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       ) : null}
     </>
   );

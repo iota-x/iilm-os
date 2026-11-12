@@ -4,6 +4,8 @@ import { contentOf } from "@/data/catalogs";
 import { SprintBoard } from "@/components/sprint-board";
 import { PlanRunSection } from "@/components/planner/plan-run-section";
 import { Card } from "@/components/ui";
+import { ReplanButton } from "@/components/replan-button";
+import { lastReplan } from "@/lib/replan-actions";
 import { ACCENT_CLASS, cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +21,7 @@ export default async function SprintPage({
   searchParams: Promise<{ subject?: string }>;
 }) {
   const { subject } = await searchParams;
-  const [subjects, tenant] = await Promise.all([getSubjects(), getTenant()]);
+  const [subjects, tenant, last] = await Promise.all([getSubjects(), getTenant(), lastReplan()]);
   // video routes are written against one syllabus's topics; other classes have none yet
   const { sprints, sprintFor } = contentOf(tenant.cohort.catalog);
   const active = sprintFor(subject ?? "") ?? sprints[0] ?? null;
@@ -27,11 +29,14 @@ export default async function SprintPage({
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-[length:var(--text-page)]">Sprint</h1>
-        <p className="mt-1 max-w-2xl text-[length:var(--text-small)] text-muted">
-          Your prep, one numbered day at a time. Tick blocks here or on Today.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[length:var(--text-page)]">Sprint</h1>
+          <p className="mt-1 max-w-2xl text-[length:var(--text-small)] text-muted">
+            Your prep, one numbered day at a time. Tick blocks here or on Today.
+          </p>
+        </div>
+        <ReplanButton lastAt={last?.at ?? null} />
       </div>
 
       <PlanRunSection />

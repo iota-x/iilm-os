@@ -126,6 +126,104 @@
    "title": "Calculus Unit 3 — one-page revision sheet",
    "content": "| Topic | Must know |\n|---|---|\n| Max/min | $f_x=f_y=0$; $rt-s^2$ and sign of $r$; give the value |\n| Lagrange | $F=f+\\lambda\\phi$; equate the $\\lambda$ expressions |\n| Gradient/Hessian | steepest ascent; definiteness ↔ min/max/saddle |\n| Gradient descent | $x\\leftarrow x-\\alpha\\nabla f$; learning rate trade-off |\n| Newton | $x\\leftarrow x-H^{-1}\\nabla f$; one step on a quadratic |\n| Regression | normal equations; $(X^TX)^{-1}X^Ty$ |\n",
    "pinned": true
+  },
+  {
+   "topic": "calc-u4-double",
+   "unit": null,
+   "title": "Double integrals (rectangles and simple regions)",
+   "content": "### ⚡ In 30 seconds\n- $\\int_a^b\\!\\int_c^d f\\,dy\\,dx$: do the **inner** integral (dy) first, treating x as a constant, then the outer.\n- Rectangle (constant limits): order can be swapped freely.\n- Non-rectangular region: inner limits are **curves** (functions of the outer variable) — sketch first.\n\n---\n\n## Method\n1. Identify inner variable (the first differential written: `dy dx` → y first).\n2. Integrate w.r.t. inner variable, outer variable held constant; substitute inner limits.\n3. Integrate the result w.r.t. the outer variable.\n\n## Worked (from the session sheet + QB)\n- S29: $\\int_0^2\\!\\int_0^1 (2x+y)\\,dy\\,dx = \\int_0^2 (2x+\\tfrac12)\\,dx = 4+1 = \\mathbf{5}$.\n- QB40: $\\int_0^2\\!\\int_0^1 (3x-y)\\,dy\\,dx = \\int_0^2(3x-\\tfrac12)dx = 6-1 = \\mathbf{5}$.\n- QB41: $\\int_0^1\\!\\int_0^2 (x+2y)\\,dy\\,dx = \\int_0^1 (2x+4)\\,dx = \\mathbf{5}$.\n- QB42 (triangle $0\\le y\\le 2x$, $0\\le x\\le1$): $\\int_0^1\\!\\int_0^{2x}(x+y)\\,dy\\,dx=\\int_0^1 4x^2dx=\\mathbf{\\tfrac43}$.\n- QB49 (triangle $0\\le y\\le 1-x$): $\\int_0^1\\!\\int_0^{1-x}(x+y)\\,dy\\,dx = \\mathbf{\\tfrac13}$.\n\n## Exam tip\nWrite the limits next to each integral sign so the marker sees which variable they belong to (S29 quick check: \"Which limits belong to y?\").\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u4-triple",
+   "unit": null,
+   "title": "Triple integrals",
+   "content": "### ⚡ In 30 seconds\n- Three nested integrations: in `dz dy dx` do **z first, then y, then x**.\n- Simplify after each step. With constant limits and a separable integrand, split into a product of three single integrals.\n- $\\iiint 1\\,dV$ = volume of the box.\n\n---\n\n## Worked\n- S30: $\\int_0^1\\!\\int_0^2\\!\\int_0^2 (x+y+2z)\\,dz\\,dy\\,dx$ → z: $2x+2y+4$ → y: $4x+4+8=4x+12$ → x: $2+12=\\mathbf{14}$.\n- QB46: $\\int_0^1\\!\\int_0^2\\!\\int_0^1 (x+2y+z)\\,dz\\,dy\\,dx = \\mathbf{6}$.\n- QB47: $\\int_0^2\\!\\int_0^1\\!\\int_0^3 (2x+y+z)\\,dz\\,dy\\,dx = \\mathbf{24}$.\n- $\\int_0^1\\!\\int_0^1\\!\\int_0^1 1\\,dz\\,dy\\,dx = 1$ (unit cube volume).\n\n## Separable shortcut\nIf $f=g(x)h(y)k(z)$ and limits are constants: $\\iiint f = \\left(\\int g\\right)\\left(\\int h\\right)\\left(\\int k\\right)$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u4-order",
+   "unit": null,
+   "title": "Change of order of integration",
+   "content": "### ⚡ In 30 seconds\n- **Sketch the region first** from the given limits; the region never changes, only how you describe it.\n- New outer variable gets **constant** limits (its full range); new inner limits are the **curves** solved for the inner variable.\n- Sometimes the region must be **split** into two pieces.\n\n---\n\n## Method\n1. Read limits: inner $y$ from $y=g_1(x)$ to $y=g_2(x)$, outer $x$ from $a$ to $b$.\n2. Sketch the four boundaries; find intersection points.\n3. Draw a horizontal strip (for dx dy): its left/right ends give the inner x-limits as functions of y.\n4. Outer y-limits = lowest to highest y of the region.\n\n## Worked\n- S31: triangle $y=0,\\ y=x,\\ x=1$. Given $\\int_0^1\\!\\int_0^x f\\,dy\\,dx$ ⇒ reversed $\\int_0^1\\!\\int_y^1 f\\,dx\\,dy$.\n- S32: region between $y=x^2$ and $y=x$ (meet at 0 and 1). $\\int_0^1\\!\\int_{x^2}^{x} f\\,dy\\,dx = \\int_0^1\\!\\int_{y}^{\\sqrt y} f\\,dx\\,dy$.\n- Classic: $\\int_0^1\\!\\int_x^1 e^{y^2}dy\\,dx$ can't be done as written → reverse: $\\int_0^1\\!\\int_0^y e^{y^2}dx\\,dy=\\int_0^1 y e^{y^2}dy=\\tfrac{e-1}{2}$.\n\nWhen to split: if the left or right boundary of a horizontal strip changes partway (e.g. different curves above/below a corner).\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u4-variables",
+   "unit": null,
+   "title": "Change of variables, Jacobian and polar coordinates",
+   "content": "### ⚡ In 30 seconds\n- $dx\\,dy = |J|\\,du\\,dv$ with $J=\\dfrac{\\partial(x,y)}{\\partial(u,v)}$. Transform **integrand, limits and area element**.\n- Polar: $x=r\\cos\\theta,\\ y=r\\sin\\theta$, **$dx\\,dy = r\\,dr\\,d\\theta$**.\n- $\\dfrac{\\partial(u,v)}{\\partial(x,y)}\\cdot\\dfrac{\\partial(x,y)}{\\partial(u,v)} = 1$; if $J=0$ the transformation isn't valid there.\n\n---\n\n## Jacobian\n$J=\\dfrac{\\partial(u,v)}{\\partial(x,y)}=\\begin{vmatrix}u_x&u_y\\\\v_x&v_y\\end{vmatrix}$.\n\n**S33 / Quiz 3:** $u=x+y,\\ v=x-y$: $J=\\begin{vmatrix}1&1\\\\1&-1\\end{vmatrix}=-2$. Inverse Jacobian $\\partial(x,y)/\\partial(u,v)=-\\tfrac12$, so $dx\\,dy=\\tfrac12\\,du\\,dv$.\n\nPolar: $\\partial(x,y)/\\partial(r,\\theta)=\\begin{vmatrix}\\cos\\theta&-r\\sin\\theta\\\\\\sin\\theta&r\\cos\\theta\\end{vmatrix}=r$.\n\n## Method\n1. Choose $u,v$ that simplify the integrand or region (often the region's boundary lines).\n2. Express x, y in u, v (or use the inverse Jacobian).\n3. Find the new region in the uv-plane.\n4. $\\iint f\\,dx\\,dy=\\iint f(u,v)\\,|J|\\,du\\,dv$ — always the **absolute value** (area can't be negative).\n\n## Polar example\n$\\iint_{x^2+y^2\\le a^2} e^{-(x^2+y^2)}dx\\,dy=\\int_0^{2\\pi}\\!\\int_0^a e^{-r^2}r\\,dr\\,d\\theta=\\pi(1-e^{-a^2})$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u4-areavol",
+   "unit": null,
+   "title": "Area between curves and volume by double/triple integrals",
+   "content": "### ⚡ In 30 seconds\n- **Area** = $\\int_a^b (\\text{upper}-\\text{lower})\\,dx$ = $\\iint_R 1\\,dA$. Find intersections first, sketch, decide which curve is on top.\n- **Volume under a surface** $z=f(x,y)$ over R = $\\iint_R f\\,dA$; volume of a solid = $\\iiint 1\\,dV$.\n- Answer must be positive — check it.\n\n---\n\n## Area — QB\n| Q | Curves | Meet at | Area |\n|---|---|---|---|\n| S35 | $y=2x,\\ y=x^2$ | 0, 2 | $\\int_0^2(2x-x^2)dx=\\tfrac43$ |\n| QB43 | $y=x^2,\\ y=4x$ | 0, 4 | $\\int_0^4(4x-x^2)dx=\\mathbf{\\tfrac{32}{3}}$ |\n| QB45 | $y=x^2,\\ y=3x$ | 0, 3 | $\\mathbf{\\tfrac92}$ |\n| QB44 | $y=x^3,\\ y=x$ | −1, 0, 1 | $2\\int_0^1(x-x^3)dx=\\mathbf{\\tfrac12}$ (two pieces; on [−1,0] $x^3$ is on top) |\n\n## Volume — QB48\nBelow $z=6-x-y$, over triangle $x,y\\ge0,\\ x+y\\le2$:\n$V=\\int_0^2\\!\\int_0^{2-x}(6-x-y)\\,dy\\,dx=\\mathbf{\\tfrac{28}{3}}$.\n\n## Answer shape\nSketch → intersections → limits → integral → value with units² / units³.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u5-lineplane",
+   "unit": null,
+   "title": "Equations of a line and a plane (3D)",
+   "content": "### ⚡ In 30 seconds\n- Line through $(x_1,y_1,z_1)$ with direction $(a,b,c)$: $\\dfrac{x-x_1}{a}=\\dfrac{y-y_1}{b}=\\dfrac{z-z_1}{c}$.\n- Plane through $(x_1,y_1,z_1)$ with normal $(a,b,c)$: $a(x-x_1)+b(y-y_1)+c(z-z_1)=0$.\n- Normal of $ax+by+cz=d$ is $(a,b,c)$.\n\n---\n\n| Want | Formula |\n|---|---|\n| Line through two points P, Q | direction = Q − P, then symmetric form |\n| Parametric line | $x=x_1+at,\\ y=y_1+bt,\\ z=z_1+ct$ |\n| Plane through 3 points | normal = $(Q-P)\\times(R-P)$ |\n| Angle between planes | $\\cos\\theta=\\dfrac{|n_1\\cdot n_2|}{|n_1||n_2|}$ |\n| Distance point to plane | $\\dfrac{|ax_0+by_0+cz_0-d|}{\\sqrt{a^2+b^2+c^2}}$ |\n\nExample: line through (1,2,3) and (3,5,4): direction (2,3,1) → $\\frac{x-1}{2}=\\frac{y-2}{3}=\\frac{z-3}{1}$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u5-tangent",
+   "unit": null,
+   "title": "Tangent plane and normal line to a surface",
+   "content": "### ⚡ In 30 seconds\n- Write the surface as $F(x,y,z)=0$; the normal at P is **$\\nabla F(P)$**.\n- Tangent plane: $F_x(x-x_0)+F_y(y-y_0)+F_z(z-z_0)=0$.\n- Normal line: $\\dfrac{x-x_0}{F_x}=\\dfrac{y-y_0}{F_y}=\\dfrac{z-z_0}{F_z}$.\n\n---\n\n## QB25 — sphere $x^2+y^2+z^2=21$ at (2, 1, 4)\n$F=x^2+y^2+z^2-21$, $\\nabla F=(2x,2y,2z)=(4,2,8)$ at P.\n- Tangent plane: $4(x-2)+2(y-1)+8(z-4)=0 \\Rightarrow \\mathbf{2x+y+4z=21}$.\n- Normal line: $\\dfrac{x-2}{4}=\\dfrac{y-1}{2}=\\dfrac{z-4}{8}$ (same as $\\frac{x-2}{2}=\\frac{y-1}{1}=\\frac{z-4}{4}$).\n\nFor $z=f(x,y)$: use $F=f(x,y)-z$, so normal $(f_x,f_y,-1)$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u5-gradcurldiv",
+   "unit": null,
+   "title": "Gradient, divergence and curl",
+   "content": "### ⚡ In 30 seconds\n- $\\nabla\\phi=(\\phi_x,\\phi_y,\\phi_z)$ — a **vector**, points to steepest increase, magnitude = max rate.\n- $\\operatorname{div}F=\\nabla\\cdot F=P_x+Q_y+R_z$ — a **scalar**; div = 0 ⇒ **solenoidal**.\n- $\\operatorname{curl}F=\\nabla\\times F=(R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y)$ — a **vector**; curl = 0 ⇒ **irrotational** (then $F=\\nabla\\phi$).\n\n---\n\n## QB solutions\n| Q | Field / function | Result |\n|---|---|---|\n| 21 | $\\phi=x^2y+yz$ at (1,2,1) | $\\nabla\\phi=(4,2,2)$ |\n| 22 | $\\phi=xy^2+yz^2$ at (2,1,1) | $(1,5,2)$ |\n| 50 | $F=(xy,yz,zx)$ at (1,2,1) | div $=x+y+z=4$; curl $=(-y,-z,-x)=(-2,-1,-1)$ |\n| 51 | $F=(x^2y,y^2z,z^2x)$ at (1,1,1) | div $=2xy+2yz+2zx=6$; curl $=(-y^2,-z^2,-x^2)=(-1,-1,-1)$ |\n| 52 | $F=(x^2-y,\\ y^2-z,\\ z^2-x)$ | div $=2x+2y+2z$ |\n| 53 | $F=(yz,xz,xy)$ | curl $=0$ ⇒ irrotational (also div = 0) |\n| 54 | $F=(2xy+z,\\ x^2-3z,\\ x-3y)$ | div $=2y$ (not solenoidal); curl $=0$ ⇒ irrotational |\n| 55 | $\\phi=x^2y+yz^2$ | $\\nabla\\phi=(2xy,\\ x^2+z^2,\\ 2yz)$; $\\nabla^2\\phi=2y+2y=4$ at (1,1,1) |\n| 56 | $F=(y+z,\\ x+z,\\ x+y)$ | curl = 0; potential $\\phi=xy+yz+zx$ |\n\n## Finding a scalar potential (QB56 method)\n$\\phi_x=y+z\\Rightarrow\\phi=xy+xz+g(y,z)$; $\\phi_y=x+g_y=x+z\\Rightarrow g=yz+h(z)$; $\\phi_z=x+y+h'=x+y\\Rightarrow h$ const. So $\\phi=xy+yz+zx$.\n\nIdentities: $\\operatorname{curl}(\\nabla\\phi)=0$, $\\operatorname{div}(\\operatorname{curl}F)=0$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u5-directional",
+   "unit": null,
+   "title": "Directional derivative and maximum rate of change",
+   "content": "### ⚡ In 30 seconds\n- $D_{\\hat a}\\phi=\\nabla\\phi\\cdot\\hat a$ — **unit** vector $\\hat a = \\vec a/|\\vec a|$ (forgetting to divide is the #1 mistake).\n- Maximum rate of change = $|\\nabla\\phi|$, in the direction of $\\nabla\\phi$.\n- Minimum (steepest decrease) = $-|\\nabla\\phi|$, direction $-\\nabla\\phi$ (gradient descent uses this).\n\n---\n\n## QB23 — $\\phi=x^2yz$ at (1,1,2), direction $2i+j+2k$\n$\\nabla\\phi=(2xyz,\\ x^2z,\\ x^2y)=(4,2,1)$; $|\\vec a|=3$; $D=\\dfrac{4\\cdot2+2\\cdot1+1\\cdot2}{3}=\\mathbf{4}$.\n\n## QB24 — $\\phi=xy^2+z^2$ at (1,−1,2), direction $i-2j+2k$\n$\\nabla\\phi=(y^2,\\ 2xy,\\ 2z)=(1,-2,4)$; $|\\vec a|=3$; $D=\\dfrac{1+4+8}{3}=\\mathbf{\\tfrac{13}{3}}$.\n\nMax rate in QB23: $|\\nabla\\phi|=\\sqrt{16+4+1}=\\sqrt{21}$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "calc-u5-linesurface",
+   "unit": null,
+   "title": "Line integrals (and surface integrals)",
+   "content": "### ⚡ In 30 seconds\n- Work done by F along C: $\\int_C F\\cdot d\\vec r=\\int_C (P\\,dx+Q\\,dy+R\\,dz)$.\n- Parametrise C ($x(t),y(t),z(t)$), substitute, integrate over t.\n- If curl F = 0 (conservative), $\\int_A^B F\\cdot dr=\\phi(B)-\\phi(A)$ — **path-independent**.\n\n---\n\n## Method\n1. Parametrise: e.g. straight line from A to B: $r(t)=A+t(B-A)$, $0\\le t\\le1$.\n2. Write $dx=x'(t)dt$ etc.\n3. Substitute into $P\\,dx+Q\\,dy+R\\,dz$, integrate from $t_0$ to $t_1$.\n\nExample: $F=(y+z,x+z,x+y)$ from (0,0,0) to (1,1,1): conservative with $\\phi=xy+yz+zx$ ⇒ work $=\\phi(1,1,1)-\\phi(0,0,0)=3$.\n\nSurface integral (flux): $\\iint_S F\\cdot\\hat n\\,dS$ — evaluated by projecting S onto a coordinate plane: $dS=\\dfrac{dx\\,dy}{|\\hat n\\cdot\\hat k|}$.\n\n\n*Source: DigiiCampus session sheets CSE26103_U4_S29–S36 / U5_S37–S44 (Dr. Vishwa Prakash Jha) + Applied Calculus Question Bank (5 Nov). Answers checked with sympy.*\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 4,
+   "title": "Calculus Unit 4 — one-page revision sheet",
+   "content": "| Topic | Must know | QB |\n|---|---|---|\n| Double integral | inner first; limits belong to the inner variable | 40, 41, 42, 49 |\n| Triple integral | dz dy dx = z, y, x | 46, 47 |\n| Change of order | sketch → horizontal strip → new limits; may split | S31–S32 |\n| Jacobian | $J=\\partial(u,v)/\\partial(x,y)$; $dxdy=|J|dudv$; polar $r\\,dr\\,d\\theta$ | Quiz 3: −2 |\n| Area | ∫(upper − lower); intersections first | 43 (32/3), 44 (1/2), 45 (9/2) |\n| Volume | $\\iint f\\,dA$ | 48 (28/3) |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 5,
+   "title": "Calculus Unit 5 — one-page revision sheet",
+   "content": "| Topic | Must know | QB |\n|---|---|---|\n| Line & plane | symmetric line; $a(x-x_0)+\\dots=0$ | — |\n| Tangent plane / normal line | normal = $\\nabla F$ | 25: $2x+y+4z=21$ |\n| Gradient | vector, steepest increase | 21 (4,2,2), 22 (1,5,2) |\n| Directional derivative | $\\nabla\\phi\\cdot\\hat a$ (unit!) ; max = $|\\nabla\\phi|$ | 23 (4), 24 (13/3) |\n| Divergence | scalar; 0 ⇒ solenoidal | 50–52, 54 |\n| Curl | vector; 0 ⇒ irrotational ⇒ potential exists | 50, 51, 53, 54, 56 |\n| Laplacian | div(grad φ) | 55 (4) |\n| Line integral | parametrise; conservative ⇒ φ(B) − φ(A) | — |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": null,
+   "title": "Applied Calculus Question Bank (DigiiCampus) — all 56 answers",
+   "content": "### ⚡ In 30 seconds\n- The official question bank (DigiiCampus, 5 Nov) — 56 questions across all 5 units. **Practise these first**; end-sem questions are drawn from this style.\n- Every answer below checked with sympy.\n\n---\n\n## 1 · Single-variable (Q1–12)\n| Q | Answer |\n|---|---|\n| 1 | f(3)=f(4)=0, continuous & differentiable → $c=\\tfrac72$ |\n| 2 | sin 0 = sin π = 0 → $c=\\tfrac{\\pi}{2}$ |\n| 3 | $\\frac{f(2)-f(0)}{2}=1=3c^2-3$ → $c=\\tfrac{2}{\\sqrt3}\\approx1.155$ |\n| 4 | $\\frac{3-1}{8}=\\frac{1}{2\\sqrt c}$ → $c=4$ |\n| 5 | limit = 8 ≠ f(4) = 7 → **discontinuous** (removable) |\n| 6 | continuity 1+a = b+2, differentiability 2 = b → $a=3,\\ b=2$ |\n| 7 | $y_n=(-4)^n e^{-4x}$ |\n| 8 | $y_n=3^n\\cos\\!\\left(3x+\\tfrac{n\\pi}{2}\\right)$ |\n| 9 | $1+2x+2x^2+\\tfrac43x^3+\\tfrac23x^4$ |\n| 10 | $x-\\tfrac{x^3}{6}+\\tfrac{x^5}{120}$ |\n| 11 | $x-\\tfrac{x^2}{2}+\\tfrac{x^3}{3}-\\tfrac{x^4}{4}+\\tfrac{x^5}{5}$, valid for $-1<x\\le1$ |\n| 12 | along $y=mx$: $\\frac{m}{1+m^2}$ depends on m → limit doesn't exist |\n\n## 2 · Partial differentiation (Q13–28)\n| Q | Answer |\n|---|---|\n| 13 | $u_x=3x^2y^2+2y$, $u_y=2x^3y+2x$, $u_{xy}=u_{yx}=6x^2y+2$ |\n| 14 | $u_x=ye^{xy}$, $u_y=xe^{xy}$, $u_{xy}=u_{yx}=(1+xy)e^{xy}$ |\n| 15 | $dz/dt=4t^3+6t^2+20t+2$; at t = 1: **32** |\n| 16 | $\\partial z/\\partial r=2r+3r\\sin2\\theta$ |\n| 17 | degree 3; $xu_x+yu_y=3u$ ✓ |\n| 18 | degree 4; $xu_x+yu_y=4u$ ✓ |\n| 19 | $H=\\begin{pmatrix}2y&2x\\\\2x&6y\\end{pmatrix}$ |\n| 20 | $f_{xx}=y^2e^{xy}+2$, $f_{xy}=f_{yx}=(1+xy)e^{xy}$, $f_{yy}=x^2e^{xy}$ |\n| 21 | (4, 2, 2) |\n| 22 | (1, 5, 2) |\n| 23 | 4 |\n| 24 | 13/3 |\n| 25 | plane $2x+y+4z=21$; line $\\frac{x-2}{2}=\\frac{y-1}{1}=\\frac{z-4}{4}$ |\n| 26 | $e^x\\cos y\\approx1+x+\\tfrac{x^2}{2}-\\tfrac{y^2}{2}$ |\n| 27 | $e^x\\sin y\\approx y+xy$ |\n| 28 | along $y=mx^2$: $\\frac{m}{1+m^2}$ → doesn't exist |\n\n## 3 · Optimisation (Q29–39)\n| Q | Answer |\n|---|---|\n| 29 | (1,2) min −18 · (−1,−2) max 18 · (1,−2), (−1,2) saddles |\n| 30 | (1,4): D = 3 > 0, $f_{xx}=2>0$ → min, f = −21 |\n| 31 | (−2,−3): D = −4 → saddle |\n| 32 | (0,0): D = −12 → saddle |\n| 33 | min 20 at (2,4), λ = 4 |\n| 34 | max 36 at (6,6) |\n| 35 | max 25 at (3,4); min −25 at (−3,−4) |\n| 36 | max 4 at $(2\\sqrt2,\\sqrt2),(-2\\sqrt2,-\\sqrt2)$; min −4 at $(2\\sqrt2,-\\sqrt2),(-2\\sqrt2,\\sqrt2)$ |\n| 37 | ∇=(4,−4) → (1.6,−0.6); ∇=(3.2,−2.4) → (1.28,−0.36) |\n| 38 | ∇=(6,4) → (0.4,1.6); ∇=(2.4,3.2) → (0.16,1.28) |\n| 39 | ∇=(4,−2) → (0.6,0.2); ∇=(2,−0.8) → (0.4,0.28) |\n\n## 4 · Multiple integrals (Q40–49)\n40: 5 · 41: 5 · 42: 4/3 · 43: 32/3 · 44: 1/2 · 45: 9/2 · 46: 6 · 47: 24 · 48: 28/3 · 49: 1/3\n\n## 5 · Vector calculus (Q50–56)\n| Q | Answer |\n|---|---|\n| 50 | div 4, curl (−2,−1,−1) |\n| 51 | div 6, curl (−1,−1,−1) |\n| 52 | 2x + 2y + 2z |\n| 53 | curl 0 → irrotational |\n| 54 | div 2y (not solenoidal), curl 0 (irrotational) |\n| 55 | ∇φ = (2xy, x²+z², 2yz); div ∇φ = 4 |\n| 56 | curl 0; φ = xy + yz + zx |\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": null,
+   "title": "Applied Calculus Assignment 2 (Units III–V, due 23 Nov) — answers to check against",
+   "content": "### ⚡ In 30 seconds\n- DigiiCampus Assignment 2 (Applied_Calculus_Assignment_Units_3_4_5.pdf, due **23 Nov, 8:08 AM**, upload PDF). 18 questions, same style as the Question Bank.\n- Final answers below (checked with sympy) — write the full working yourself; the marks are for the steps.\n- File saved in `~/Desktop/iilm/applied_calculus/digicampus/`.\n\n---\n\n| Q | Answer |\n|---|---|\n| 1 | $H=\\begin{pmatrix}2y&2x\\\\2x&6y\\end{pmatrix}$ |\n| 2 | $x^3+y^3-3x-3y$: (1,1) min −4 · (−1,−1) max 4 · (1,−1), (−1,1) saddles |\n| 3 | $x^3+y^3-12x-12y$: (2,2) min −32 · (−2,−2) max 32 · (2,−2), (−2,2) saddles |\n| 4 | min $x^2+y^2$ on $2x+y=5$: (2, 1), λ = 2, **min = 5** |\n| 5 | ∇=(6,4) → (0.4, 1.6); ∇=(2.4, 3.2) → (0.16, 1.28) |\n| 6 | degree 3; $xu_x+yu_y=3u$ ✓ |\n| 7 | 5 |\n| 8 | 3 |\n| 9 | 1/6 |\n| 10 | 4/3 |\n| 11 | 18 |\n| 12 | 6 |\n| 13 | (4, 4, 2) |\n| 14 | ∇φ=(2,1,1), $\\hat a=(1,2,2)/3$ → **2** |\n| 15 | div = 3, curl = (−1, −1, −1) |\n| 16 | div $=2xy+2yz+2zx$; curl $=(-y^2,-z^2,-x^2)$ |\n| 17 | ∇F=(2,4,6): plane $x+2y+3z=14$; line $\\frac{x-1}{1}=\\frac{y-2}{2}=\\frac{z-3}{3}$ |\n| 18 | ∇φ=(2,1,4), $\\hat a=(2,1,-2)/3$ → **−1** |\n",
+   "pinned": false
   }
  ]
 }

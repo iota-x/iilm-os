@@ -147,6 +147,160 @@
    "title": "C Unit 4 — one-page revision sheet",
    "content": "| Topic | Must know |\n|---|---|\n| Functions | prototype, definition, call; formal vs actual parameters; 4 types |\n| Call by value | copies; swap fails. Call by reference: pointers; swap works |\n| Recursion | base case + recursive case; stack trace; factorial, fibonacci, Hanoi ($2^n-1$ moves) |\n| Storage classes | the 5-row table: storage, default, scope, lifetime; static keeps its value |\n\n**Class Test 1 covers Units 3 and 4.**\n",
    "pinned": true
+  },
+  {
+   "topic": "c-u5-arrays",
+   "unit": null,
+   "title": "Arrays: declaration, initialisation, memory",
+   "content": "### ⚡ In 30 seconds\n- Array = **same-type** elements in **contiguous** memory under one name, accessed by index **from 0**.\n- Size must be a **compile-time integer constant** (`int a[j];` with variable j is invalid in classic C).\n- Memory = size of one element × number of elements; address of `a[i]` = base + i × size.\n\n---\n\n## Declaration & initialisation\n```c\nint a[5];                 // 5 ints, garbage values (local)\nint a[5] = {1,2,3,4,5};\nint a[]  = {1,2,3};       // size inferred = 3\nint a[5] = {1,2};         // rest become 0\nint a[5] = {0};           // all zeros\n```\nValid sizes: `int a[3+5];`, `#define N 10` → `int a[N];`. Invalid: `int a[j];` (variable), `int a[2.5];`, `int a[-3];`.\n\n## Facts examiners ask\n| Q | Answer |\n|---|---|\n| Why index from 0? | index = offset from base address |\n| Bounds checking? | none — `a[10]` in `int a[5]` = undefined behaviour |\n| Number of elements | `sizeof(a)/sizeof(a[0])` |\n| Can you assign `a = b`? | no — array name is a constant address |\n| Address of a[3], base 2000, int 4 B | 2012 |\n\n## Classic programs\nSum/average, max/min, linear search, reverse, bubble sort, count even/odd.\n```c\nfor (i = 0; i < n; i++) sum += a[i];\navg = (float)sum / n;\n```\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u5-multidim",
+   "unit": null,
+   "title": "Multidimensional (2D) arrays",
+   "content": "### ⚡ In 30 seconds\n- `int m[3][4];` = 3 rows × 4 columns, stored **row-major** (row 0, then row 1 …).\n- Address of `m[i][j]` = base + (i × cols + j) × size.\n- In a declaration/parameter you may omit the **row** size, never the **column** size: `int m[][4]`.\n\n---\n\n```c\nint m[2][3] = {{1,2,3},{4,5,6}};\nfor (i = 0; i < 2; i++)\n    for (j = 0; j < 3; j++)\n        printf(\"%d \", m[i][j]);\n```\n\n## Standard matrix programs\n| Program | Core line |\n|---|---|\n| Addition | `c[i][j] = a[i][j] + b[i][j];` |\n| Transpose | `t[j][i] = a[i][j];` |\n| Multiplication (r1×c1 · c1×c2) | `c[i][j] += a[i][k] * b[k][j];` (3 loops; need c1 == r2) |\n| Diagonal sum | `if (i == j) s += a[i][j];` |\n\nAddress example: `int m[3][4]`, base 1000, 4 B: `m[2][1]` → 1000 + (2·4+1)·4 = 1036.\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u5-funcarrays",
+   "unit": null,
+   "title": "Functions with arrays",
+   "content": "### ⚡ In 30 seconds\n- Pass an element (`f(a[2])`) → **call by value** (a copy).\n- Pass the whole array (`f(a, n)`) → only the **base address** is passed, so changes inside affect the original.\n- Always pass the size separately; `sizeof(a)` inside the function gives the pointer size, not the array size.\n\n---\n\n```c\nint sum(int a[], int n) {          // same as int *a\n    int s = 0;\n    for (int i = 0; i < n; i++) s += a[i];\n    return s;\n}\nint main() { int x[5] = {1,2,3,4,5}; printf(\"%d\", sum(x, 5)); }\n```\n`int a[]` and `int *a` mean the same thing in a parameter list.\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u5-passing",
+   "unit": null,
+   "title": "Passing arrays (1D and 2D) to functions",
+   "content": "### ⚡ In 30 seconds\n- 1D: `void f(int a[], int n)` · call `f(arr, n)`.\n- 2D: column size required: `void f(int m[][3], int rows)` · call `f(mat, 2)`.\n- Arrays are effectively passed by reference → function can modify them (e.g. sort in place).\n\n---\n\n```c\nvoid doubleAll(int a[], int n) { for (int i = 0; i < n; i++) a[i] *= 2; }\nvoid printMat(int m[][3], int r) {\n    for (int i = 0; i < r; i++) { for (int j = 0; j < 3; j++) printf(\"%d \", m[i][j]); printf(\"\\n\"); }\n}\n```\nReturning an array: return a pointer to a static/global or malloc'd array — never to a local array (it dies when the function returns).\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u5-chararrays",
+   "unit": null,
+   "title": "Character arrays",
+   "content": "### ⚡ In 30 seconds\n- A character array holds chars; it becomes a **string** only when it ends with **`'\\0'`**.\n- `char s[] = \"Sam\";` takes **4 bytes** (S a m \\0).\n- `'a'` = one char (1 byte); `\"a\"` = string of 2 bytes.\n\n---\n\n| | Character array | String |\n|---|---|---|\n| End marker | may lack `'\\0'` | always `'\\0'` |\n| Example | `char c[3] = {'a','b','c'};` | `char s[4] = \"abc\";` |\n| `printf(\"%s\")` safe? | no | yes |\n\nReading: `scanf(\"%s\", s)` stops at a space (no `&` — array name is an address); `fgets(s, size, stdin)` reads a whole line safely; `gets` is unsafe (removed in C11).\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u5-strings",
+   "unit": null,
+   "title": "Strings and string functions",
+   "content": "### ⚡ In 30 seconds\n- String = char array ending in `'\\0'`; functions in **`<string.h>`**.\n- `strlen` (length without `\\0`), `strcpy`, `strcat`, `strcmp` (0 if equal), `strrev/strupr/strlwr` (non-standard).\n- Can't use `=` or `==` on strings — use `strcpy` and `strcmp`.\n\n---\n\n| Function | Does |\n|---|---|\n| `strlen(s)` | length, not counting `\\0` |\n| `strcpy(d, s)` | copy s into d |\n| `strcat(d, s)` | append s to d |\n| `strcmp(a, b)` | 0 equal, <0 a first, >0 a after |\n| `strncpy`, `strncmp` | first n chars |\n| `strchr`, `strstr` | find char / substring |\n\n`char s[10] = \"hi\";` → `strlen(s)` = 2, `sizeof(s)` = 10.\n\n## Write-without-library programs\n```c\nint len = 0; while (s[len] != '\\0') len++;            // strlen\nfor (i = 0, j = len-1; i < j; i++, j--) { t = s[i]; s[i] = s[j]; s[j] = t; }  // reverse\n// palindrome: compare s[i] with s[len-1-i]\n// count vowels: if (strchr(\"aeiouAEIOU\", s[i])) v++;\n```\n\n\n*Source: DigiiCampus Unit-5 deck (S26–S31, 'Arrays and Strings').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u6-pointers",
+   "unit": null,
+   "title": "Pointer declarations and pointer arithmetic",
+   "content": "### ⚡ In 30 seconds\n- Pointer = variable holding an **address**: `int *p = &x;` · `&` = address-of, `*` = value-at.\n- `p + 1` moves by **sizeof(type)** bytes. Allowed: ± integer, ++/--, pointer − pointer, compare. **Not** allowed: pointer + pointer, ×, ÷.\n- Uninitialised = **wild**; after `free` = **dangling**; `NULL` = points nowhere.\n\n---\n\n```c\nint num = 10;\nint *ptr = &num;\nprintf(\"%d\", *ptr);      // 10\nint arr[3] = {10,20,30}; int *p = arr;\nprintf(\"%d\", *(p+1));    // 20\np++;                     // now at arr[1]\n```\n\n| Term | Meaning |\n|---|---|\n| Size of a pointer | same for all types (8 B on 64-bit) |\n| Why typed? | so `*p` reads the right number of bytes and `p+1` steps correctly |\n| void pointer | generic `void *`, must cast before dereference (malloc returns one) |\n| Double pointer | `int **pp = &p;` → `**pp` is x |\n| NULL pointer | `int *p = NULL;` — check before use |\n| Wild | uninitialised pointer |\n| Dangling | points to freed/out-of-scope memory → set `p = NULL` after free |\n\n\n*Source: DigiiCampus Unit 6 deck (S32–S37, 'Pointers and Dynamic Memory Allocation').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u6-passing",
+   "unit": null,
+   "title": "Passing pointers to functions (call by reference) and pointers with arrays",
+   "content": "### ⚡ In 30 seconds\n- Pass `&x`, receive `int *p`, modify `*p` → the **caller's** variable changes (C's way of call by reference).\n- `arr[i] == *(arr + i)`; array name decays to `&arr[0]`.\n- Lets a function \"return\" several values through parameters.\n\n---\n\n```c\nvoid swap(int *a, int *b) { int t = *a; *a = *b; *b = t; }\nint x = 1, y = 2; swap(&x, &y);     // x = 2, y = 1\n\nvoid increment(int *p) { (*p)++; }   // note brackets: *p++ would move the pointer\n```\n\n| | Call by value | Call by reference (pointers) |\n|---|---|---|\n| Passes | copy | address |\n| Changes original? | no | yes |\n| swap works? | no | yes |\n\nWalking an array: `for (i = 0; i < 4; i++) printf(\"%d \", *(p + i));`\n\nArray vs pointer: `sizeof(arr)` = whole array, `sizeof(p)` = 8; `arr = …` illegal, `p = …` legal.\n\n\n*Source: DigiiCampus Unit 6 deck (S32–S37, 'Pointers and Dynamic Memory Allocation').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u6-arraysptr",
+   "unit": null,
+   "title": "Arrays of pointers vs pointer to an array",
+   "content": "### ⚡ In 30 seconds\n- `int *p[3];` = **array of 3 pointers** · `int (*p)[3];` = **one pointer to an array of 3 ints** — brackets change everything.\n- Classic use: array of strings `char *names[] = {\"Asha\",\"Ravi\",\"Mia\"};`.\n- Stores only addresses → strings of different lengths, no copying.\n\n---\n\n```c\nchar *names[3] = {\"Asha\", \"Ravi\", \"Mia\"};\nfor (int i = 0; i < 3; i++) printf(\"%s\\n\", names[i]);\n```\n\n| | Array of pointers | Pointer to array |\n|---|---|---|\n| Declaration | `int *p[3];` | `int (*p)[3];` |\n| Is | 3 pointers | 1 pointer |\n| Use | list of strings, jagged rows | stepping row by row through a 2D array |\n\n`char *names[]` vs `char names[3][10]`: the first wastes no space (each string its own length); the second reserves 10 bytes per name.\n\n\n*Source: DigiiCampus Unit 6 deck (S32–S37, 'Pointers and Dynamic Memory Allocation').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u6-dma",
+   "unit": null,
+   "title": "Dynamic memory allocation: malloc, calloc, realloc, free",
+   "content": "### ⚡ In 30 seconds\n- Runtime allocation from the **heap** (`<stdlib.h>`): **malloc** (garbage), **calloc** (zeroed), **realloc** (resize), **free**.\n- Always check for `NULL`, always `free` → otherwise **memory leak**.\n- Static allocation = compile time, stack, fixed · dynamic = run time, heap, resizable, freed by you.\n\n---\n\n```c\nint *arr = (int *) malloc(n * sizeof(int));\nif (arr == NULL) { printf(\"No memory\"); exit(1); }\narr[0] = 100;\narr = realloc(arr, 2 * n * sizeof(int));\nfree(arr); arr = NULL;\n```\n\n| | malloc | calloc |\n|---|---|---|\n| Args | 1 (total bytes) | 2 (count, size) |\n| Initial value | garbage | 0 |\n| Speed | slightly faster | slightly slower |\n\n| | Static | Dynamic |\n|---|---|---|\n| When | compile time | run time |\n| Where | stack/data | heap |\n| Size | fixed | changeable |\n| Freed | automatically | `free()` |\n\nPractice: dynamic array of n marks → average; grow with realloc as input arrives; reverse with two pointers (`while (s < e) swap`).\n\n\n*Source: DigiiCampus Unit 6 deck (S32–S37, 'Pointers and Dynamic Memory Allocation').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u7-structs",
+   "unit": null,
+   "title": "Structures: declaration, members, initialisation, access",
+   "content": "### ⚡ In 30 seconds\n- `struct` groups **different** types under one name; semicolon after `}` is compulsory.\n- Access with **`.`** (variable) or **`->`** (pointer): `p->roll` ≡ `(*p).roll`.\n- Initialise in member order: `struct Student s1 = {101, \"Amit\", 89.5};`.\n\n---\n\n```c\nstruct Student { int roll; char name[20]; float marks; };\nstruct Student s1 = {101, \"Amit\", 89.5};\ns1.marks = 90.5;\nscanf(\"%d %f\", &s1.roll, &s1.marks);\nstruct Student *p = &s1; printf(\"%d\", p->roll);\n```\nTwo ways to declare variables: after the definition (`struct Student s1, s2;`) or with it (`} s1, s2;`).\n\n| | Array | Structure |\n|---|---|---|\n| Elements | same type | different types |\n| Access | index | member name |\n\nExtras: nested structures (`s.dob.day`); **padding** can make `sizeof(struct)` bigger than the sum of members; `typedef struct Student Student;` creates an alias.\n\n\n*Source: DigiiCampus Unit 7 deck (S38–S41, 'Structures, Unions, enum').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u7-structprog",
+   "unit": null,
+   "title": "Array of structures and structure programs",
+   "content": "### ⚡ In 30 seconds\n- `struct Student s[60];` → each element is one record; access `s[i].roll`.\n- Typical programs: store/display n records, find topper, sort by marks, search by roll.\n- Structures can be passed to functions by value (copy) or by pointer (`->`).\n\n---\n\n```c\nstruct Student { int roll; float marks; };\nstruct Student s[3];\nfor (i = 0; i < 3; i++) scanf(\"%d %f\", &s[i].roll, &s[i].marks);\nint top = 0;\nfor (i = 1; i < 3; i++) if (s[i].marks > s[top].marks) top = i;\nprintf(\"Topper: %d\", s[top].roll);\n```\nPass to a function: `void show(struct Student x)` (copy) or `void raise(struct Student *x) { x->marks += 5; }` (modifies original).\n\n\n*Source: DigiiCampus Unit 7 deck (S38–S41, 'Structures, Unions, enum').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u7-unions",
+   "unit": null,
+   "title": "Unions and structure vs union",
+   "content": "### ⚡ In 30 seconds\n- Union: all members **share one memory**; size = **largest member**; only the last-written member is valid.\n- Structure: each member has **its own** memory; size = sum (+ padding).\n- Use a union to save memory when a value is one of several types.\n\n---\n\n```c\nunion Data { int i; float f; char c; };\nunion Data d; d.i = 10; d.f = 3.5;   // now d.i is garbage\nprintf(\"%zu\", sizeof(d));            // 4\n```\n\n| | Structure | Union |\n|---|---|---|\n| Keyword | `struct` | `union` |\n| Memory | separate per member | shared |\n| Size | sum of members (+padding) | largest member |\n| Valid values | all at once | only the last assigned |\n| `{int; char; float}` | 12 bytes | 4 bytes |\n| Use | records | memory saving / variant data |\n\n\n*Source: DigiiCampus Unit 7 deck (S38–S41, 'Structures, Unions, enum').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u7-enum",
+   "unit": null,
+   "title": "Enumeration types (enum) and typedef",
+   "content": "### ⚡ In 30 seconds\n- `enum` = named integer constants, auto-numbered **from 0**: `enum day {MON, TUE, WED};` → 0, 1, 2.\n- You can set values: `enum {A = 5, B};` → B = 6.\n- `typedef` creates an alias name; it does not create a new type.\n\n---\n\n```c\nenum Dept {CSE = 1, ECE, ME};          // 1, 2, 3\nstruct Employee { int id; enum Dept d; };\ntypedef struct Employee Emp; Emp e = {7, CSE};\n```\n\n| | enum | #define |\n|---|---|---|\n| Values | automatic | written one by one |\n| Handled by | compiler (typed, scoped) | preprocessor (text replace) |\n\n\n*Source: DigiiCampus Unit 7 deck (S38–S41, 'Structures, Unions, enum').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u8-intro",
+   "unit": null,
+   "title": "Files: introduction, FILE pointer, opening and closing",
+   "content": "### ⚡ In 30 seconds\n- Files give **persistent** storage (variables die when the program ends).\n- `FILE *fp = fopen(\"a.txt\", \"r\");` — **check for NULL**; `fclose(fp)` flushes the buffer and frees it.\n- fopen in \"r\": finds the file, loads it into a **buffer**, sets a pointer to the first character.\n\n---\n\n## Modes\n| Mode | Meaning | File missing | File exists |\n|---|---|---|---|\n| r | read | NULL | read from start |\n| w | write | create | **erase** |\n| a | append | create | add at end |\n| r+ | read+write | NULL | keep |\n| w+ | write+read | create | erase |\n| a+ | read+append | create | writes at end |\nBinary: add `b` → `rb`, `wb`, `ab`.\n\n## Steps\nDeclare `FILE *fp` → `fopen` → check NULL → read/write → `fclose`.\n\nStandard streams: `stdin`, `stdout`, `stderr` (open automatically). `EOF` = end-of-file constant (usually −1) — store `fgetc` result in an **int**, not a char.\n\n\n*Source: DigiiCampus Unit 8 deck (S42–S45, 'File Handling').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u8-textbinary",
+   "unit": null,
+   "title": "Text files vs binary files and read/write functions",
+   "content": "### ⚡ In 30 seconds\n- **Text** = readable characters (fprintf, fscanf, fgetc, fputc, fgets, fputs). **Binary** = raw bytes (fread, fwrite) — smaller, faster, good for structs.\n- `fgets(str, max, fp)` reads a line safely; `fputs` does **not** add `\\n`.\n- Classic programs: count chars/blanks/tabs/lines; copy a file.\n\n---\n\n| | Text | Binary |\n|---|---|---|\n| Stored as | ASCII characters | bytes as in memory |\n| In Notepad | readable | garbage |\n| Functions | fprintf/fscanf/fgetc/fputc/fgets/fputs | fread/fwrite |\n| Size/speed | larger, slower | smaller, faster |\n\n## Count program (deck)\n```c\nwhile ((ch = fgetc(fp)) != EOF) {\n    noc++;\n    if (ch == ' ')  nob++;\n    if (ch == '\\n') nol++;\n    if (ch == '\\t') not++;\n}\n```\n## File copy (deck)\n`fs = fopen(\"pr1.c\",\"r\"); ft = fopen(\"pr2.c\",\"w\"); while ((ch = fgetc(fs)) != EOF) fputc(ch, ft); fclose(fs); fclose(ft);`\n\n\n*Source: DigiiCampus Unit 8 deck (S42–S45, 'File Handling').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u8-records",
+   "unit": null,
+   "title": "Files of records and random access (fseek, ftell, rewind)",
+   "content": "### ⚡ In 30 seconds\n- Store structs with **`fwrite(&s, sizeof(s), 1, fp)`**, read back with **`fread`** (binary mode).\n- Random access: **`fseek(fp, offset, origin)`** with `SEEK_SET` / `SEEK_CUR` / `SEEK_END`; **`ftell`** = current byte position; **`rewind`** = back to start.\n- Record n is at `(n-1) * sizeof(struct)`.\n\n---\n\n```c\nstruct Student s;\nFILE *fp = fopen(\"stu.dat\", \"rb\");\nfseek(fp, (n - 1) * sizeof(s), SEEK_SET);\nfread(&s, sizeof(s), 1, fp);\nfseek(fp, 0, SEEK_END); long size = ftell(fp);   // file size\nrewind(fp);\n```\n\n| | Sequential | Random |\n|---|---|---|\n| Reads | from the start, in order | jumps straight to a record |\n| Uses | fgetc/fread loop | fseek + fread |\n\n\n*Source: DigiiCampus Unit 8 deck (S42–S45, 'File Handling').*\n",
+   "pinned": false
+  },
+  {
+   "topic": "c-u8-mgmt",
+   "unit": null,
+   "title": "Other file management functions",
+   "content": "### ⚡ In 30 seconds\n- `feof(fp)` true once end reached · `ferror(fp)` checks errors · `remove(\"f\")` deletes · `rename(\"a\",\"b\")` renames.\n- `fprintf(stdout, …)` = `printf`; `fprintf(fp, …)` writes to a file.\n- `\"w\"` erases, `\"a\"` keeps and appends.\n\n---\n\n| Function | Does |\n|---|---|\n| fopen / fclose | open / close |\n| fgetc / fputc | one character |\n| fgets / fputs | one line |\n| fscanf / fprintf | formatted |\n| fread / fwrite | binary blocks |\n| fseek / ftell / rewind | move / where / back to start |\n| feof / ferror | end / error check |\n| remove / rename | delete / rename a file |\n\n\n*Source: DigiiCampus Unit 8 deck (S42–S45, 'File Handling').*\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 5,
+   "title": "C Unit 5 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Array basics | same type, contiguous, index 0, size = compile-time constant |\n| Init rules | `{1,2}` rest 0 · `int a[]` size inferred |\n| Address | base + i·size · 2D: base + (i·cols + j)·size |\n| 2D | row-major; `int m[][4]` column size needed |\n| Passing | element = value; array = base address (modifiable) |\n| Strings | `'\\0'`, `\"Sam\"` = 4 bytes; strlen/strcpy/strcat/strcmp |\n| Programs | sum/avg/max, search, reverse, sort, matrix add/transpose/multiply, palindrome |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 6,
+   "title": "C Unit 6 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Pointer | `int *p = &x;` & vs * |\n| Arithmetic | p+1 = +sizeof(type); no p+p, ×, ÷ |\n| Kinds | NULL, void, wild, dangling, double |\n| Call by reference | swap(&a,&b) with `int *` params |\n| Arrays & pointers | `a[i] == *(a+i)`; sizeof differs; `a=` illegal |\n| `int *p[3]` vs `int (*p)[3]` | array of pointers vs pointer to array |\n| DMA | malloc (garbage) / calloc (0) / realloc / free; check NULL; leaks |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 7,
+   "title": "C Unit 7 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| struct | different types, `.` and `->`, init in order, `;` after `}` |\n| Array of structs | `s[i].roll`; topper / sort / search programs |\n| Union | shared memory, size = largest, last-written valid |\n| Struct vs union | 12 vs 4 bytes for {int, char, float} |\n| enum | auto from 0; `A = 5, B` → 6 |\n| typedef | alias only |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 8,
+   "title": "C Unit 8 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Why files | persistence |\n| FILE * | fopen → check NULL → use → fclose |\n| Modes | r / w (erase) / a (append) / + / b |\n| Text vs binary | fprintf/fgets… vs fread/fwrite |\n| EOF | int ch = fgetc(fp) |\n| Records | fwrite(&s, sizeof s, 1, fp) |\n| Random access | fseek(SEEK_SET/CUR/END), ftell, rewind |\n| Programs | count chars/lines, copy file, store/read student records |\n",
+   "pinned": true
   }
  ]
 }

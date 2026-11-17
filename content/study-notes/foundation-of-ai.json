@@ -112,6 +112,111 @@
    "title": "AI Unit 2 — one-page revision sheet",
    "content": "| Topic | Must know |\n|---|---|\n| Agents | PEAS; 7 environment properties; 5 agent types |\n| Brute force | $b^d$ explosion |\n| BFS / DFS | queue vs stack; comparison table; trace with the frontier shown |\n| UCS, DLS, IDS, bidirectional | one line each |\n| Hill climbing | best neighbour; local maximum, plateau, ridge; fixes |\n| Best-first | $f=h$; the S → D → E → G trace |\n| A* | $f=g+h$; admissible ⇒ optimal; the table method |\n| AO* | AND–OR graphs; cost propagation; SOLVED labels |\n| KR | logic, semantic nets, frames, rules, ontologies |\n",
    "pinned": true
+  },
+  {
+   "topic": "ai-u3-fundamentals",
+   "unit": null,
+   "title": "What is Machine Learning? ML vs AI",
+   "content": "### ⚡ In 30 seconds\n- **ML** = a branch of AI where computers learn patterns from data instead of being given every rule.\n- AI is the broad goal; ML is one way to reach it — every ML system is AI, not every AI is ML (draw two circles).\n- Deck example: a spam filter learns from emails already marked spam / not spam.\n\n---\n\n**Definition (deck):** Machine Learning is a branch of AI that enables computers to learn patterns from data and use those patterns to make predictions or decisions, rather than being programmed with every rule.\nArthur Samuel (1959): \"field of study that gives computers the ability to learn without being explicitly programmed\".\n\n| | Traditional programming | Machine learning |\n|---|---|---|\n| Input | rules + data | data + correct answers |\n| Output | answers | the rules (a model) |\n| Spam? | \"block if it says WIN\" | learns which words, senders, links mean spam |\n\nKey ideas: **learns** from data · **generalises** to unseen inputs · **improves** with more/better data.\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-supervised",
+   "unit": null,
+   "title": "Supervised learning: classification and regression",
+   "content": "### ⚡ In 30 seconds\n- Learns from **labelled** examples (features + known answer) → maps input to output.\n- **Classification** predicts a category (spam / not spam); **regression** predicts a number (house price).\n- Tested on examples it has not seen.\n\n---\n\n| | Classification | Regression |\n|---|---|---|\n| Output | category | continuous number |\n| Deck example | spam filter: text, sender, links → Spam/Not spam | house price: size, location, age → ₹ price |\n| Metric | accuracy, precision, recall | MAE |\n\n\"Why regression for house price?\" → it predicts a continuous value, not a category.\n\n## The 3 types at a glance (10-mark table)\n| | Supervised | Unsupervised | Reinforcement |\n|---|---|---|---|\n| Learns from | labelled examples | unlabelled data | actions → rewards/penalties |\n| Goal | input → known output | find groups/structure | maximise long-term reward |\n| Tasks | classification, regression | clustering, association | sequential decisions |\n| Example | house price | group shoppers | robot learns a maze route |\n| Cue | labelled answers | hidden patterns | rewards from actions |\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-unsupervised",
+   "unit": null,
+   "title": "Unsupervised and reinforcement learning",
+   "content": "### ⚡ In 30 seconds\n- **Unsupervised:** no labels; finds groups (**clustering**, e.g. K-means) or items that go together (**association**: pasta → sauce).\n- **Reinforcement:** an **agent** acts in an **environment**, gets **reward/penalty** + new state, aims to maximise long-term reward.\n- Deck examples: customers grouped into low/medium/high spenders; robot rewarded for reaching goal, penalised for collisions.\n\n---\n\n## Clustering walk-through (deck)\n1. Input: spending + number of purchases, no labels.\n2. K-means groups similar customers.\n3. Output: three clusters — low, medium, high spenders.\n4. The model found the groups itself.\n\n## Reinforcement loop\nAgent → *action* → Environment → *new state + reward* → Agent … (trial and error).\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-data",
+   "unit": null,
+   "title": "Data, features and labels",
+   "content": "### ⚡ In 30 seconds\n- **Data** = examples (rows) · **Features** = input columns · **Label** = the answer to predict.\n- Supervised data = features + label; unsupervised = features only.\n\n---\n\n| Study hours | Attendance % | Quizzes | **Label: Pass?** |\n|---|---|---|---|\n| 2 | 70 | 1 | No |\n| 5 | 85 | 4 | Yes |\n| 7 | 95 | 6 | Yes |\n\n| Dataset | Features | Label | Type |\n|---|---|---|---|\n| Spam emails | text, sender, links | spam/not | classification |\n| House prices | size, location, age | price | regression |\n| Student pass | hours, attendance, quizzes | yes/no | classification |\n| Shoppers | spending, purchases | none | clustering |\n\nRecap Q3: house-price features = size, location (age); label = selling price.\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-evaluation",
+   "unit": null,
+   "title": "Training data, testing data and model evaluation",
+   "content": "### ⚡ In 30 seconds\n- Train on one part, **test on held-back unseen data** to check generalisation.\n- Classification: **accuracy, precision = TP/(TP+FP), recall = TP/(TP+FN)**. Regression: **MAE**.\n- **Overfitting** = great on training data, poor on new data.\n\n---\n\n## Worked numerical\n100 emails, 40 real spam; filter flags 45, of which 36 are spam.\nTP 36 · FP 9 · FN 4 · TN 51 → Accuracy 0.87 · Precision 0.80 · Recall 0.90.\nHouse prices actual 40, 60, 80 vs predicted 45, 55, 90 → MAE = 20/3 ≈ 6.67 lakh.\n\n## Which metric when\n| Metric | Use when |\n|---|---|\n| Accuracy | classes balanced |\n| Precision | false alarms costly |\n| Recall | missed cases costly (deck: student support → check recall) |\n| MAE | predicting numbers |\n\nWhy keep test data separate? Otherwise the model \"remembers\" training data and looks perfect; only unseen data reveals overfitting.\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-workflow",
+   "unit": null,
+   "title": "The basic ML workflow (7 steps)",
+   "content": "### ⚡ In 30 seconds\n- **Define → Collect → Prepare → Split → Train → Evaluate → Deploy & monitor** (\"Don't Cook Pasta Slowly, Taste Every Dish\").\n- Last step loops: watch for drift and harm.\n\n---\n\n| Step | Student-support example (deck) |\n|---|---|\n| 1 Define problem | which students may need extra support |\n| 2 Collect data | study hours, attendance, quiz scores (permitted, representative) |\n| 3 Prepare | clean errors, handle missing values, select features |\n| 4 Split | training and testing sets |\n| 5 Train | supervised classification if labelled outcomes exist |\n| 6 Evaluate | unseen data; recall + false positives, not accuracy alone |\n| 7 Deploy & monitor | offer help, don't label unfairly; human in the loop; watch drift |\n\n10-mark answer: draw the 7 boxes as a loop + one line each + this example.\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u3-ethics",
+   "unit": null,
+   "title": "Applications and ethics of machine learning",
+   "content": "### ⚡ In 30 seconds\n- Applications: healthcare, education, banking, retail, transport, agriculture.\n- 6 risks — **Bias, Privacy, Transparency, Accountability, Security, Reliability**.\n- Key lesson: ML should support decisions, not replace human judgement.\n\n---\n\n| Field | Example |\n|---|---|\n| Healthcare | flag a scan for clinician review |\n| Education | recommend revision topics |\n| Banking | flag a suspicious payment |\n| Retail | suggest items from past purchases |\n| Transport | estimate arrival time |\n| Agriculture | find areas needing irrigation |\n\n| Risk | Good practice |\n|---|---|\n| Bias & fairness | check performance across groups |\n| Privacy & consent | minimise and protect data |\n| Transparency | explain important factors and limits |\n| Accountability | human oversight, audit trail, appeals |\n| Security & misuse | control access, test vulnerabilities |\n| Reliability | monitor drift, retest, allow correction |\n\nRecap Q6: high-stakes predictions (health, jobs, credit) need a human because models can be wrong, biased or outdated.\n\n\n*Source: Dr. Sapna Arora's deck 'Machine Learning Fundamentals' (DigiiCampus, Unit 3); full version in AI_Notes_Units1-4.pdf pp. 53–64.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-basics",
+   "unit": null,
+   "title": "Robotics and automation: definitions, history, Asimov's laws",
+   "content": "### ⚡ In 30 seconds\n- **Robotics** = design, construction, operation and use of robots (programmable machines acting automatically/semi-autonomously). **Automation** = tasks done with minimal human intervention — may not need a robot.\n- \"Robot\": Karel Čapek, *R.U.R.*, 1920 · \"Robotics\": Isaac Asimov, 1940s · first industrial robot: George Devol, 1956.\n- Asimov's laws: **0 humanity > 1 human > 2 obey > 3 self**.\n\n---\n\n| | Robotics | Automation |\n|---|---|---|\n| Focus | building/using robots | making a process run itself |\n| Needs a robot? | yes | no |\n| Example | welding arm | washing-machine cycle |\n\n## Asimov's laws\n| Law | A robot… | unless… |\n|---|---|---|\n| Zeroth | must not harm humanity | — |\n| First | must not injure a human (or allow harm by inaction) | conflicts with Zeroth |\n| Second | must obey humans | conflicts with 0 or 1 |\n| Third | may protect itself | conflicts with 0, 1 or 2 |\n\nScenario tip: \"ordered to push someone\" → refuse — 2nd law gives way to 1st. Name both laws.\n\n**How ML enhances robotics (Class Test Q5):** robot learns from sensor data → recognises objects, adapts, improves (warehouse picker; SmartBot predictive maintenance).\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-types",
+   "unit": null,
+   "title": "Classification of robots",
+   "content": "### ⚡ In 30 seconds\n- By **function**: industrial, service, medical, military · by **movement**: stationary, mobile · by **control**: manual, semi-autonomous, fully autonomous.\n- Application types: humanoid, cobots, agricultural, space/exploration, defence, entertainment, educational.\n\n---\n\n| Basis | Type | Example |\n|---|---|---|\n| Function | Industrial | ABB IRB 6700 (welding) |\n| | Service | Pepper (malls, hotels) |\n| | Medical | Da Vinci Surgical System |\n| | Military | PackBot (bomb disposal) |\n| Movement | Stationary | arm on assembly line |\n| | Mobile | AGV in warehouses |\n| Control | Manual | remote bomb-disposal robot |\n| | Semi-autonomous | drone with autopilot |\n| | Fully autonomous | self-driving car |\n\n**Cobots** work safely beside humans; traditional robots work in isolation.\n\n| Advantages | Limitations |\n|---|---|\n| productivity, no fatigue | no human creativity/judgement |\n| accuracy | job displacement |\n| reprogrammable | high cost |\n| lower long-term labour cost | dependency |\n| consistency | cyber risk, needs power |\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-components",
+   "unit": null,
+   "title": "Robot components, configurations and anatomy",
+   "content": "### ⚡ In 30 seconds\n- **Sensors** (sense) → **Controller** (decide, the brain) → **Actuators** (move, the muscles).\n- 5 arm configurations: **Cartesian, cylindrical, spherical (polar), jointed (articulated), SCARA**.\n- Anatomy: links (rigid) + joints (motion), 1 DOF per joint; joint types **L U R T V**.\n\n---\n\n## Configurations\n| Config | Motions | Work envelope |\n|---|---|---|\n| Cartesian | 3 linear X, Y, Z | rectangular box (most accurate) |\n| Cylindrical | 2 linear + base rotation | cylinder |\n| Spherical/polar | 1 slide + 2 rotations | sphere |\n| Jointed/articulated | all rotary, like a human arm; 6 DOF (X Y Z + pitch yaw roll) | irregular |\n| SCARA | like jointed but shoulder/elbow axes **vertical** | large cylinder |\n\nPitch = wrist up–down · yaw = left–right · roll = rotate forearm.\n\n## Joint types\n| Joint | Motion | Links vs axis |\n|---|---|---|\n| Linear (L) | slide | links parallel |\n| Orthogonal (U) | slide | links perpendicular |\n| Rotational (R) | rotate | axis ⊥ both links |\n| Twisting (T) | rotate | axis ∥ both links |\n| Revolving (V) | rotate | input ∥ axis, output ⊥ |\n\nNumbering: base = link-0 → joint-1 → link-1 → joint-2 …\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-control",
+   "unit": null,
+   "title": "Drives, actuators and control systems",
+   "content": "### ⚡ In 30 seconds\n- Drives: **electric** (rotation, revolute joints, precise), **hydraulic** (linear, heavy loads), **pneumatic** (linear, cheap, light loads).\n- Control levels: limited sequence → playback point-to-point → playback continuous path → intelligent.\n- **Open loop** (no feedback, washing-machine timer) vs **closed loop** (feedback, thermostat).\n\n---\n\n| Actuator | Motion | Traits |\n|---|---|---|\n| Electric motor | rotary | precise, clean, most common |\n| Hydraulic | linear | very high force, may leak |\n| Pneumatic | linear | cheap, fast, less precise |\n\nMotor choice (textbook): torque, speed, power.\n\n| | Open loop | Closed loop |\n|---|---|---|\n| Feedback | none | sensor measures output |\n| Corrects errors | no | yes |\n| Example | timer | temperature control |\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-applications",
+   "unit": null,
+   "title": "Applications of robotics + ABC Pvt. Ltd. case study",
+   "content": "### ⚡ In 30 seconds\n- Areas: home, industry, AI & data science, healthcare, defence/aerospace.\n- ABC SmartBot = **object recognition + NLP voice commands + predictive maintenance + data analytics**.\n- Results: **+30% production efficiency, −25% maintenance cost**, faster decisions.\n\n---\n\n| Area | Robots do |\n|---|---|\n| Home | cleaning, lawn, security (Amazon Astro) |\n| Industry | manufacturing, inspection, autonomous vehicles |\n| AI & data | object recognition, NLP, predictive maintenance, anomaly detection |\n| Healthcare | surgical, assistive, telemedicine, lab automation |\n| Defence/aerospace | surveillance, maintenance, MEMS |\n\n## Case Q&A\n1. Object recognition → sorts components, fewer errors.\n2. NLP → understands voice commands.\n3. Predictive maintenance → sensor data forecasts breakdowns → less downtime.\n4. Data science → automated cleaning, analytics, anomaly detection.\n5. Outcomes → 30% efficiency, 25% lower maintenance cost.\n\nAnswer shape for case questions: technique → what it does → benefit.\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": "ai-u4-trends",
+   "unit": null,
+   "title": "Automation applications and future trends",
+   "content": "### ⚡ In 30 seconds\n- Automation: manufacturing, smart homes, agriculture → AI + IoT + robotics = **Industry 5.0**.\n- 6 trends: **IIoT, cybersecurity, big data, open architectures, virtual solutions, cobots**.\n- \"The future is automated, but guided by human intelligence.\"\n\n---\n\n| Trend | One line |\n|---|---|\n| IIoT | robots with smart edge sensors collect new data |\n| Cybersecurity | more connected robots → more attack surface |\n| Big data | robot data drives better decisions |\n| Open architectures | interoperable, vendor-neutral systems |\n| Virtual solutions | simulation / digital twins before deployment |\n| Cobots | humans and robots share workspaces safely |\n\n\n*Source: Dr. Sapna Arora's deck 'Robotics' (DigiiCampus, Unit 4); full version in AI_Notes_Units1-4.pdf pp. 65–74.*\n",
+   "pinned": false
+  },
+  {
+   "topic": null,
+   "unit": 3,
+   "title": "AI Unit 3 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| ML vs AI | ML ⊂ AI; learns patterns from data |\n| 3 types | supervised (labels) · unsupervised (no labels) · reinforcement (rewards) |\n| Supervised | classification (category) vs regression (number) |\n| Unsupervised | clustering (K-means), association |\n| Data words | data, features, label |\n| Evaluation | train/test split; accuracy, precision, recall, MAE; overfitting |\n| Workflow | Define, Collect, Prepare, Split, Train, Evaluate, Deploy & monitor |\n| Ethics | Bias, Privacy, Transparency, Accountability, Security, Reliability |\n",
+   "pinned": true
+  },
+  {
+   "topic": null,
+   "unit": 4,
+   "title": "AI Unit 4 — one-page revision sheet",
+   "content": "| Topic | Must know |\n|---|---|\n| Robotics vs automation | robot needed vs not |\n| History | Čapek 1920 R.U.R. · Asimov 1940s · Devol 1956 |\n| Asimov | 0 humanity > 1 human > 2 obey > 3 self |\n| Classification | function / movement / control + examples |\n| Components | sensors → controller → actuators |\n| Configurations | Cartesian, cylindrical, spherical, jointed (6 DOF), SCARA |\n| Joints | L U (slide) · R T V (rotate) |\n| Drives | electric (rotary), hydraulic & pneumatic (linear) |\n| Control | 4 levels; open vs closed loop |\n| Case study | ABC SmartBot: +30% efficiency, −25% maintenance |\n| Trends | IIoT, cybersecurity, big data, open architectures, virtual, cobots |\n",
+   "pinned": true
   }
  ]
 }
